@@ -6,7 +6,7 @@ import Login from "./Pages/Login/Login.js";
 import Library from "./Pages/Library/Library.js";
 import Register from "./Pages/Register/Register.js";
 import Order from "./Pages/Order/Order.js";
-
+import ContactUs from "./Pages/ContactUs/ContactUs.js";
 function App() {
   return (
     <div className="App">
@@ -18,6 +18,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/order" element={<Order />} />
+            <Route path="/contactus" element={<ContactUs />} />
           </Routes>
         </div>
       </BrowserRouter>
