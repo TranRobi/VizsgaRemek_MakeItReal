@@ -23,12 +23,18 @@ function Navbar() {
 						</a>
 					</li>
 					<li className="black">
-						<a href="https://youtube.com" className="">
+						<a
+							href="https://youtube.com"
+							className="bg-black rounded-2xl hover:bg-slate-900"
+						>
 							Login<span></span>
 						</a>
 					</li>
 					<li>
-						<a href="https://youtube.com">
+						<a
+							href="https://youtube.com"
+							className="bg-black rounded-2xl hover:bg-slate-900"
+						>
 							Register<span></span>
 						</a>
 					</li>
