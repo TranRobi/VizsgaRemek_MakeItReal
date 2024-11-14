@@ -8,28 +8,26 @@ function Navbar() {
 			<div>
 				<ul>
 					<li>
-						<a href="https://youtube.com">
-							Webshop<span></span>
+						<a href="/library">
+							Library<span></span>
 						</a>
 					</li>
 					<li>
-						<a href="https://youtube.com">
-							Contact us<span></span>
+						<a href="/order">
+							Order<span></span>
 						</a>
 					</li>
 					<li>
-						<a href="https://youtube.com">
+						<a href="/aboutus">
 							About us<span></span>
 						</a>
 					</li>
 					<li className="black">
-						<a href="https://youtube.com" className="">
+						<a
+							href="/login"
+							className="bg-black rounded-2xl hover:bg-slate-900"
+						>
 							Login<span></span>
-						</a>
-					</li>
-					<li>
-						<a href="https://youtube.com">
-							Register<span></span>
 						</a>
 					</li>
 				</ul>

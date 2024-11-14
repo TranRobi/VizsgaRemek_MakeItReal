@@ -8,7 +8,9 @@ Light Stone Gray: #E0E0E0
 Steel Blue: #5A738E
 Soft Beige: #D3C5B8 
 */
-
+.gray {
+  background-color: #333333;
+}
 body {
   background-color: #e0e0e0;
 }
@@ -19,7 +21,7 @@ nav {
   display: flex;
   width: 100%;
   background-color: #333333;
-  height: fit-content;
+  height: 4rem;
   align-items: center;
 }
 
