@@ -3,7 +3,7 @@ import GitHubIcon from "@mui/icons-material/GitHub";
 
 function Footer() {
 	return (
-		<div className="text-white gray w-full h-fit absolute left-0 bottom-0 pt-10 ">
+		<div className="text-white gray w-full h-fitpt-10 ">
 			<div className="w-fit m-auto flex justify-between pb-2 border-b-2 border-black">
 				<div className="text-center mr-5">
 					<a

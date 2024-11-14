@@ -8,6 +8,18 @@ Light Stone Gray: #E0E0E0
 Steel Blue: #5A738E
 Soft Beige: #D3C5B8 
 */
+
+* {
+	-webkit-box-sizing: content-box;
+	-moz-box-sizing: content-box;
+	box-sizing: content-box;
+}
+*:before,
+*:after {
+	-webkit-box-sizing: content-box;
+	-moz-box-sizing: content-box;
+	box-sizing: content-box;
+}
 .beige {
 	color: #d3c5b8;
 }
@@ -81,4 +93,77 @@ nav li {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+}
+.cards {
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+}
+.card {
+	padding: 10px;
+	margin: 20px;
+	color: #0e191f;
+	position: relative;
+	background-color: #7b6d62;
+	width: 20%;
+	height: fit-content;
+	transition: 0.5s;
+	border-radius: 15px;
+}
+@property --angle {
+	syntax: "<angle>";
+	initial-value: 0deg;
+	inherits: false;
+}
+.cards .card span:after {
+	box-shadow: 5px 5px 5px gray;
+	content: "";
+	width: 100%;
+	height: 100%;
+	background-image: conic-gradient(from var(--angle), #3d606e, #090f13);
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	translate: -50% -50%;
+	z-index: -1;
+	border-radius: 15px;
+	padding: 5px;
+	animation: 3s spin linear infinite;
+}
+
+.cards .card span::before {
+	filter: blur(3rem);
+}
+
+.card h2,
+p {
+	width: fit-content;
+	margin: auto;
+	padding: 5px;
+}
+
+.card button {
+	display: flex;
+	justify-content: center;
+	margin: auto;
+	padding: 10px;
+	border-radius: 15px;
+	color: white;
+	background-color: green;
+}
+@keyframes spin {
+	from {
+		--angle: 0deg;
+	}
+	to {
+		--angle: 360deg;
+	}
+}
+
+.card img {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	width: 50%;
+	height: 50%;
 }
