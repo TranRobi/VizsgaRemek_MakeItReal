@@ -40,11 +40,15 @@ function Navbar() {
                 About us<span></span>
               </NavLink>
             </li>
-            <li className="black">
-              <button onClick={handleOpen}>Login</button>
+            <li>
+              <a onClick={handleOpen}>
+                Login<span></span>
+              </a>
             </li>
-            <li className="black">
-              <button onClick={handleOpenRegister}>Register</button>
+            <li>
+              <a onClick={handleOpenRegister}>
+                Register<span></span>
+              </a>
             </li>
           </ul>
         </div>
