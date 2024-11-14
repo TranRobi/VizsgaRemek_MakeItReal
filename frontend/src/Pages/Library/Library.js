@@ -7,19 +7,27 @@ function Library() {
 	return (
 		<>
 			<Navbar />
-			<div>
-				<div></div>
-				<div className="cards">
-					<Card />
-					<Card />
-					<Card />
-					<Card />
-					<Card />
-					<Card />
-					<Card />
-					<Card />
-					<Card />
-					<Card />
+			<div className="flex">
+				<div className="">Basket</div>
+				<div className="w-fit">
+					<div className="cards">
+						<Card />
+						<Card />
+						<Card />
+						<Card />
+					</div>
+					<div className="cards">
+						<Card />
+						<Card />
+						<Card />
+						<Card />
+					</div>
+					<div className="cards">
+						<Card />
+						<Card />
+						<Card />
+						<Card />
+					</div>
 				</div>
 			</div>
 
