@@ -2,8 +2,8 @@ import React from "react";
 function Navbar() {
 	return (
 		<nav>
-			<div>
-				<h1>logo</h1>
+			<div className="p-2">
+				<img className="logo" src="logo.png"/>
 			</div>
 			<div>
 				<ul>
