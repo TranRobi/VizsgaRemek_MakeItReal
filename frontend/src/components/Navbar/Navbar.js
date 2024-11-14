@@ -1,41 +1,62 @@
+import { Modal } from "@mui/material";
 import React from "react";
 import { NavLink } from "react-router-dom";
+
+import { useState } from "react";
+import Login from "../../Pages/Login/Login";
+import Register from "../../Pages/Register/Register";
 function Navbar() {
+  const [isOpened, setIsOpened] = useState(false);
+  const [isOpenedRegister, setIsOpenedRegister] = useState(false);
+
+  const handleOpen = () => {
+    setIsOpened(!isOpened);
+  };
+  const handleOpenRegister = () => {
+    setIsOpenedRegister(!isOpenedRegister);
+  };
   return (
-    <nav className="h-fit">
-      <div className="p-2">
-        <NavLink to="/">
-          <img className="logo" src="logo.png" alt="logo" />
-        </NavLink>
-      </div>
-      <div>
-        <ul>
-          <li>
-            <NavLink to="/library">
-              Library<span></span>
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/order">
-              Order<span></span>
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/aboutus">
-              About us<span></span>
-            </NavLink>
-          </li>
-          <li className="black">
-            <NavLink
-              to="/login"
-              className="bg-black rounded-2xl hover:bg-slate-900"
-            >
-              Login<span></span>
-            </NavLink>
-          </li>
-        </ul>
-      </div>
-    </nav>
+    <>
+      <nav className="h-fit">
+        <div className="p-2">
+          <NavLink to="/">
+            <img className="logo" src="logo.png" alt="logo" />
+          </NavLink>
+        </div>
+        <div>
+          <ul>
+            <li>
+              <NavLink to="/library">
+                Library<span></span>
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/order">
+                Order<span></span>
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/aboutus">
+                About us<span></span>
+              </NavLink>
+            </li>
+            <li className="black">
+              <button onClick={handleOpen}>Login</button>
+            </li>
+            <li className="black">
+              <button onClick={handleOpenRegister}>Register</button>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <Modal open={isOpened}>
+        <Login />
+      </Modal>
+      <Modal open={isOpenedRegister}>
+        <Register />
+      </Modal>
+    </>
   );
 }
 

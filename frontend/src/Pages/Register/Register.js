@@ -1,4 +1,5 @@
 import React from "react";
+import CancelIcon from "@mui/icons-material/Cancel";
 
 function Register() {
   return (
@@ -30,11 +31,8 @@ function Register() {
             <p className="beige">Already have an account? Log in now!</p>
           </div>
           <div className="w-fit mt-4">
-            <a href="/login" className=" text-blue-500 mr-5">
-              Login
-            </a>
-            <a href="/" className=" text-blue-500">
-              Home
+            <a href={window.location.pathname} className=" text-red-500">
+              <CancelIcon fontSize="large" />
             </a>
           </div>
         </div>

@@ -109,7 +109,6 @@ nav li {
 }
 .cards {
   display: flex;
-  justify-content: right;
   flex-wrap: wrap;
 }
 .card {

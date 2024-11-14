@@ -4,36 +4,28 @@ import Footer from "../../components/Footer/Footer";
 import Card from "../../components/Cards/Card";
 
 function Library() {
-	return (
-		<>
-			<Navbar />
-			<div className="flex">
-				<div className="">Basket</div>
-				<div className="w-fit">
-					<div className="cards">
-						<Card />
-						<Card />
-						<Card />
-						<Card />
-					</div>
-					<div className="cards">
-						<Card />
-						<Card />
-						<Card />
-						<Card />
-					</div>
-					<div className="cards">
-						<Card />
-						<Card />
-						<Card />
-						<Card />
-					</div>
-				</div>
-			</div>
-
-			<Footer />
-		</>
-	);
+  return (
+    <>
+      <Navbar />
+      <div>
+        <div className="cards justify-center">
+          <Card />
+          <Card />
+          <Card />
+          <Card />
+          <Card />
+          <Card />
+          <Card />
+          <Card />
+          <Card />
+          <Card />
+          <Card />
+          <Card />
+        </div>
+      </div>
+      <Footer />
+    </>
+  );
 }
 
 export default Library;
