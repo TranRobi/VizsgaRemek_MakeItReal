@@ -2,25 +2,35 @@ import React from "react";
 
 function Login() {
 	return (
-		<div className="flex justify-center h-4/5">
-			<div className="">
-				<h1>Login</h1>
-				<form>
-					<label>
-						Username:
-						<input type="text" name="username" />
-					</label>
-					<br />
-					<label>
-						Password:
-						<input type="password" name="password" />
-					</label>
-					<br />
-					<input type="submit" value="Submit" />
-				</form>
-				<p>
-					Don't have an account? <a href="/register">Register</a>
-				</p>
+		<div className="w-full h-screen flex justify-center items-center">
+			<div className="p-5 gray rounded-xl w-1/2">
+				<h1 className="text-3xl font-bold beige">Login</h1>
+				<div>
+					<input
+						type="text"
+						placeholder="Username/Email Address"
+						className="w-full p-3 mt-5 border rounded-md"
+					/>
+					<input
+						type="password"
+						placeholder="Password"
+						className="w-full p-3 mt-5 border rounded-md"
+					/>
+				</div>
+				<button className="w-full p-3 mt-5 bg-blue-500 text-white rounded-md">
+					Login
+				</button>
+				<div className="flex items-center w-full justify-between">
+					<p className="beige">Don't have an account? Create it now!</p>
+					<div className="w-fit mt-4">
+						<a href="/register" className=" text-blue-500 mr-5">
+							Register
+						</a>
+						<a href="/" className=" text-blue-500">
+							Home
+						</a>
+					</div>
+				</div>
 			</div>
 		</div>
 	);

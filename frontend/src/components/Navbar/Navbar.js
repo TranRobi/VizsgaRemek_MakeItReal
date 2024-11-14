@@ -1,9 +1,11 @@
 import React from "react";
 function Navbar() {
 	return (
-		<nav>
+		<nav className="h-fit">
 			<div className="p-2">
-				<img className="logo" src="logo.png"/>
+				<a href="/">
+					<img className="logo" src="logo.png" alt="logo" />
+				</a>
 			</div>
 			<div>
 				<ul>
