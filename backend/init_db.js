@@ -31,9 +31,12 @@ query(`
         id INT UNSIGNED NOT NULL AUTO_INCREMENT,
         product_id INT UNSIGNED NULL,
         gcode_file_path VARCHAR(256) CHARACTER SET utf8 NOT NULL,
+        material ENUM('PLA', 'PETG', 'ABS'),
+        colour ENUM('Red', 'Green', 'Blue', 'Yellow', 'Black', 'White', 'Gray'),
         state ENUM('pending', 'in_production', 'shipped'),
         PRIMARY KEY(id)
     );
 `);
+
 
 connection.end();
