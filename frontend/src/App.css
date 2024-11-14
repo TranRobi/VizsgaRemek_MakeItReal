@@ -67,3 +67,10 @@ nav li {
 .menu {
   width: auto;
 }
+
+.logo {
+  width: 15%;
+  height: 15%;
+  margin: 0px 10px;
+  border-radius: 25%;
+}
