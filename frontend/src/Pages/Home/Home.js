@@ -6,7 +6,11 @@ function Home() {
 	return (
 		<>
 			<Navbar />
-			<div>Home</div>
+			<section>Company name, slogan</section>
+			<section>About us</section>
+			<section>Contact us</section>
+			<section>Libtary</section>
+			<section>Order</section>
 			<Footer />
 		</>
 	);
