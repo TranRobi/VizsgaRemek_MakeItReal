@@ -1,44 +1,82 @@
-import React from "react";
-import CancelIcon from "@mui/icons-material/Cancel";
+import React, { useState } from "react";
+import { Button, createTheme, TextField, ThemeProvider } from "@mui/material";
+import Stack from "@mui/material/Stack";
 
-function Register() {
-  return (
-    <div className="w-full h-screen flex justify-center items-center">
-      <div className="p-5 gray rounded-xl w-1/2">
-        <h1 className="text-3xl font-bold beige">Register</h1>
-        <div>
-          <input
-            type="text"
-            placeholder="Username"
-            className="w-full py-3 mt-5 border rounded-md"
-          />
-          <input
-            type="email"
-            placeholder="Email Address"
-            className="w-full py-3 mt-5 border rounded-md"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            className="w-full py-3 mt-5 border rounded-md"
-          />
-        </div>
-        <button className="w-full py-3 mt-5 bg-blue-500 text-white rounded-md">
-          Login
-        </button>
-        <div className="flex items-center w-full justify-between">
-          <div className="text-left mt-4">
-            <p className="beige">Already have an account? Log in now!</p>
-          </div>
-          <div className="w-fit mt-4">
-            <a href={window.location.pathname} className=" text-red-500">
-              <CancelIcon fontSize="large" />
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+import MailOutlineIcon from "@mui/icons-material/MailOutline";
+import CancelIcon from "@mui/icons-material/Cancel";
+import KeyIcon from "@mui/icons-material/Key";
+
+function Register({ close, open }) {
+	const theme = createTheme({
+		palette: {
+			warning: {
+				main: "#1C1C1C",
+			},
+		},
+	});
+
+	const handleOpenLogin = (e) => {
+		open(e);
+		close(e);
+	};
+	return (
+		<ThemeProvider theme={theme}>
+			<div className="w-full h-screen flex justify-center items-center">
+				<div className="p-5 rounded-xl w-1/3 login">
+					<div className="flex justify-between align-middle">
+						<h1 className="text-3xl font-bold pb-6 ">Register</h1>
+
+						<a href={window.location.pathname} className=" text-red-500">
+							<CancelIcon fontSize="large" onClick={(e) => close(e)} />
+						</a>
+					</div>
+					<form>
+						<Stack spacing={2}>
+							<div className="relative">
+								<TextField
+									id="standard-basic"
+									label="Username"
+									placeholder="Enter Username"
+									color="warning"
+									variant="standard"
+									className="w-full"
+								></TextField>
+								<MailOutlineIcon className="absolute top-1/2 right-0" />
+							</div>
+							<div className="relative">
+								<TextField
+									id="standard-basic"
+									label="Email Address"
+									placeholder="Enter Email Address"
+									type="text"
+									color="warning"
+									variant="standard"
+									className="w-full"
+								></TextField>
+								<KeyIcon className="absolute top-1/2 right-0" />
+							</div>
+							<div className="relative">
+								<TextField
+									id="standard-basic"
+									label="Password"
+									placeholder="Enter password"
+									type="password"
+									color="warning"
+									variant="standard"
+									className="w-full"
+								></TextField>
+								<KeyIcon className="absolute top-1/2 right-0" />
+							</div>
+							<Button variant="contained" sx={{ py: "0.5rem" }}>
+								Register
+							</Button>
+							<Button onClick={(e) => handleOpenLogin(e)}>Login</Button>
+						</Stack>
+					</form>
+				</div>
+			</div>
+		</ThemeProvider>
+	);
 }
 
 export default Register;

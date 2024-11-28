@@ -9,20 +9,28 @@ function Navbar() {
 	const [isOpened, setIsOpened] = useState(false);
 	const [isOpenedRegister, setIsOpenedRegister] = useState(false);
 
-	const handleOpen = () => {
-		setIsOpened(!isOpened);
+	const closeLogin = (e) => {
+		e.preventDefault();
+		setIsOpened(false);
 	};
-	const handleOpenRegister = () => {
-		setIsOpenedRegister(!isOpenedRegister);
+	const closeRegister = (e) => {
+		e.preventDefault();
+		setIsOpenedRegister(false);
+	};
+	const openLogin = (e) => {
+		e.preventDefault();
+		setIsOpened(true);
+	};
+	const openRegister = (e) => {
+		e.preventDefault();
+		setIsOpenedRegister(true);
 	};
 	return (
 		<>
 			<nav className="h-fit">
-				<div className="p-2">
-					<NavLink to="/">
-						<img className="logo" src="logo.png" alt="logo" />
-					</NavLink>
-				</div>
+				<NavLink to="/">
+					<img className="logo" src="logo.png" alt="logo" />
+				</NavLink>
 				<div>
 					<ul>
 						<li>
@@ -41,12 +49,12 @@ function Navbar() {
 							</NavLink>
 						</li>
 						<li>
-							<a onClick={handleOpen}>
+							<a onClick={openLogin}>
 								Login<span></span>
 							</a>
 						</li>
 						<li>
-							<a onClick={handleOpenRegister}>
+							<a onClick={openRegister}>
 								Register<span></span>
 							</a>
 						</li>
@@ -56,12 +64,12 @@ function Navbar() {
 
 			<Modal open={isOpened}>
 				<div>
-					<Login />
+					<Login close={closeLogin} open={openRegister} />
 				</div>
 			</Modal>
 			<Modal open={isOpenedRegister}>
 				<div>
-					<Register />
+					<Register close={closeRegister} open={openLogin} />
 				</div>
 			</Modal>
 		</>

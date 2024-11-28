@@ -7,7 +7,7 @@ function AboutUs() {
 	return (
 		<>
 			<Navbar />
-			<div>About Us</div>
+			<div className="h-screen">About Us</div>
 			<Footer />
 		</>
 	);
