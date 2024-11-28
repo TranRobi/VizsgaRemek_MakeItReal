@@ -1,6 +1,7 @@
 import { Modal } from "@mui/material";
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { Button } from "@mui/material";
 
 import { useState } from "react";
 import Login from "../../Pages/Login/Login";
@@ -8,6 +9,7 @@ import Register from "../../Pages/Register/Register";
 function Navbar() {
 	const [isOpened, setIsOpened] = useState(false);
 	const [isOpenedRegister, setIsOpenedRegister] = useState(false);
+	const navigate = useNavigate();
 
 	const closeLogin = (e) => {
 		e.preventDefault();
@@ -25,13 +27,16 @@ function Navbar() {
 		e.preventDefault();
 		setIsOpenedRegister(true);
 	};
+
+	const home = () => {
+		navigate("/");
+	};
 	return (
 		<>
 			<nav className="h-fit">
-				<NavLink to="/">
-					<img className="logo" src="logo.png" alt="logo" />
-				</NavLink>
-				<div>
+				<img className="logo" src="logo.png" alt="logo" onClick={home} />
+
+				<div className="mr-4">
 					<ul>
 						<li>
 							<NavLink to="/library">
@@ -49,14 +54,9 @@ function Navbar() {
 							</NavLink>
 						</li>
 						<li>
-							<a onClick={openLogin}>
+							<Button onClick={openLogin} variant="contained">
 								Login<span></span>
-							</a>
-						</li>
-						<li>
-							<a onClick={openRegister}>
-								Register<span></span>
-							</a>
+							</Button>
 						</li>
 					</ul>
 				</div>

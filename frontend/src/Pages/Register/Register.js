@@ -1,10 +1,17 @@
 import React, { useState } from "react";
-import { Button, createTheme, TextField, ThemeProvider } from "@mui/material";
+import {
+	Button,
+	createTheme,
+	TextField,
+	ThemeProvider,
+	Typography,
+} from "@mui/material";
 import Stack from "@mui/material/Stack";
 
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import CancelIcon from "@mui/icons-material/Cancel";
 import KeyIcon from "@mui/icons-material/Key";
+import PersonIcon from "@mui/icons-material/Person";
 
 function Register({ close, open }) {
 	const theme = createTheme({
@@ -41,7 +48,7 @@ function Register({ close, open }) {
 									variant="standard"
 									className="w-full"
 								></TextField>
-								<MailOutlineIcon className="absolute top-1/2 right-0" />
+								<PersonIcon className="absolute top-1/2 right-0" />
 							</div>
 							<div className="relative">
 								<TextField
@@ -53,7 +60,7 @@ function Register({ close, open }) {
 									variant="standard"
 									className="w-full"
 								></TextField>
-								<KeyIcon className="absolute top-1/2 right-0" />
+								<MailOutlineIcon className="absolute top-1/2 right-0" />
 							</div>
 							<div className="relative">
 								<TextField
@@ -70,7 +77,22 @@ function Register({ close, open }) {
 							<Button variant="contained" sx={{ py: "0.5rem" }}>
 								Register
 							</Button>
-							<Button onClick={(e) => handleOpenLogin(e)}>Login</Button>
+							<div className="flex items-center justify-between">
+								<Typography
+									variant="subtitle2"
+									color="primary"
+									className="mr-4"
+								>
+									Already have an account?
+								</Typography>
+								<Button
+									variant="contained"
+									color="warning"
+									onClick={(e) => handleOpenLogin(e)}
+								>
+									Login
+								</Button>
+							</div>
 						</Stack>
 					</form>
 				</div>

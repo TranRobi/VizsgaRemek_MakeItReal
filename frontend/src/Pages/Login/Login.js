@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { Button, createTheme, TextField, ThemeProvider } from "@mui/material";
+import {
+	Button,
+	createTheme,
+	TextField,
+	ThemeProvider,
+	Typography,
+} from "@mui/material";
 import Stack from "@mui/material/Stack";
 
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
@@ -58,7 +64,22 @@ function Login({ close, open }) {
 							<Button variant="contained" sx={{ py: "0.5rem" }}>
 								Login
 							</Button>
-							<Button onClick={(e) => handleOpenRegister(e)}>Register</Button>
+							<div className="flex items-center justify-between">
+								<Typography
+									variant="subtitle2"
+									color="primary"
+									className="mr-4"
+								>
+									Don't have an account?
+								</Typography>
+								<Button
+									variant="contained"
+									color="warning"
+									onClick={(e) => handleOpenRegister(e)}
+								>
+									Register
+								</Button>
+							</div>
 						</Stack>
 					</form>
 				</div>

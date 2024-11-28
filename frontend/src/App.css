@@ -34,6 +34,9 @@ Pale Gold: #F7E4C4
 	-moz-box-sizing: content-box;
 	box-sizing: content-box;
 }
+body::-webkit-scrollbar {
+	display: none;
+}
 .beige {
 	color: #d3c5b8;
 }
@@ -111,9 +114,8 @@ nav li {
 }
 
 .logo {
-	width: 15%;
-	height: 15%;
-	margin: 0px 10px;
+	width: 5%;
+	margin: 10px;
 	border-radius: 25%;
 }
 .LoginContainer {
