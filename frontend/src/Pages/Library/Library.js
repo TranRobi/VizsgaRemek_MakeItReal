@@ -11,8 +11,8 @@ function Library() {
 			<Navbar />
 			<div>
 				<div className="cards justify-center">
-					{prouduct.map((prod) => {
-						return <Card props={prod} />;
+					{prouduct.map((prod, index) => {
+						return <Card key={index} props={prod} />;
 					})}
 				</div>
 			</div>

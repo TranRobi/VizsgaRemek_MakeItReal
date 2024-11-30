@@ -34,7 +34,12 @@ function Navbar() {
 	return (
 		<>
 			<nav className="h-fit">
-				<img className="logo" src="logo.png" alt="logo" onClick={home} />
+				<img
+					className="logo"
+					src={process.env.PUBLIC_URL + "/logo.png"}
+					alt="logo"
+					onClick={home}
+				/>
 
 				<div className="mr-4">
 					<ul>

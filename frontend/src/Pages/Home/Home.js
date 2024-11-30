@@ -2,6 +2,9 @@ import React from "react";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import ReadMoreIcon from "@mui/icons-material/ReadMore";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+import { NavLink } from "react-router-dom";
 
 function Home() {
 	return (
@@ -18,7 +21,7 @@ function Home() {
 				<div>
 					<h1>About us</h1>
 					<h3>short introduction</h3>
-					<button>Read more {<ReadMoreIcon />}</button>
+					<NavLink to={"/aboutus"}>Read more {<ReadMoreIcon />}</NavLink>
 				</div>
 				<img src="1.jpg" alt="asd" />
 			</section>
@@ -27,13 +30,15 @@ function Home() {
 				<div>
 					<h1>Contact us</h1>
 					<h3>For help or questions, please contact us</h3>
-					<button>Contanct us now</button>
+					<NavLink to={"/contactus"}>
+						Contanct us now {<ArrowForwardIcon />}
+					</NavLink>
 				</div>
 			</section>
 			<section className="block">
 				<h1>Slide</h1>
 				<h3>For more prouduct click on the button below</h3>
-				<button>Visit library</button>
+				<NavLink to={"/library"}>Visit library {<ArrowForwardIcon />}</NavLink>
 			</section>
 			<section>
 				<img src="1.jpg" alt="asd" />
@@ -43,7 +48,7 @@ function Home() {
 						This is for clients with ideas in mind that needed to be modeled and
 						make into reality
 					</h3>
-					<button>Order now</button>
+					<NavLink to={"/order"}>Order now {<LocalShippingIcon />}</NavLink>
 				</div>
 			</section>
 			<Footer />

@@ -6,6 +6,7 @@ import Library from "./Pages/Library/Library.js";
 import Order from "./Pages/Order/Order.js";
 import ContactUs from "./Pages/ContactUs/ContactUs.js";
 import AboutUs from "./Pages/AboutUs/AboutUs.js";
+import Prouduct from "./Pages/Prouducts/Prouduct.js";
 function App() {
 	return (
 		<div className="App">
@@ -20,6 +21,7 @@ function App() {
 					<Route path="/order" element={<Order />} />
 					<Route path="/contactus" element={<ContactUs />} />
 					<Route path="/aboutus" element={<AboutUs />} />
+					<Route path="/library/:id" element={<Prouduct />} />
 				</Routes>
 			</BrowserRouter>
 		</div>

@@ -130,9 +130,9 @@ nav li {
 .card {
 	padding: 10px;
 	margin: 20px;
-	color: #0e191f;
+	color: #d3c5b8;
 	position: relative;
-	background-color: #7b6d62;
+	background-color: #0e191f;
 	width: 15%;
 	height: fit-content;
 	transition: 0.5s;
@@ -170,14 +170,21 @@ p {
 	padding: 5px;
 }
 
-.card button {
+.card a {
 	display: flex;
 	justify-content: center;
-	margin: auto;
 	padding: 10px;
 	border-radius: 15px;
 	color: white;
-	background-color: green;
+	background-color: #090f13;
+	border: 2px white solid;
+}
+
+.card a:hover {
+	color: #5a738e;
+	border-color: #5a738e;
+	transition: 0.5s;
+	background: #0e191f;
 }
 @keyframes spin {
 	from {
@@ -220,7 +227,9 @@ section h3 {
 	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
-section button {
+section a {
+	display: block;
+	width: fit-content;
 	margin: 1.5rem 0;
 	padding: 1.1rem;
 	background-color: darkorange;
@@ -229,7 +238,7 @@ section button {
 	color: #0e191f;
 	font-size: 1.3rem;
 }
-section button:hover {
+section a:hover {
 	padding: 1.1rem;
 	background-color: #0e191f;
 	border-top-right-radius: 30%;
