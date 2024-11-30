@@ -238,3 +238,6 @@ section button:hover {
 	font-size: 1.3rem;
 	transition: 0.5s;
 }
+section div {
+	width: 50%;
+}

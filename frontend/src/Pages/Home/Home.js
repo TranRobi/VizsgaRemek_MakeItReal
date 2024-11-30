@@ -22,7 +22,7 @@ function Home() {
 				</div>
 				<img src="1.jpg" alt="asd" />
 			</section>
-			<section className="text-right">
+			<section>
 				<img src="1.jpg" alt="asd" />
 				<div>
 					<h1>Contact us</h1>
@@ -35,7 +35,7 @@ function Home() {
 				<h3>For more prouduct click on the button below</h3>
 				<button>Visit library</button>
 			</section>
-			<section className="text-right">
+			<section>
 				<img src="1.jpg" alt="asd" />
 				<div>
 					<h1>Order now</h1>

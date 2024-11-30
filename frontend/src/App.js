@@ -9,7 +9,11 @@ import AboutUs from "./Pages/AboutUs/AboutUs.js";
 function App() {
 	return (
 		<div className="App">
-			<BrowserRouter>
+			<BrowserRouter
+				future={{
+					v7_relativeSplatPath: true,
+				}}
+			>
 				<Routes>
 					<Route path="/" element={<Home />} />
 					<Route path="/library" element={<Library />} />

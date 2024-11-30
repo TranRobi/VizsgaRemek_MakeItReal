@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import {
 	Button,
 	createTheme,
+	FormControl,
 	TextField,
 	ThemeProvider,
 	Typography,
@@ -22,6 +23,23 @@ function Register({ close, open }) {
 		},
 	});
 
+	const [formData, setFormData] = useState({
+		username: "",
+		password: "",
+		email: "",
+	});
+
+	const handleChange = (event) => {
+		if (!event.target) {
+			setFormData((values) => ({ ...values, expire_at: event.$d }));
+		} else {
+			setFormData((values) => ({
+				...values,
+				[event.target.name]: event.target.value,
+			}));
+		}
+	};
+
 	const handleOpenLogin = (e) => {
 		open(e);
 		close(e);
@@ -37,11 +55,13 @@ function Register({ close, open }) {
 							<CancelIcon fontSize="large" onClick={(e) => close(e)} />
 						</a>
 					</div>
-					<form>
+					<FormControl fullWidth>
 						<Stack spacing={2}>
 							<div className="relative">
 								<TextField
-									id="standard-basic"
+									onChange={handleChange}
+									name="username"
+									id="username"
 									label="Username"
 									placeholder="Enter Username"
 									color="warning"
@@ -52,7 +72,9 @@ function Register({ close, open }) {
 							</div>
 							<div className="relative">
 								<TextField
-									id="standard-basic"
+									onChange={handleChange}
+									name="email"
+									id="email"
 									label="Email Address"
 									placeholder="Enter Email Address"
 									type="text"
@@ -64,7 +86,9 @@ function Register({ close, open }) {
 							</div>
 							<div className="relative">
 								<TextField
-									id="standard-basic"
+									onChange={handleChange}
+									name="password"
+									id="password"
 									label="Password"
 									placeholder="Enter password"
 									type="password"
@@ -74,7 +98,13 @@ function Register({ close, open }) {
 								></TextField>
 								<KeyIcon className="absolute top-1/2 right-0" />
 							</div>
-							<Button variant="contained" sx={{ py: "0.5rem" }}>
+							<Button
+								variant="contained"
+								sx={{ py: "0.5rem" }}
+								onClick={() => {
+									console.log(formData);
+								}}
+							>
 								Register
 							</Button>
 							<div className="flex items-center justify-between">
@@ -94,7 +124,7 @@ function Register({ close, open }) {
 								</Button>
 							</div>
 						</Stack>
-					</form>
+					</FormControl>
 				</div>
 			</div>
 		</ThemeProvider>
