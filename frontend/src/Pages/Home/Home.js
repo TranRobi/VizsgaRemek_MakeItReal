@@ -20,8 +20,10 @@ function Home() {
 			<section>
 				<div>
 					<h1>About us</h1>
-					<h3>short introduction</h3>
-					<NavLink to={"/aboutus"}>Read more {<ReadMoreIcon />}</NavLink>
+					<h2>Who are we?</h2>
+					<h2>How did we start?</h2>
+					<h2>What are we doing?</h2>
+					<NavLink to={"/aboutus"}>See for yourself here	{<ReadMoreIcon />}</NavLink>
 				</div>
 				<img src="1.jpg" alt="asd" />
 			</section>

@@ -65,7 +65,7 @@ function Footer() {
 			</div>
 			<div className="text-center pt-3 pb-3 w-full border-t-2 border-black">
 				<h1>
-					Copyright © 2024 MakeItReal™ | WeAreMakeItReal™. WE ARE MAKE IT REAL
+					Copyright © 2024 MakeItReal™ | MakeItReal™. MAKE IT REAL
 					KFT. Minden jog fenntartva. All rights reserved.
 				</h1>
 			</div>
