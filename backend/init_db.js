@@ -13,21 +13,20 @@ try {
     unlinkSync(`./${DB_NAME}`);
 } catch (e) {}
 
-const connection = new sqlite3.Database(`./${DB_NAME}`);
+const db = new sqlite3.Database(`./${DB_NAME}`);
 console.log('SQLilte adatbázis létrehozva');
 
-const query = (q) => connection.run(q, (err) => { if (err) throw err; });
+const query = (q) => db.run(q, (err) => { if (err) throw err; });
 
-connection.serialize(() => {
+db.serialize(() => {
     console.log("'address' tábla létrehozása");
     query(`
         CREATE TABLE address (
-            id INT NOT NULL PRIMARY KEY,
             country VARCHAR(128) NOT NULL,
             county VARCHAR(256) NOT NULL,
             city VARCHAR(256) NOT NULL,
-            number INT NOT NULL,
             postal_code INT NOT NULL,
+            street_number VARCHAR(256) NOT NULL,
             phone_number INT NOT NULL,
             name VARCHAR(256) NOT NULL
         );
@@ -36,7 +35,6 @@ connection.serialize(() => {
     console.log("'jobs' tábla létrehozása");
     query(`
         CREATE TABLE jobs (
-            id INT NOT NULL PRIMARY KEY,
             product_id INT NULL,
             address_id INT NOT NULL,
             gcode_file_path VARCHAR(256) NOT NULL,
@@ -44,20 +42,35 @@ connection.serialize(() => {
             material TEXT CHECK(material IN ('PLA', 'PETG', 'ABS')),
             colour TEXT CHECK(colour IN ('Red', 'Green', 'Blue', 'Yellow', 'Black', 'White', 'Gray')),
             state TEXT CHECK(state IN('pending', 'in_production', 'shipped')),
-            FOREIGN KEY(address_id) REFERENCES address(id)
+            FOREIGN KEY(address_id) REFERENCES address(rowid)
         );
     `);
     
     console.log("'users' tábla létrehozása");
     query(`
         CREATE TABLE users (
-            id INT NOT NULL PRIMARY KEY,
             address_id INT,
             email_address VARCHAR(256) NOT NULL,
             display_name VARCHAR(64) NOT NULL,
             password VARCHAR(128) NOT NULL
         );
     `);
+
+    console.log('Dummy adatokkal feltöltés');
+    query(`
+        INSERT INTO address(country, county, city, postal_code, street_number, phone_number, name) VALUES
+        ('Magyarország', 'Pest', 'Budapest', 4000, 'Street utca 2', 36701234567, 'Vicc Elek'),
+        ('Magyarország', 'Szabolcs-Szatmár-Bereg', 'Nyíregyháza', 4400, 'Street utca 3', 36701234567, 'Kriszh Advice');
+    `);
+    let rowid = 0;
+    db.get(`
+        SELECT rowid FROM address WHERE name = 'Vicc Elek';
+    `, (err, row_id) => {
+        rowid = row_id;
+    });
+    query(`
+        INSERT INTO users VALUES(${rowid}, 'viccelek@citromail.hu', 'ViccElek', '888888');
+    `);
 });
 
-connection.close();
+db.close();

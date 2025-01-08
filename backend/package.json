@@ -7,7 +7,7 @@
   },
   "scripts": {
     "start": "node backend.js",
-    "init": "node init_db.js"
+    "init-db": "node init_db.js"
   },
   "type": "module"
 }
