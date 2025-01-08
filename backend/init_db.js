@@ -36,7 +36,8 @@ query(`
         material ENUM('PLA', 'PETG', 'ABS'),
         colour ENUM('Red', 'Green', 'Blue', 'Yellow', 'Black', 'White', 'Gray'),
         state ENUM('pending', 'in_production', 'shipped'),
-        PRIMARY KEY(id)
+        PRIMARY KEY(id),
+        FOREIGN KEY(address_id) REFERENCES ${DB_NAME}.address(id)
     );
 `);
 
@@ -59,11 +60,11 @@ console.log("'users' tábla létrehozása");
 query(`
     CREATE TABLE ${DB_NAME}.users (
         id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-        address_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+        address_id INT UNSIGNED AUTO_INCREMENT,
         email_address VARCHAR(256) CHARACTER SET utf8 NOT NULL,
         display_name VARCHAR(64) CHARACTER_SET utf8 NOT NULL,
         password VARCHAR(128) CHARACTER_SET utf8 NOT NULL,
-        PRIMARY KEY(id)
+        PRIMARY KEY(id),
     );
 `);
 
