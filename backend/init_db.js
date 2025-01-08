@@ -1,71 +1,63 @@
 'use strict';
 
-const DB_NAME = 'makeitreal';
-const USER = 'mysql';
-const PASS = '******';
+import { unlinkSync } from 'fs';
+import sqlite3 from 'sqlite3';
 
-const mysql = require('mysql');
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: USER,
-    password: PASS,
-    //database: DB_NAME,
-    multipleStatements: true,
-});
+sqlite3.verbose();
 
-connection.connect();
-
-const query = (q) => connection.query(q, (err, rows, fields) => { if (err) throw err; });
-
-console.log('SQL kapcsolat létrejött');
+const DB_NAME = 'makeitreal.db';
 
 console.log('Tiszta lappal kezdünk');
-query(`DROP DATABASE IF EXISTS ${DB_NAME};`);
+// nem idempotens a függvény, szóval hibát dob, ha nincs létező db
+try {
+    unlinkSync(`./${DB_NAME}`);
+} catch (e) {}
 
-console.log('Adatbázis létrehozása');
-query(`CREATE DATABASE ${DB_NAME}`);
+const connection = new sqlite3.Database(`./${DB_NAME}`);
+console.log('SQLilte adatbázis létrehozva');
 
-console.log("'jobs' tábla létrehozása");
-query(`
-    CREATE TABLE ${DB_NAME}.jobs (
-        id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-        product_id INT UNSIGNED NULL,
-        address_id INT UNSIGNED NOT NULL,
-        gcode_file_path VARCHAR(256) CHARACTER SET utf8 NOT NULL,
-        quantity INT UNSIGNED NOT NULL,
-        material ENUM('PLA', 'PETG', 'ABS'),
-        colour ENUM('Red', 'Green', 'Blue', 'Yellow', 'Black', 'White', 'Gray'),
-        state ENUM('pending', 'in_production', 'shipped'),
-        PRIMARY KEY(id),
-        FOREIGN KEY(address_id) REFERENCES ${DB_NAME}.address(id)
-    );
-`);
+const query = (q) => connection.run(q, (err) => { if (err) throw err; });
 
-console.log("'address' tábla létrehozása");
-query(`
-    CREATE TABLE ${DB_NAME}.address (
-        id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-        country VARCHAR(128) CHARACTER SET utf8 NOT NULL,
-        county VARCHAR(256) CHARACTER SET utf8 NOT NULL,
-        city VARCHAR(256) CHARACTER SET utf8 NOT NULL,
-        number INT UNSIGNED NOT NULL,
-        postal_code INT UNSIGNED NOT NULL,
-        phone_number INT UNSIGNED  NOT NULL,
-        name VARCHAR(256) CHARACTER SET utf8 NOT NULL,
-        PRIMARY KEY(id)
-    );
-`);
+connection.serialize(() => {
+    console.log("'address' tábla létrehozása");
+    query(`
+        CREATE TABLE address (
+            id INT NOT NULL PRIMARY KEY,
+            country VARCHAR(128) NOT NULL,
+            county VARCHAR(256) NOT NULL,
+            city VARCHAR(256) NOT NULL,
+            number INT NOT NULL,
+            postal_code INT NOT NULL,
+            phone_number INT NOT NULL,
+            name VARCHAR(256) NOT NULL
+        );
+    `);
+    
+    console.log("'jobs' tábla létrehozása");
+    query(`
+        CREATE TABLE jobs (
+            id INT NOT NULL PRIMARY KEY,
+            product_id INT NULL,
+            address_id INT NOT NULL,
+            gcode_file_path VARCHAR(256) NOT NULL,
+            quantity INT NOT NULL,
+            material TEXT CHECK(material IN ('PLA', 'PETG', 'ABS')),
+            colour TEXT CHECK(colour IN ('Red', 'Green', 'Blue', 'Yellow', 'Black', 'White', 'Gray')),
+            state TEXT CHECK(state IN('pending', 'in_production', 'shipped')),
+            FOREIGN KEY(address_id) REFERENCES address(id)
+        );
+    `);
+    
+    console.log("'users' tábla létrehozása");
+    query(`
+        CREATE TABLE users (
+            id INT NOT NULL PRIMARY KEY,
+            address_id INT,
+            email_address VARCHAR(256) NOT NULL,
+            display_name VARCHAR(64) NOT NULL,
+            password VARCHAR(128) NOT NULL
+        );
+    `);
+});
 
-console.log("'users' tábla létrehozása");
-query(`
-    CREATE TABLE ${DB_NAME}.users (
-        id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-        address_id INT UNSIGNED AUTO_INCREMENT,
-        email_address VARCHAR(256) CHARACTER SET utf8 NOT NULL,
-        display_name VARCHAR(64) CHARACTER_SET utf8 NOT NULL,
-        password VARCHAR(128) CHARACTER_SET utf8 NOT NULL,
-        PRIMARY KEY(id),
-    );
-`);
-
-connection.end();
+connection.close();
