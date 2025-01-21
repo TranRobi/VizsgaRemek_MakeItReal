@@ -49,7 +49,7 @@ db.serialize(() => {
     console.log("'users' tábla létrehozása");
     query(`
         CREATE TABLE users (
-            address_id INT,
+            address_id INT NULL,
             email_address VARCHAR(256) NOT NULL,
             display_name VARCHAR(64) NOT NULL,
             password VARCHAR(128) NOT NULL
