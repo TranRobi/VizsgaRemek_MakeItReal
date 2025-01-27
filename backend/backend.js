@@ -53,8 +53,11 @@ const app = express();
 app.use(urlencoded({ extended: true }));
 app.use('/api-docs', swagger_ui.serve, swagger_ui.setup(swagger_jsdoc(SWAGGER_OPTS)));
 
+const logged_in_users = new Map();
+
+
 app.get('/', (req, res) => {
-    res.send('<h1>lol</h1>');
+    return res.send('<h1>lol</h1>');
 });
 
 /**
@@ -105,17 +108,19 @@ app.post('/api/register', (req, res) => {
         const stmt = db.prepare(`INSERT INTO users (email_address, display_name, password, address_id) VALUES
             (?, ?, ?, ?)`, email, display_name, password, null, query_callback);
         if (get_error()) {
-            res.status(400).send();
-            return;
+            return res.status(400).send();
         }
         stmt.run(query_callback);
         if (get_error()) {
-            res.status(400).send();
+            return res.status(400).send();
         } else {
-            res.status(200).send();
+            return res.status(200).send();
         }
     });
 });
+
+// TODO valami hashelos token generalas kellene
+const user_token_from_credentials = (email, password) => password + email;
 
 /**
  * @swagger
@@ -141,19 +146,55 @@ app.post('/api/register', (req, res) => {
  *                             - password
  *         responses:
  *             "201":
- *                 description: Sikeres belépés
+ *                 description:
+ *                     Sikeres belépés, a `token` sütit beállítja,
+ *                     melyet a logint igénylő végpontok innentől el fognak várni
  *                 content:
  *                     text/plain:
  *                         schema:
  *                             type: string
- *             "400":
+ *             "406":
  *                 description:
  *                     Nem formdata, vagy a formdata-ban a mezők nevei rosszak,
- *                     vagy nem rendes email cím lett küldve
+ *                     vagy túl hosszúak az adatok (init_db.js-ben vannak egyelőre
+ *                     dokumentálva az email címek és jelszavak hosszai)
+ *             "500":
+ *                 description:
+ *                     A backenden valami nagyon nem jó, ha a backendes nem béna,
+ *                     ez sose történik meg
+ *             "409":
+ *                 description:
+ *                     Ez a felhasználó már be van lépve
  */
 app.post('/api/login', (req, res) => {
     const email = req.body['email-address'];
     const password = req.body['password'];
+
+    if (!email || !password || email.length > 256 || password.length > 128)
+        return res.status(406).send();
+
+    const [set_error, get_error] = new_db_error_ctx();
+    db.serialize(() => {
+        const stmt = db.prepare(`SELECT rowid FROM users WHERE email_address = ? AND password = ?`, email, password, set_error);
+        if (get_error()) {
+            return res.status(500).send();
+        }
+        stmt.get((err, row) => {
+            set_error(err);
+            if (get_error()) {
+                return res.status(404).send();
+            }
+            console.log(row);
+            const token = user_token_from_credentials(email, password);
+            if (logged_in_users.get(token)) {
+                return res.status(409).send();
+            }
+            logged_in_users.set(token, row['rowid']);
+            res.cookie('token', token);
+            return res.status(201).send();
+        });
+    });
+
 });
 
 app.listen(PORT, () => {
