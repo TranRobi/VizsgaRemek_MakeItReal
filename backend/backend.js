@@ -20,6 +20,18 @@ const SWAGGER_OPTS = {
                 email: '20d_vadaszz@nyirszikszi.hu'
             }
         },
+        components: {
+            securitySchemes: {
+                cookieAuth: {
+                    type: 'apiKey',
+                    in: 'cookie',
+                    name: 'token',
+                }
+            }
+        },
+        security: {
+                cookieAuth: []
+        },
         servers: [
             {
                 url: `http://localhost:${PORT}/`
@@ -66,6 +78,7 @@ app.get('/', (req, res) => {
  *     post:
  *         summary: Regisztráció
  *         description: Beszúr egy sort a `users` táblába
+ *         security: []
  *         requestBody:
  *             required: true
  *             content:
@@ -91,6 +104,8 @@ app.get('/', (req, res) => {
  *                 description: Sikeres regisztráció
  *             "400":
  *                 description: Sikertelen regisztráció
+ *             "409":
+ *                 description: Már létezik ilyen felhasználó
  */
 app.post('/api/register', (req, res) => {
     const email = req.body['email-address'];
@@ -112,7 +127,7 @@ app.post('/api/register', (req, res) => {
         }
         stmt.run(query_callback);
         if (get_error()) {
-            return res.status(400).send();
+            return res.status(409).send();
         } else {
             return res.status(200).send();
         }
@@ -144,13 +159,14 @@ const user_token_from_credentials = (email, password) => password + email;
  *                         required:
  *                             - email-address
  *                             - password
+ *         security: []
  *         responses:
  *             "201":
  *                 description:
  *                     Sikeres belépés, a `token` sütit beállítja,
  *                     melyet a logint igénylő végpontok innentől el fognak várni
- *                 content:
- *                     text/plain:
+ *                 headers:
+ *                     Set-Cookie:
  *                         schema:
  *                             type: string
  *             "406":
@@ -194,7 +210,65 @@ app.post('/api/login', (req, res) => {
             return res.status(201).send();
         });
     });
+});
 
+/**
+ * @swagger
+ * /api/delivery-information:
+ *     post:
+ *         summary: Szállítási adatok rögzítése az adatbázisba
+ *         description: Rögzíti a bejelentkezett felhasználó szállítási adatait
+ *         requestBody:
+ *             required: true
+ *             content:
+ *                 application/x-www-form-urlencoded:
+ *                     schema:
+ *                         type: object
+ *                         properties:
+ *                             country:
+ *                                 type: string
+ *                                 description: Ország
+ *                             county:
+ *                                 type: string
+ *                                 description: Megye/Állam
+ *                             city:
+ *                                 type: string
+ *                                 description: Város/Község
+ *                             postal-code:
+ *                                 type: number
+ *                                 description: Postakód
+ *                             street-number:
+ *                                 type: string
+ *                                 description: Utca, házszám
+ *                             phone-number:
+ *                                 type: string
+ *                                 description: Telefonszám
+ *                             name:
+ *                                 type: string
+ *                                 description: Név
+ *         responses:
+ *             "404":
+ *                 description:
+ *                     Nincs ilyen felhasználó
+ *             "406":
+ *                 description:
+ *                     Nem formdata, hibás formdata, vagy a formdata-ban a mezők nevei rosszak,
+ *                     vagy túl hosszúak az adatok (init_db.js-ben vannak egyelőre
+ *                     dokumentálva az email címek és jelszavak hosszai)
+ *
+ */
+app.post('/api/delivery-information', (req, res) => {
+    const token = req.cookies['token'];
+    const user_id = logged_in_users.get(token);
+    if (!user_id)
+        return res.status(404).send();
+    const country = req.body['country'];
+    const county = req.body['county'];
+    const city = req.body['city'];
+    const postal_code = req.body['postal-code'];
+    const street_number = req.body['street-number'];
+    const phone_number = req.body['phone-number'];
+    const name = req.body['name'];
 });
 
 app.listen(PORT, () => {
