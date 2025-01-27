@@ -78,8 +78,8 @@ function Navbar({ basketList }) {
         <div
           className={
             basket
-              ? "w-1/4 h-full absolute top-0 bg-red-700 right-0 z-10"
-              : "w-1/4 h-full absolute top-0 bg-red-700 right-0 z-10 hidden"
+              ? "w-1/3 h-full absolute top-0 bg-slate-50 bg-opacity-35 right-0 z-10"
+              : "w-1/3 h-full absolute top-0 bg-slate-50 bg-opacity-35 right-0 z-10 hidden"
           }
         >
           <Basket close={closeBasket} basketList={basketList} />

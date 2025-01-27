@@ -4,6 +4,7 @@ import CloseIcon from "@mui/icons-material/Close";
 function Basket({ close, basketList }) {
   return (
     <>
+    <div className="bg-slate-50">
       <div className="flex justify-between items-center h-fit p-4">
         <h1 className="text-white">Shopping Basket</h1>
         <CloseIcon
@@ -22,6 +23,8 @@ function Basket({ close, basketList }) {
           Checkout
         </button>
       </div>
+    </div>
+      
     </>
   );
 }
