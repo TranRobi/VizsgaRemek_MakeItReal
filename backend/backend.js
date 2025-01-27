@@ -4,8 +4,9 @@ import sqlite3 from 'sqlite3';
 import express from 'express';
 import swagger_jsdoc from 'swagger-jsdoc';
 import swagger_ui from 'swagger-ui-express';
-import pkg from 'body-parser';
-const { urlencoded } = pkg;
+import body_parser from 'body-parser';
+const { urlencoded } = body_parser;
+import cookie_parser from 'cookie-parser';
 
 const DB_NAME = 'makeitreal.db';
 const PORT = 8080;
@@ -62,6 +63,7 @@ const new_db_error_ctx = () => {
 const db = new sqlite3.Database(`./${DB_NAME}`);
 const app = express();
 
+app.use(cookie_parser());
 app.use(urlencoded({ extended: true }));
 app.use('/api-docs', swagger_ui.serve, swagger_ui.setup(swagger_jsdoc(SWAGGER_OPTS)));
 
@@ -163,7 +165,7 @@ const user_token_from_credentials = (email, password) => password + email;
  *         responses:
  *             "201":
  *                 description:
- *                     Sikeres belépés, a `token` sütit beállítja,
+ *                     Sikeres belépés, a `LOGIN_TOKEN` sütit beállítja,
  *                     melyet a logint igénylő végpontok innentől el fognak várni
  *                 headers:
  *                     Set-Cookie:
@@ -205,8 +207,8 @@ app.post('/api/login', (req, res) => {
             if (logged_in_users.get(token)) {
                 return res.status(409).send();
             }
-            logged_in_users.set(token, row['rowid']);
-            res.cookie('token', token);
+            logged_in_users.set(token, row.rowid);
+            res.cookie('LOGIN_TOKEN', token);
             return res.status(201).send();
         });
     });
@@ -247,17 +249,25 @@ app.post('/api/login', (req, res) => {
  *                                 type: string
  *                                 description: Név
  *         responses:
- *             "404":
+ *             403:
  *                 description:
- *                     Nincs ilyen felhasználó
- *             "406":
+ *                     Frontend nem küldte el a `LOGIN_TOKEN` cookie-t
+ *             404:
+ *                 description:
+ *                     Nincs ilyen BELÉPETT felhasználó
+ *             406:
  *                 description:
  *                     Nem formdata, hibás formdata, vagy a formdata-ban a mezők nevei rosszak,
  *                     vagy túl hosszúak az adatok (init_db.js-ben vannak egyelőre
  *                     dokumentálva az email címek és jelszavak hosszai)
- *
+ *             500:
+ *                 description:
+ *                     A backenden valami nagyon nem jó, ha a backendes nem béna,
+ *                     ez sose történik meg
  */
 app.post('/api/delivery-information', (req, res) => {
+    if (!req.cookies)
+        return res.status(403).send();
     const token = req.cookies['token'];
     const user_id = logged_in_users.get(token);
     if (!user_id)
@@ -269,6 +279,45 @@ app.post('/api/delivery-information', (req, res) => {
     const street_number = req.body['street-number'];
     const phone_number = req.body['phone-number'];
     const name = req.body['name'];
+    if (!country || !county || !city || !postal_code || !street_number || !phone_number || !name ||
+        country.length > 64 || county.length > 128 || city.length > 128 || street_number.length > 128 || name.length > 64 || postal_code < 1) {
+        return res.status(406).send();
+    }
+
+    const [set_error, get_error] = new_db_error_ctx();
+    db.serialize(() => {
+        let stmt = db.prepare(`INSERT INTO address VALUES
+            (?, ?, ?, ?, ?, ?, ?) RETURNING rowid`,
+            country,
+            county,
+            city,
+            postal_code,
+            street_number,
+            phone_number,
+            name,
+            set_error);
+        if (get_error()) {
+            return res.status(500).send();
+        }
+        let address_id = undefined;
+        stmt.get((err, row) => {
+            if (err) {
+                console.log(err);
+                return res.status(500).send();
+            }
+            address_id = row.rowid;
+        });
+        // frissitjuk a users tablat
+        stmt = db.prepare(`UPDATE users
+            SET address_id = ?
+            WHERE rowid = ?`,
+            address_id, user_id);
+        stmt.run(set_error);
+        if (get_error())
+            return res.status(500).send();
+        else
+            return res.status(201).send();
+    });
 });
 
 app.listen(PORT, () => {
