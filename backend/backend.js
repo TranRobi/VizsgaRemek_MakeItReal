@@ -7,6 +7,7 @@ import swagger_ui from 'swagger-ui-express';
 import body_parser from 'body-parser';
 const { urlencoded } = body_parser;
 import cookie_parser from 'cookie-parser';
+import cors from 'cors';
 
 const DB_NAME = 'makeitreal.db';
 const PORT = 8080;
@@ -63,6 +64,7 @@ const new_db_error_ctx = () => {
 const db = new sqlite3.Database(`./${DB_NAME}`);
 const app = express();
 
+app.use(cors());
 app.use(cookie_parser());
 app.use(urlencoded({ extended: true }));
 app.use('/api-docs', swagger_ui.serve, swagger_ui.setup(swagger_jsdoc(SWAGGER_OPTS)));
