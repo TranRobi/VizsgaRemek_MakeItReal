@@ -12,7 +12,7 @@ function Library() {
       <div>
         <div className="cards justify-center">
           {prouduct.map((prod, index) => {
-            return <Card key={index} props={prod} />;
+            return <Card key={index} prod={prod} />;
           })}
         </div>
       </div>
