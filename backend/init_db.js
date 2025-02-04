@@ -22,13 +22,13 @@ db.serialize(() => {
     console.log("'address' tábla létrehozása");
     query(`
         CREATE TABLE address (
-            country VARCHAR(128) NOT NULL,
-            county VARCHAR(256) NOT NULL,
-            city VARCHAR(256) NOT NULL,
+            country VARCHAR(64) NOT NULL,
+            county VARCHAR(128) NOT NULL,
+            city VARCHAR(128) NOT NULL,
             postal_code INT NOT NULL,
-            street_number VARCHAR(256) NOT NULL,
+            street_number VARCHAR(128) NOT NULL,
             phone_number INT NOT NULL,
-            name VARCHAR(256) NOT NULL
+            name VARCHAR(64) NOT NULL
         );
     `);
     
