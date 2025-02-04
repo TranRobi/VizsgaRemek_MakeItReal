@@ -5,10 +5,10 @@ import Card from "../../components/Cards/Card";
 
 import prouduct from "../../dummy";
 
-function Library({ setBasketList, basketList }) {
+function Library() {
   return (
     <>
-      <Navbar basketList={basketList} />
+      <Navbar />
       <div>
         <div className="cards justify-center">
           {prouduct.map((prod, index) => {

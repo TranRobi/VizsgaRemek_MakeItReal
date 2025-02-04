@@ -1,5 +1,5 @@
 import { Modal } from "@mui/material";
-import React from "react";
+import React, { useContext } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
 
@@ -8,7 +8,9 @@ import Login from "../../Pages/Login/Login";
 import Register from "../../Pages/Register/Register";
 import Basket from "../Basket/Basket";
 import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
-function Navbar({ basketList }) {
+import { BasketContext } from "../context/BasketContext";
+function Navbar() {
+  const { basketList, setBasketList } = useContext(BasketContext);
   const [isOpened, setIsOpened] = useState(false);
   const [isOpenedRegister, setIsOpenedRegister] = useState(false);
   const navigate = useNavigate();

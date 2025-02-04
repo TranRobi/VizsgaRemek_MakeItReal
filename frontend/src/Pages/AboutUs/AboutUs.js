@@ -3,10 +3,10 @@ import React from "react";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 
-function AboutUs({ setBasketList, basketList }) {
+function AboutUs() {
   return (
     <>
-      <Navbar basketList={basketList} />
+      <Navbar />
       <div className="aboutus">
         <div className="h-fit">
           <h1>About us</h1>

@@ -6,10 +6,10 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import { NavLink } from "react-router-dom";
 
-function Home({ setBasketList, basketList }) {
+function Home() {
   return (
     <>
-      <Navbar basketList={basketList} />
+      <Navbar />
 
       <div className="text-center m-4">
         <h1 className="font-serif text-6xl">Make it real</h1>
