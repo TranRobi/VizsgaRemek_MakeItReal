@@ -36,6 +36,7 @@
   border-bottom-right-radius: 30%;
   color: #171717;
   font-size: 1.3rem;
+  height: fit-content;
 }
 .home section a:hover {
   padding: 1.1rem;
@@ -48,4 +49,7 @@
 }
 .home section div {
   width: 50%;
+}
+.block {
+  display: block;
 }

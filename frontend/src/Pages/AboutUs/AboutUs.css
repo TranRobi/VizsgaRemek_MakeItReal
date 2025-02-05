@@ -1,8 +1,9 @@
 .hero {
   background-image: url("../../../public/background_about2.jpg");
-  height: 30vh;
+  height: 90vh;
   background-repeat: no-repeat;
   background-size: cover;
+  display: flex;
 }
 .hero-text {
   font-size: 10rem;
@@ -11,6 +12,7 @@
   text-shadow: black 4px 10px;
   font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
     "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+  margin: auto;
 }
 .aboutus .section-title {
   font-size: 3rem;
@@ -53,10 +55,7 @@
   text-align: justify;
   width: 40%;
 }
-.member h3,
-.description {
-  text-align: left;
-}
+
 @keyframes appear {
   from {
     opacity: 0;

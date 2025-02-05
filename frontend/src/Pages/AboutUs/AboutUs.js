@@ -34,7 +34,7 @@ function AboutUs() {
                   In this year I also worked for a company that installs and
                   programs robots with PLC.
                 </p>
-                <p>
+                <p className="description">
                   For the future I want to start and finish my college education
                   and get more work experience during my studies.
                 </p>
