@@ -9,6 +9,8 @@ import Register from "../../Pages/Register/Register";
 import Basket from "../Basket/Basket";
 import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
 import { BasketContext } from "../context/BasketContext";
+
+import "./Navbar.css";
 function Navbar() {
   const { basketList, setBasketList } = useContext(BasketContext);
   const [isOpened, setIsOpened] = useState(false);
