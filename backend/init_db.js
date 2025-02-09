@@ -56,6 +56,18 @@ db.serialize(() => {
         );
     `);
 
+    console.log("'products' tábla létrehozása");
+    query(`
+        CREATE TABLE products (
+            name VARCHAR(64) NOT NULL,
+            description VARCHAR(512) NOT NULL,
+            stl_file_path VARCHAR(256) NOT NULL,
+            display_image_file_path VARCHAR(256) NOT NULL,
+            uploader_id INT NOT NULL,
+            FOREIGN KEY(uploader_id) REFERENCES users(rowid)
+        );
+    `);
+
     console.log('Dummy adatokkal feltöltés');
     query(`
         INSERT INTO address(country, county, city, postal_code, street_number, phone_number, name) VALUES
@@ -70,6 +82,10 @@ db.serialize(() => {
     });
     query(`
         INSERT INTO users VALUES(${rowid}, 'viccelek@citromail.hu', 'ViccElek', '888888');
+    `);
+
+    query(`
+        INSERT INTO products VALUES ('Spártai pajzs', '300 egyike', '/dev/null', '/dev/null', ${rowid});
     `);
 });
 
