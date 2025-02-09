@@ -56,6 +56,8 @@ const new_db_error_ctx = () => {
 	return [error_handler, getter];
 };
 
+const PATH_ID_REGEX = new RegExp('^[0-9]+$');
+
 const db = new sqlite3.Database(`./${DB_NAME}`);
 const app = express();
 
@@ -353,25 +355,121 @@ app.post("/api/delivery-information", (req, res) => {
 	});
 });
 
-//termékek object array visszaadására
 /**
  * @swagger
  * /api/products:
  *     get:
  *         summary: Termékek listázása
  *         description: Visszaadja a termékek listáját, azokhoz tartozó cikkek, képek, stb.
+ *         security: []
  *         responses:
+ *             200:
+ *                 description:
+ *                     Ez a request nem bukhat el, visszaad minden terméket a `products` táblából
+ *                 content:
+ *                     application/json:
+ *                         schema:
+ *                             type: object
+ *                             properties:
+ *                                 id:
+ *                                     type: integer
+ *                                     description: Termék ID
+ *                                 name:
+ *                                     type: string
+ *                                     description: Termék neve
+ *                                 description:
+ *                                     type: string
+ *                                     description: Termék leírása
+ *
+ *             500:
+ *                 description:
+ *                     Nincs a backendnek `products` táblája, futtasd az `init_db.js` scriptet!
+ *                     Csak teszteléskor jöhet elő.
  */
-app.get("/api/products", (req, res) => {});
-// egy termék visszaadása
+app.get('/api/products', (req, res) => {
+    db.serialize(() => {
+        const stmt = db.prepare(`SELECT rowid, name, description FROM products`);
+        stmt.all((err, rows) => {
+            if (err) {
+                console.log(err);
+                return res.status(500).send();
+            }
+
+            const json = rows.map(row => ({
+                id: Number(row.rowid),
+                name: row.name,
+                description: row.description
+            }));
+            return res.status(200).json(json);
+        });
+    });
+});
+
 /** @swagger
  * /api/products/{id}:
  *     get:
  *         summary: Egy termék visszaadása
  *         description: Visszaadja a megadott termék adatait, azokhoz tartozó cikkek, képek, stb.
+ *         security: []
  *         parameters:
+ *             - in: path
+ *               name: id
+ *               schema:
+ *                   type: integer
+ *               required: true
+ *               description: Termék ID
+ *         responses:
+ *             200:
+ *                 description:
+ *                     Egy terméknek ugyanazokat az adatait adja vissza, mint a `/api/products`
+ *                 content:
+ *                     application/json:
+ *                         schema:
+ *                             type: object
+ *                             properties:
+ *                                 id:
+ *                                     type: integer
+ *                                     description: Termék ID
+ *                                 name:
+ *                                     type: string
+ *                                     description: Termék neve
+ *                                 description:
+ *                                     type: string
+ *                                     description: Termék leírása
+ *             404:
+ *                 description:
+ *                     Nincs ilyen ID!
+ *             406:
+ *                 description:
+ *                     Rossz a path paraméter
+ *             500:
+ *                 description:
+ *                     Nincs a backendnek `products` táblája, futtasd az `init_db.js` scriptet!
+ *                     Csak teszteléskor jöhet elő.
  */
-app.get("/api/products/:id", (req, res) => {});
+app.get('/api/products/:id', (req, res) => {
+    if (!req.params.id || !PATH_ID_REGEX.test(req.params.id))
+        return res.status(406).send();
+
+    db.serialize(() => {
+        const stmt = db.prepare(`SELECT rowid, name, description FROM products WHERE rowid = ?`, req.params.id);
+        stmt.get((err, row) => {
+            if (err) {
+                console.log(err);
+                return res.status(500).send();
+            }
+
+            if (!row)
+                return res.status(404).send();
+
+            return res.status(200).json({
+                id: Number(row.rowid),
+                name: row.name,
+                description: row.description
+            });
+        });
+    });
+});
 
 app.listen(PORT, () => {
 	console.log(`Backend fut http://127.0.0.1:${PORT}/`);
