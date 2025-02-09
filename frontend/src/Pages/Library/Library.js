@@ -1,17 +1,27 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import Card from "../../components/Cards/Card";
 
-import prouduct from "../../dummy";
-
+import axios from "axios";
 function Library() {
+  const [product, setProduct] = useState([]);
+  useEffect(() => {
+    axios
+      .get("/api/products")
+      .then((res) => {
+        setProduct(res.data);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, []);
   return (
     <>
       <Navbar />
       <div>
         <div className="cards justify-center">
-          {prouduct.map((prod, index) => {
+          {product.map((prod, index) => {
             return <Card key={index} prod={prod} />;
           })}
         </div>

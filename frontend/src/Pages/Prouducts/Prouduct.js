@@ -16,20 +16,17 @@ function Prouduct() {
     quantity: 0,
   });
   const params = useParams();
-  const [product, setProduct] = React.useState(null);
+  const [product, setProduct] = useState([]);
   useEffect(() => {
-    getProd();
-  }, []);
-  function getProd() {
     axios
-      .get(`http://localhost:8080/prouducts/${params.id}`)
+      .get(`/api/products/${params.id}`)
       .then((response) => {
         setProduct(response.data);
       })
       .catch((error) => {
         console.error(error);
       });
-  }
+  }, []);
 
   function addToBasket() {
     setProdInfo({
@@ -47,6 +44,8 @@ function Prouduct() {
       <Navbar />
       <div className="w-[500px] m-auto">
         <h1>Prouduct id: {params.id}</h1>
+        <h2>A {product.name}</h2>
+        <p>Price: {product.description}</p>
         <NavLink to="/library">Go Back</NavLink>
         <button
           onClick={() => {
