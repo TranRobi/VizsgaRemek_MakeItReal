@@ -13,6 +13,8 @@ import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import CancelIcon from "@mui/icons-material/Cancel";
 import KeyIcon from "@mui/icons-material/Key";
 
+import axios from "axios";
+
 function Login({ close, open }) {
 	const theme = createTheme({
 		palette: {
@@ -23,7 +25,7 @@ function Login({ close, open }) {
 	});
 
 	const [formData, setFormData] = useState({
-		username: "",
+		"email-address": "",
 		password: "",
 	});
 
@@ -45,7 +47,12 @@ function Login({ close, open }) {
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		console.log(formData);
+		axios
+			.post("/api/login", formData, {
+				headers: { "content-type": "application/x-www-form-urlencoded" },
+			})
+			.then((response) => console.log(response))
+			.catch((error) => console.log(error));
 	};
 	return (
 		<ThemeProvider theme={theme}>
@@ -64,8 +71,8 @@ function Login({ close, open }) {
 								<div className="relative">
 									<TextField
 										onChange={handleChange}
-										name="username"
-										id="username"
+										name="email-address"
+										id="email-address"
 										label="Email Address/Username"
 										placeholder="Enter Email Address/Username"
 										color="warning"
