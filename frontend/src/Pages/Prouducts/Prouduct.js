@@ -3,6 +3,9 @@ import { useParams } from "react-router-dom";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import axios from "axios";
+import "./Product.css";
+import Button from '@mui/material/Button';
+
 
 import { NavLink } from "react-router-dom";
 import { BasketContext } from "../../components/context/BasketContext";
@@ -42,19 +45,27 @@ function Prouduct() {
   return (
     <>
       <Navbar />
-      <div className="w-[500px] m-auto">
-        <h1>Prouduct id: {params.id}</h1>
-        <h2>A {product.name}</h2>
-        <p>Price: {product.description}</p>
-        <NavLink to="/library">Go Back</NavLink>
-        <button
-          onClick={() => {
+      <div>
+        <Button variant="outlined" className="h-fit"><NavLink to="/library"></NavLink></Button>
+        <Button variant="outlined" className="h-fit" onClick={() => 
+          {
             addToBasket();
-          }}
-        >
-          Add to basket
-        </button>
+          }}>Add to basket</Button>
+      </div>  
+      <div className="w-[800px] m-auto h-screen flex">
+        
+        <div id="images">
+          <img src="/image1.png"/>
+        </div>
+        <div>
+          <h2 id="productName">A {product.name}</h2>
+          <p id="desc">{product.description}</p>
+        </div>
+        
+
       </div>
+      
+
       <Footer />
     </>
   );
