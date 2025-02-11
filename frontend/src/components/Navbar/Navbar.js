@@ -9,14 +9,22 @@ import Register from "../../Pages/Register/Register";
 import Basket from "../Basket/Basket";
 import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
 import { BasketContext } from "../context/BasketContext";
+import Profile from "../Profile/Profile";
 
 import "./Navbar.css";
+import { AuthContext } from "../context/AuthContext";
 function Navbar() {
   const { basketList, setBasketList } = useContext(BasketContext);
   const [isOpened, setIsOpened] = useState(false);
   const [isOpenedRegister, setIsOpenedRegister] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
   const [basket, setBasket] = useState(false);
+
+  const { user, setUser } = useContext(AuthContext);
+  const openPorfile = (e) => {
+    setIsLoggedIn(!isLoggedIn);
+  };
   const closeLogin = (e) => {
     e.preventDefault();
     setIsOpened(false);
@@ -72,9 +80,15 @@ function Navbar() {
                 />
               </li>
               <li>
-                <Button onClick={openLogin} variant="contained">
-                  Login<span></span>
-                </Button>
+                {user ? (
+                  <Button onClick={openPorfile} variant="contained">
+                    View Profile
+                  </Button>
+                ) : (
+                  <Button onClick={openLogin} variant="contained">
+                    Login<span></span>
+                  </Button>
+                )}
               </li>
             </ul>
           </div>
@@ -89,6 +103,11 @@ function Navbar() {
           <Basket close={closeBasket} basketList={basketList} />
         </div>
       </div>
+      <Modal open={isLoggedIn}>
+        <div className="w-full h-screen flex justify-center items-center">
+          <Profile close={openPorfile} />
+        </div>
+      </Modal>
       <Modal open={isOpened}>
         <div>
           <Login close={closeLogin} open={openRegister} />

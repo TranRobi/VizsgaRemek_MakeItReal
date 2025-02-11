@@ -93,7 +93,19 @@ db.serialize(() => {
   query(`
         INSERT INTO products VALUES 
         ('Spártai pajzs', '300 egyike', '/dev/null', '/dev/null', 1),
-        ('Spártai', '300', '/dev/null', '/dev/null', 2);
+        ('Spártai', '300', '/dev/null', '/dev/null', 2),
+        ('Spártai pajzs', '300 egyike', '/dev/null', '/dev/null', 3),
+        ('Spártai', '300', '/dev/null', '/dev/null', 4),
+        ('Spártai', '300', '/dev/null', '/dev/null', 5),
+        ('Spártai', '300', '/dev/null', '/dev/null', 6),
+        ('Spártai', '300', '/dev/null', '/dev/null', 7),
+        ('Spártai', '300', '/dev/null', '/dev/null', 8),
+        ('Spártai', '300', '/dev/null', '/dev/null', 9),
+        ('Spártai', '300', '/dev/null', '/dev/null', 10),
+        ('Spártai', '300', '/dev/null', '/dev/null', 11),
+        ('Spártai', '300', '/dev/null', '/dev/null', 12),
+        ('Spártai', '300', '/dev/null', '/dev/null', 13),
+        ('Spártai', '300', '/dev/null', '/dev/null', 14);
     `);
 });
 
