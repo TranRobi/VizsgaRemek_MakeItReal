@@ -6,7 +6,7 @@
   display: flex;
 }
 .hero-text {
-  font-size: 10rem;
+  font-size: 6rem;
   text-align: center;
   align-self: center;
   text-shadow: black 4px 10px;
@@ -54,6 +54,7 @@
   font-size: 1.2rem;
   text-align: justify;
   width: 40%;
+  color: white;
 }
 
 @keyframes appear {

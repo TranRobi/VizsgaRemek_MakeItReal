@@ -10,10 +10,12 @@ function AboutUs() {
       <div className="aboutus">
         <div className="h-fit">
           <div className="hero">
-            <h1 className="text-white font-serif hero-text">About us</h1>
+            <h1 className="text-white font-serif hero-text">Who are we?</h1>
+            <p className="description">
+              We have brought together a description of who we are, what we are doing and how we started
+            </p>
           </div>
           <section className="in">
-            <h2 className="section-title">Who are we?</h2>
             <div className="members in">
               <div className="member in">
                 <h3>Mester Máté</h3>
