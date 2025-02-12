@@ -1,80 +1,80 @@
 .cards {
-  display: flex;
-  flex-wrap: wrap;
+	display: flex;
+	flex-wrap: wrap;
 }
 .card {
-  padding: 10px;
-  margin: 20px;
-  color: #d3c5b8;
-  position: relative;
-  background-color: #0e191f;
-  width: 15%;
-  height: 35vh;
-  transition: 0.5s;
-  border-radius: 15px;
+	padding: 10px;
+	margin: 20px;
+	color: #d3c5b8;
+	position: relative;
+	background-color: #0e191f;
+	width: 15%;
+	height: 35vh;
+	transition: 0.5s;
+	border-radius: 15px;
 }
 @property --angle {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
+	syntax: "<angle>";
+	initial-value: 0deg;
+	inherits: false;
 }
 .cards .card span:after {
-  box-shadow: 5px 5px 5px gray;
-  content: "";
-  width: 100%;
-  height: 100%;
-  background-image: conic-gradient(from var(--angle), #3d606e, #090f13);
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  translate: -50% -50%;
-  z-index: -1;
-  border-radius: 15px;
-  padding: 5px;
-  animation: 3s spin linear infinite;
+	box-shadow: 5px 5px 5px gray;
+	content: "";
+	width: 100%;
+	height: 100%;
+	background-image: conic-gradient(from var(--angle), #3d606e, #090f13);
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	translate: -50% -50%;
+	z-index: -1;
+	border-radius: 15px;
+	padding: 5px;
+	animation: 3s spin linear infinite;
 }
 
 .cards .card span::before {
-  filter: blur(3rem);
+	filter: blur(3rem);
 }
 
 .card h2,
 .cardp {
-  width: fit-content;
-  margin: auto;
-  padding: 5px;
+	width: fit-content;
+	margin: auto;
+	padding: 5px;
 }
 
 .card a {
-  display: flex;
-  justify-content: center;
-  padding: 10px;
-  border-radius: 15px;
-  color: white;
-  background-color: #090f13;
-  border: 2px white solid;
+	display: flex;
+	justify-content: center;
+	padding: 10px;
+	border-radius: 15px;
+	color: white;
+	background-color: #090f13;
+	border: 2px white solid;
 }
 
 .card a:hover {
-  color: #5a738e;
-  border-color: #5a738e;
-  transition: 0.5s;
-  background: #0e191f;
+	color: #5a738e;
+	border-color: #5a738e;
+	transition: 0.5s;
+	background: #0e191f;
 }
 @keyframes spin {
-  from {
-    --angle: 0deg;
-  }
-  to {
-    --angle: 360deg;
-  }
+	from {
+		--angle: 0deg;
+	}
+	to {
+		--angle: 360deg;
+	}
 }
 
 .card img {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  width: 330px;
-  height: 350px;
-  object-fit: cover;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	width: 80%;
+	height: 60%;
+	object-fit: cover;
 }
