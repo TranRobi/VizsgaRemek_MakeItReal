@@ -2,18 +2,18 @@
 
 import { unlinkSync } from "fs";
 import sqlite3 from "sqlite3";
+import CONFIG from './config.js';
+import { generate_salt, hash_password } from './secret.js';
 
 sqlite3.verbose();
-
-const DB_NAME = "makeitreal.db";
 
 console.log("Tiszta lappal kezdünk");
 // nem idempotens a függvény, szóval hibát dob, ha nincs létező db
 try {
-	unlinkSync(`./${DB_NAME}`);
+	unlinkSync(`./${CONFIG.DB_NAME}`);
 } catch (e) {}
 
-const db = new sqlite3.Database(`./${DB_NAME}`);
+const db = new sqlite3.Database(`./${CONFIG.DB_NAME}`);
 console.log("SQLilte adatbázis létrehozva");
 
 const query = (q) =>
@@ -55,7 +55,8 @@ db.serialize(() => {
             address_id INT NULL,
             email_address VARCHAR(256) NOT NULL,
             display_name VARCHAR(64) NOT NULL,
-            password VARCHAR(128) NOT NULL
+            password_hash VARCHAR(${CONFIG.PASSWORD_HASH_SIZE}) NOT NULL,
+            salt VARCHAR(${CONFIG.SALT_SIZE}) NOT NULL
         );
     `);
 
@@ -86,8 +87,10 @@ db.serialize(() => {
 			rowid = row_id;
 		}
 	);
+    const salt = generate_salt();
+    const pw = hash_password('888888', salt);
 	query(`
-        INSERT INTO users VALUES(${rowid}, 'viccelek@citromail.hu', 'ViccElek', '888888');
+        INSERT INTO users VALUES(${rowid}, 'viccelek@citromail.hu', 'ViccElek', '${pw}', '${salt}');
     `);
 
 	query(`

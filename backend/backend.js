@@ -9,7 +9,9 @@ const { urlencoded } = body_parser;
 import cookie_parser from "cookie-parser";
 import cors from "cors";
 
-const DB_NAME = "makeitreal.db";
+import CONFIG from './config.js';
+import { generate_salt, hash_password } from './secret.js';
+
 const PORT = 8080;
 const SWAGGER_OPTS = {
 	swaggerDefinition: {
@@ -27,7 +29,7 @@ const SWAGGER_OPTS = {
 				cookieAuth: {
 					type: "apiKey",
 					in: "cookie",
-					name: "token",
+					name: "LOGIN_TOKEN",
 				},
 			},
 		},
@@ -58,7 +60,7 @@ const new_db_error_ctx = () => {
 
 const PATH_ID_REGEX = new RegExp('^[0-9]+$');
 
-const db = new sqlite3.Database(`./${DB_NAME}`);
+const db = new sqlite3.Database(`./${CONFIG.DB_NAME}`);
 const app = express();
 
 app.use(cors());
@@ -129,14 +131,18 @@ app.post("/api/register", (req, res) => {
 		return res.status(400).send();
 	}
 
+    const salt = generate_salt();
+    const password_hash = hash_password(password, salt);
+
 	const [query_callback, get_error] = new_db_error_ctx();
 	db.serialize(() => {
 		const stmt = db.prepare(
-			`INSERT INTO users (email_address, display_name, password, address_id) VALUES
-            (?, ?, ?, ?)`,
+			`INSERT INTO users (email_address, display_name, password_hash, salt, address_id) VALUES
+            (?, ?, ?, ?, ?)`,
 			email,
 			display_name,
-			password,
+			password_hash,
+            salt,
 			null,
 			query_callback
 		);
@@ -187,6 +193,12 @@ const user_token_from_credentials = (email, password) => password + email;
  *                     Set-Cookie:
  *                         schema:
  *                             type: string
+ *             "401":
+ *                 description:
+ *                     A felhasználó létezik, de hibás a jelszó
+ *             "404":
+ *                 description:
+ *                     Nincs ilyen felhasználó
  *             "406":
  *                 description:
  *                     Nem formdata, vagy a formdata-ban a mezők nevei rosszak,
@@ -207,31 +219,40 @@ app.post("/api/login", (req, res) => {
 	if (!email || !password || email.length > 256 || password.length > 128)
 		return res.status(406).send();
 
+
 	const [set_error, get_error] = new_db_error_ctx();
 	db.serialize(() => {
-		const stmt = db.prepare(
-			`SELECT rowid FROM users WHERE email_address = ? AND password = ?`,
-			email,
-			password,
-			set_error
-		);
-		if (get_error()) {
-			return res.status(500).send();
-		}
-		stmt.get((err, row) => {
-			set_error(err);
-			if (get_error()) {
-				return res.status(404).send();
-			}
-			console.log(row);
-			const token = user_token_from_credentials(email, password);
-			if (logged_in_users.get(token)) {
-				return res.status(409).send();
-			}
-			logged_in_users.set(token, row.rowid);
-			res.cookie("LOGIN_TOKEN", token);
-			return res.status(201).send();
-		});
+        // `salt`, es `stored_hash` lekerese
+        const stmt = db.prepare(
+            `SELECT rowid, password_hash, salt FROM users WHERE email_address = ?`,
+            email,
+            set_error
+        );
+        if (get_error()) {
+            console.log(get_error());
+            return res.status(500).send();
+        }
+        stmt.get((err, row) => {
+            set_error(err);
+            if (get_error()) {
+                return res.status(404).send();
+            }
+
+            const salt = row.salt;
+            const stored_hash = row.password_hash;
+            const hashed_input = hash_password(password, salt);
+            if (hashed_input !== stored_hash)
+                return res.status(401).send();
+
+            const token = generate_salt();
+		    if (logged_in_users.get(token)) {
+		    	return res.status(409).send();
+		    }
+		    logged_in_users.set(token, row.rowid);
+            console.log(token);
+		    res.cookie("LOGIN_TOKEN", token);
+		    return res.status(201).send();
+        });
 	});
 });
 
