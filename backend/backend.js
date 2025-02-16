@@ -72,7 +72,7 @@ app.use(
 	swagger_ui.setup(swagger_jsdoc(SWAGGER_OPTS))
 );
 
-const logged_in_users = new Map();
+const logged_in_users = new Array();
 
 app.get("/", (req, res) => {
 	return res.send("<h1>lol</h1>");
@@ -235,8 +235,13 @@ app.post("/api/login", (req, res) => {
         stmt.get((err, row) => {
             set_error(err);
             if (get_error()) {
+                return res.status(500).send();
+            }
+            if (!row) {
                 return res.status(404).send();
             }
+
+            console.log(row);
 
             const salt = row.salt;
             const stored_hash = row.password_hash;
@@ -245,10 +250,13 @@ app.post("/api/login", (req, res) => {
                 return res.status(401).send();
 
             const token = generate_salt();
-		    if (logged_in_users.get(token)) {
+		    if (logged_in_users.find(elem => elem.id === row.rowid)) {
 		    	return res.status(409).send();
 		    }
-		    logged_in_users.set(token, row.rowid);
+		    logged_in_users.push({
+                id: row.rowid,
+                token: token
+            });
             console.log(token);
 		    res.cookie("LOGIN_TOKEN", token);
 		    return res.status(201).send();
@@ -258,10 +266,44 @@ app.post("/api/login", (req, res) => {
 
 /**
  * @swagger
+ * /api/logout:
+ *     post:
+ *         summary: Kilépés
+ *         description: Kilépteti a bejelentkezett felhasználót
+ *         security: []
+ *         parameters:
+ *             - name: LOGIN_TOKEN
+ *               in: cookie
+ *               type: string
+ *               required: true
+ *         responses:
+ *             "200":
+ *                 description:
+ *                     Sikeres kilépés, kitörli a `LOGIN_TOKEN` sütit
+ *             "404":
+ *                 description:
+ *                     Nincs ilyen belépett felhasználó
+ */
+app.post('/api/logout', (req, res) => {
+    console.log(req.cookies);
+    if (!req.cookies || !req.cookies['LOGIN_TOKEN'] || !logged_in_users.find(elem => elem.token === req.cookies['LOGIN_TOKEN']))
+        return res.status(404).send();
+    logged_in_users.splice(logged_in_users.indexOf(elem => elem.token === req.cookies['LOGIN_TOKEN']), 1);
+    res.clearCookie('LOGIN_TOKEN');
+    return res.status(200).send();
+});
+
+/**
+ * @swagger
  * /api/delivery-information:
  *     post:
  *         summary: Szállítási adatok rögzítése az adatbázisba
  *         description: Rögzíti a bejelentkezett felhasználó szállítási adatait
+ *         parameters:
+ *             - name: LOGIN_TOKEN
+ *               in: cookie
+ *               type: string
+ *               required: true
  *         requestBody:
  *             required: true
  *             content:
@@ -309,9 +351,10 @@ app.post("/api/login", (req, res) => {
  */
 app.post("/api/delivery-information", (req, res) => {
 	if (!req.cookies) return res.status(403).send();
-	const token = req.cookies["token"];
-	const user_id = logged_in_users.get(token);
-	if (!user_id) return res.status(404).send();
+	const token = req.cookies["LOGIN_TOKEN"];
+	const user = logged_in_users.find(elem => elem.token === token);
+	if (!user) return res.status(404).send();
+    const user_id = user.id;
 	const country = req.body["country"];
 	const county = req.body["county"];
 	const city = req.body["city"];
