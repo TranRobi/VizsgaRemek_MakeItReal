@@ -5,7 +5,7 @@ function Profile({ close }) {
   const { user, setUser } = useContext(AuthContext);
   const handleLogout = () => {
     setUser(!user);
-    localStorage.clear();
+
     close();
   };
   return (
