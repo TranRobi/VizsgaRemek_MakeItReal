@@ -311,6 +311,8 @@ app.post("/api/logout", (req, res) => {
  * /api/delivery-information:
  *     post:
  *         summary: Szállítási adatok rögzítése az adatbázisba
+ *         tags:
+ *           - delivery-information
  *         description: Rögzíti a bejelentkezett felhasználó szállítási adatait
  *         parameters:
  *             - name: LOGIN_TOKEN
