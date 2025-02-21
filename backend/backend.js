@@ -160,9 +160,6 @@ app.post("/api/register", (req, res) => {
   });
 });
 
-// TODO valami hashelos token generalas kellene
-const user_token_from_credentials = (email, password) => password + email;
-
 /**
  * @swagger
  * /api/login:
