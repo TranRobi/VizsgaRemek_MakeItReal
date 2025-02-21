@@ -18,7 +18,10 @@ console.log("SQLite adatbázis létrehozva");
 
 const query = (q) =>
 	db.run(q, (err) => {
-		if (err) throw err;
+		if (err) {
+            console.log(err);
+            throw err;
+        }
 	});
 
 db.serialize(() => {
@@ -44,7 +47,7 @@ db.serialize(() => {
             quantity INT NOT NULL,
             material TEXT CHECK(material IN ('PLA', 'PETG', 'ABS')),
             colour TEXT CHECK(colour IN ('Red', 'Green', 'Blue', 'Yellow', 'Black', 'White', 'Gray')),
-            state TEXT CHECK(state IN('pending', 'in_production', 'shipped')),
+            state TEXT CHECK(state IN('pending', 'in_production', 'shipped', 'done')),
             FOREIGN KEY(address_id) REFERENCES address(rowid)
         );
     `);
@@ -56,7 +59,8 @@ db.serialize(() => {
             email_address VARCHAR(256) NOT NULL,
             display_name VARCHAR(64) NOT NULL,
             password_hash VARCHAR(${CONFIG.PASSWORD_HASH_SIZE}) NOT NULL,
-            salt VARCHAR(${CONFIG.SALT_SIZE}) NOT NULL
+            salt VARCHAR(${CONFIG.SALT_SIZE}) NOT NULL,
+            FOREIGN KEY(address_id) REFERENCES address(rowid)
         );
     `);
 
@@ -78,20 +82,15 @@ db.serialize(() => {
         ('Magyarország', 'Pest', 'Budapest', 4000, 'Street utca 2', 36701234567, 'Vicc Elek'),
         ('Magyarország', 'Szabolcs-Szatmár-Bereg', 'Nyíregyháza', 4400, 'Street utca 3', 36701234567, 'Kriszh Advice');
     `);
-	let rowid = 0;
-	db.get(
-		`
-        SELECT rowid FROM address WHERE name = 'Vicc Elek';
-    `,
-		(err, row_id) => {
-			rowid = row_id;
-		}
-	);
+
     const salt = generate_salt();
     const pw = hash_password('888888', salt);
-	query(`
-        INSERT INTO users VALUES(${rowid}, 'viccelek@citromail.hu', 'ViccElek', '${pw}', '${salt}');
-    `);
+    db.run(`
+        INSERT INTO users(address_id, email_address, display_name, password_hash, salt)
+            VALUES(
+                (SELECT rowid FROM address WHERE name = 'Vicc Elek'),
+                ?, ?, ?, ?);
+    `, 'viccelek@citromail.hu', 'ViccElek', pw, salt);
 
 	query(`
         INSERT INTO products VALUES 
