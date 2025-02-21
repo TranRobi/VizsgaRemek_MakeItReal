@@ -14,7 +14,7 @@ try {
 } catch (e) {}
 
 const db = new sqlite3.Database(`./${CONFIG.DB_NAME}`);
-console.log("SQLilte adatbázis létrehozva");
+console.log("SQLite adatbázis létrehozva");
 
 const query = (q) =>
 	db.run(q, (err) => {
