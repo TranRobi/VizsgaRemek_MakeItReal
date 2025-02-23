@@ -454,7 +454,7 @@ app.post("/api/delivery-information", (req, res) => {
  *         responses:
  *             200:
  *                 content:
- *                     application/x-www-form-urlencoded:
+ *                     application/json:
  *                         schema:
  *                             type: object
  *                             properties:
@@ -499,7 +499,6 @@ app.get('/api/delivery-information', (req, res) => {
     if (!user) {
         return res.status(404).send();
     }
-    console.log(user.id);
 
     db.serialize(() => {
         const stmt = db.prepare('SELECT * FROM address WHERE rowid = (SELECT address_id FROM users WHERE rowid = ?)', user.id);
@@ -512,11 +511,8 @@ app.get('/api/delivery-information', (req, res) => {
                 return res.status(404).send();
             }
             rename_key(row, 'postal_code', 'postal-code');
-            console.log(row);
             rename_key(row, 'street_number', 'street-number');
-            console.log(row);
             rename_key(row, 'phone_number', 'phone-number');
-            console.log(row);
             return res.status(200).json(row);
         });
     });
