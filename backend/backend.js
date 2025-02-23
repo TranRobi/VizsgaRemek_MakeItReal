@@ -11,6 +11,7 @@ import cors from "cors";
 
 import CONFIG from "./config.js";
 import { generate_salt, hash_password } from "./secret.js";
+import { rename_key } from './util.js';
 
 const PORT = 8080;
 const SWAGGER_OPTS = {
@@ -309,7 +310,7 @@ app.post("/api/logout", (req, res) => {
  *     post:
  *         summary: Szállítási adatok rögzítése az adatbázisba
  *         tags:
- *           - delivery-information
+ *           - Szállítási adatok
  *         description: Rögzíti a bejelentkezett felhasználó szállítási adatait
  *         parameters:
  *             - name: LOGIN_TOKEN
@@ -345,6 +346,9 @@ app.post("/api/logout", (req, res) => {
  *                                 type: string
  *                                 description: Név
  *         responses:
+ *             200:
+ *                 description:
+ *                     Szállítási információk sikeresen beállítva
  *             403:
  *                 description:
  *                     Frontend nem küldte el a `LOGIN_TOKEN` cookie-t
@@ -429,6 +433,92 @@ app.post("/api/delivery-information", (req, res) => {
     if (get_error()) return res.status(500).send();
     else return res.status(201).send();
   });
+});
+
+
+/**
+ * @swagger
+ * /api/delivery-information:
+ *     get:
+ *         summary: Felhasználó szállítási adatainak
+ *         tags:
+ *           - Szállítási adatok
+ *         description: Rögzíti a bejelentkezett felhasználó szállítási adatait
+ *         parameters:
+ *             - name: LOGIN_TOKEN
+ *               in: cookie
+ *               type: string
+ *               required: true
+ *         security: []
+ *         responses:
+ *             200:
+ *                 content:
+ *                     application/x-www-form-urlencoded:
+ *                         schema:
+ *                             type: object
+ *                             properties:
+ *                                 country:
+ *                                     type: string
+ *                                     description: Ország
+ *                                 county:
+ *                                     type: string
+ *                                     description: Megye/Állam
+ *                                 city:
+ *                                     type: string
+ *                                     description: Város/Község
+ *                                 postal-code:
+ *                                     type: number
+ *                                     description: Postakód
+ *                                 street-number:
+ *                                     type: string
+ *                                     description: Utca, házszám
+ *                                 phone-number:
+ *                                     type: string
+ *                                     description: Telefonszám
+ *                                 name:
+ *                                     type: string
+ *                                     description: Név
+ *             403:
+ *                 description:
+ *                     Frontend nem küldte el a `LOGIN_TOKEN` cookie-t
+ *             404:
+ *                 description:
+ *                     Nincs ilyen BELÉPETT felhasználó
+ *             500:
+ *                 description:
+ *                     A backenden valami nagyon nem jó, ha a backendes nem béna,
+ *                     ez sose történik meg
+ */
+app.get('/api/delivery-information', (req, res) => {
+    if (!req.cookies || !req.cookies['LOGIN_TOKEN']) {
+        return res.status(403).send();
+    }
+    const user = logged_in_users.find(e => e.token === req.cookies['LOGIN_TOKEN']);
+    console.log(user);
+    if (!user) {
+        return res.status(404).send();
+    }
+    console.log(user.id);
+
+    db.serialize(() => {
+        const stmt = db.prepare('SELECT * FROM address WHERE rowid = (SELECT address_id FROM users WHERE rowid = ?)', user.id);
+        stmt.get((err, row) => {
+            if (err) {
+                console.log(err);
+                return res.status(500).send();
+            }
+            if (!row) {
+                return res.status(404).send();
+            }
+            rename_key(row, 'postal_code', 'postal-code');
+            console.log(row);
+            rename_key(row, 'street_number', 'street-number');
+            console.log(row);
+            rename_key(row, 'phone_number', 'phone-number');
+            console.log(row);
+            return res.status(200).json(row);
+        });
+    });
 });
 
 /**
