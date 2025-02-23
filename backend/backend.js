@@ -386,6 +386,7 @@ app.post("/api/delivery-information", (req, res) => {
     !street_number ||
     !phone_number ||
     !name ||
+    phone_number.length > 12 ||
     country.length > 64 ||
     county.length > 128 ||
     city.length > 128 ||

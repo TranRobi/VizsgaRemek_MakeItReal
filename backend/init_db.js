@@ -33,7 +33,7 @@ db.serialize(() => {
             city VARCHAR(128) NOT NULL,
             postal_code INT NOT NULL,
             street_number VARCHAR(128) NOT NULL,
-            phone_number INT NOT NULL,
+            phone_number VARCHAR(12) NOT NULL,
             name VARCHAR(64) NOT NULL
         );
     `);
@@ -80,7 +80,7 @@ db.serialize(() => {
 	query(`
         INSERT INTO address(country, county, city, postal_code, street_number, phone_number, name) VALUES
         ('Magyarország', 'Pest', 'Budapest', 4000, 'Street utca 2', 36701234567, 'Vicc Elek'),
-        ('Magyarország', 'Szabolcs-Szatmár-Bereg', 'Nyíregyháza', 4400, 'Street utca 3', 36701234567, 'Kriszh Advice');
+        ('Magyarország', 'Szabolcs-Szatmár-Bereg', 'Nyíregyháza', 4400, 'Street utca 3', '+36701234567', 'Kriszh Advice');
     `);
 
     const salt = generate_salt();
