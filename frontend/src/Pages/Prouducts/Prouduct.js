@@ -4,20 +4,17 @@ import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import axios from "axios";
 import "./Product.css";
-import Button from '@mui/material/Button';
-
+import Button from "@mui/material/Button";
 
 import { NavLink } from "react-router-dom";
 import { BasketContext } from "../../components/context/BasketContext";
+import { TextField } from "@mui/material";
 
 function Prouduct() {
-  const { basket, setBasket } = useContext(BasketContext);
-  const [prodInfo, setProdInfo] = useState({
-    id: 0,
-    title: "",
-    price: 0,
-    quantity: 0,
-  });
+  const { basketList, setBasketList } = useContext(BasketContext);
+
+  const [quantity, setQuantity] = useState([]);
+
   const params = useParams();
   const [product, setProduct] = useState([]);
   useEffect(() => {
@@ -32,39 +29,49 @@ function Prouduct() {
   }, []);
 
   function addToBasket() {
-    setProdInfo({
-      id: parseInt(product.id),
-      title: product.title,
-      price: parseInt(product.price),
-      quantity: 1,
-    });
-    setBasket((prev) => {
-      return [...prev, prodInfo];
-    });
+    const item = {
+      id: product.id,
+      name: product.name,
+      quantity: quantity,
+    };
+    setBasketList([...basketList, item]);
+    // localStorage.setItem("basketList", JSON.stringify(basketList));
+    // console.log(localStorage.getItem("basketList"));
   }
   return (
     <>
       <Navbar />
-      <div>
-        <Button variant="outlined" className="h-fit"><NavLink to="/library"></NavLink></Button>
-        <Button variant="outlined" className="h-fit" onClick={() => 
-          {
-            addToBasket();
-          }}>Add to basket</Button>
-      </div>  
+
       <div className="w-[800px] m-auto h-screen flex">
-        
         <div id="images">
-          <img src="/image1.png"/>
+          <img src="/image1.png" />
         </div>
         <div>
-          <h2 id="productName">A {product.name}</h2>
-          <p id="desc">{product.description}</p>
-        </div>
-        
+          <div>
+            <h2 id="productName">A {product.name}</h2>
+            <p id="desc">{product.description}</p>
+            <p>Quantity: {quantity}</p>
+            <TextField
+              onChange={(e) => setQuantity(e.target.value)}
+            ></TextField>
+          </div>
+          <div>
+            <NavLink to="/library" className="mr-3">
+              Back to Library
+            </NavLink>
 
+            <Button
+              variant="outlined"
+              className="h-fit"
+              onClick={() => {
+                addToBasket();
+              }}
+            >
+              Add to basket
+            </Button>
+          </div>
+        </div>
       </div>
-      
 
       <Footer />
     </>

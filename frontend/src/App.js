@@ -7,6 +7,8 @@ import Order from "./Pages/Order/Order.js";
 import ContactUs from "./Pages/ContactUs/ContactUs.js";
 import AboutUs from "./Pages/AboutUs/AboutUs.js";
 import Prouduct from "./Pages/Prouducts/Prouduct.js";
+import Profile from "./components/Profile/Profile.js";
+import Delivery from "./components/Delivery/Delivery.js";
 
 function App() {
   return (
@@ -23,6 +25,7 @@ function App() {
           <Route path="/contactus" element={<ContactUs />} />
           <Route path="/aboutus" element={<AboutUs />} />
           <Route path="/library/:id" element={<Prouduct />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </BrowserRouter>
     </div>

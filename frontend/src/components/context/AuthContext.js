@@ -4,16 +4,16 @@ import { createContext } from "react";
 const AuthContext = createContext();
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(false);
+  const storedUser = document.cookie.split("=");
   useEffect(() => {
-    const storedUser = document.cookie.split("=");
     if (storedUser[1]) {
       setUser(true);
     } else {
       setUser(false);
     }
-  }, []);
+  }, [storedUser]);
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
+    <AuthContext.Provider value={{ user, setUser, storedUser }}>
       {children}
     </AuthContext.Provider>
   );
