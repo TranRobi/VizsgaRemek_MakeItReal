@@ -1,5 +1,4 @@
 import React from "react";
-import "./AboutUs.css";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 
@@ -7,67 +6,70 @@ function AboutUs() {
   return (
     <>
       <Navbar />
-      <div className="aboutus">
-        <div className="h-fit">
-          <div className="hero">
-            <h1 className="text-white font-serif hero-text">Who are we?</h1>
-            <p className="description">
-              We have brought together a description of who we are, what we are doing and how we started
+      <div className="bg-white min-h-screen">
+        <div className="container mx-auto px-6 py-12">
+          <div className="text-center bg-[#5A738E] text-white py-16 rounded-lg shadow-lg">
+            <h1 className="text-4xl font-bold mb-4">Who are we?</h1>
+            <p className="text-lg max-w-2xl mx-auto">
+              We have brought together a description of who we are, what we are
+              doing, and how we started.
             </p>
           </div>
-          <section className="in">
-            <div className="members in">
-              <div className="member in">
-                <h3>Mester Máté</h3>
-                <p className="description">
-                  I have 3 years of experience in 3D printing and designing.
-                  With my colleagues, we've taken part in several competitions
-                  in which we had to make a lot of 3D designs.
+
+          <section className="mt-12">
+            <h2 className="text-3xl font-semibold text-center mb-8 text-[#333333]">Our Team</h2>
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="bg-[#E0E0E0] p-6 rounded-lg shadow-md">
+                <h3 className="text-xl font-semibold mb-2 text-[#333333]">Mester Máté</h3>
+                <p className="text-[#333333]">
+                  I have 3 years of experience in 3D printing and designing. With
+                  my colleagues, we've taken part in several competitions in
+                  which we had to make a lot of 3D designs.
                 </p>
               </div>
-              <div className="member in">
-                <h3>Tran Duy Dat</h3>
-                <p className="description">
-                  In the previous years me and my colleagues competed in various
-                  robotics competitions, where my role was documenting the
-                  process of making the robot. The documentation was implemented
-                  for the web. I also took part in 3D designing and assembling
-                  the robot. It was also my role to drive and operate the robot.
-                  In this year I also worked for a company that installs and
-                  programs robots with PLC.
+              <div className="bg-[#E0E0E0] p-6 rounded-lg shadow-md">
+                <h3 className="text-xl font-semibold mb-2 text-[#333333]">Tran Duy Dat</h3>
+                <p className="text-[#333333]">
+                  In the previous years, my colleagues and I competed in
+                  various robotics competitions, where my role was documenting
+                  the process of making the robot. The documentation was
+                  implemented for the web. I also took part in 3D designing and
+                  assembling the robot.
                 </p>
-                <p className="description">
-                  For the future I want to start and finish my college education
-                  and get more work experience during my studies.
+                <p className="mt-2 text-[#333333]">
+                  In the future, I want to start and finish my college education
+                  and gain more work experience during my studies.
                 </p>
               </div>
-              <div className="member">
-                <h3>Vadász Zsolt</h3>
-                <p className="description">lorem</p>
+              <div className="bg-[#E0E0E0] p-6 rounded-lg shadow-md">
+                <h3 className="text-xl font-semibold mb-2 text-[#333333]">Vadász Zsolt</h3>
+                <p className="text-[#333333]">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
               </div>
             </div>
           </section>
-          <section className="in">
-            <h2 className="section-title">How did we start?</h2>
-            <p>
-              We started working together in 2021 when we took part in a
-              national robotics championship. Since then, we competed in several
-              national and international competitions, we are four times
-              Hungarian champions. In the preparations for the championships, we
-              had to make lots of 3D models so we learnt how to design models in
-              3D. That is where the idea came for this application. It is for
-              those, who want to make an idea real but don't have the resources
-              to make it real.
+
+          <section className="mt-12">
+            <h2 className="text-3xl font-semibold text-center mb-6 text-[#333333]">
+              How did we start?
+            </h2>
+            <p className="text-lg max-w-3xl mx-auto text-center text-[#333333]">
+              We started working together in 2021 when we participated in a
+              national robotics championship. Since then, we have competed in
+              several national and international competitions, winning four
+              Hungarian championships. The idea for this application was born
+              from our experience designing 3D models for competitions.
             </p>
           </section>
-          <section className="in">
-            <h2 className="section-title">What are we doing?</h2>
-            <p>
-              We are making your ideas real. If you know how to 3D model, you
-              can send your design and we will print it out and send it to you.
-              If you don't know how to model, don't worry we got you. You can
-              send a description of what you need. We'll contact you and design
-              the model for you, then print and ship.
+
+          <section className="mt-12">
+            <h2 className="text-3xl font-semibold text-center mb-6 text-[#333333]">
+              What are we doing?
+            </h2>
+            <p className="text-lg max-w-3xl mx-auto text-center text-[#333333]">
+              We bring your ideas to life. If you know how to 3D model, send us
+              your design, and we'll print and ship it to you. If you don’t
+              know how to model, no problem! Send us a description, and we’ll
+              design, print, and ship it for you.
             </p>
           </section>
         </div>

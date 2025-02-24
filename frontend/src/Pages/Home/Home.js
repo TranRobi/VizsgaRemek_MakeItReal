@@ -6,58 +6,65 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import { NavLink } from "react-router-dom";
 
-import "./Home.css";
-
 function Home() {
   return (
     <>
       <Navbar />
-      <div className="home">
-        <div className="text-center m-4">
-          <h1 className="font-serif text-6xl">Make it real</h1>
-          <h3 className="font-mono mt-4 text-3xl">
+      <div className="w-4/5 mx-auto py-12">
+        {/* Hero Section */}
+        <div className="text-center mb-12">
+          <h1 className="text-5xl font-bold text-[#333333]">Make it real</h1>
+          <h3 className="text-2xl text-[#5A738E] mt-4">
             Dream it and we will make it into reality
           </h3>
         </div>
-        <section>
-          <div>
-            <h1>About us</h1>
-            <h2>Who are we?</h2>
-            <h2>How did we start?</h2>
-            <h2>What are we doing?</h2>
-            <NavLink to={"/aboutus"}>
-              See for yourself here {<ReadMoreIcon />}
+
+        {/* About Us Section */}
+        <section className="bg-[#D3C5B8] p-8 rounded-lg shadow-lg mb-12 flex flex-col md:flex-row items-center gap-8">
+          <div className="md:w-1/2">
+            <h1 className="text-4xl font-semibold text-[#333333]">About us</h1>
+            <h2 className="text-2xl text-[#5A738E] mt-2">Who are we?</h2>
+            <h2 className="text-2xl text-[#5A738E]">How did we start?</h2>
+            <h2 className="text-2xl text-[#5A738E]">What are we doing?</h2>
+            <NavLink to="/aboutus" className="text-[#333333] flex items-center mt-4 font-medium">
+              See for yourself here <ReadMoreIcon className="ml-2" />
             </NavLink>
           </div>
-          <img src="1.jpg" alt="asd" />
+          <img src="1.jpeg" alt="About us" className="w-full md:w-1/2 rounded-lg shadow-lg" />
         </section>
-        <hr />
-        <section>
-          <img src="1.jpg" alt="asd" />
-          <div>
-            <h1>Contact us</h1>
-            <h3>For help or questions, please contact us</h3>
-            <NavLink to={"/contactus"}>
-              Contanct us now {<ArrowForwardIcon />}
+
+        {/* Contact Section */}
+        <section className="bg-[#D3C5B8] p-8 rounded-lg shadow-lg mb-12 flex flex-col md:flex-row-reverse items-center gap-8">
+          <div className="md:w-1/2">
+            <h1 className="text-4xl font-semibold text-[#333333]">Contact us</h1>
+            <h3 className="text-xl text-[#5A738E] mt-2">For help or questions, please contact us</h3>
+            <NavLink to="/contactus" className="text-[#333333] flex items-center mt-4 font-medium">
+              Contact us now <ArrowForwardIcon className="ml-2" />
             </NavLink>
           </div>
+          <img src="1.jpg" alt="Contact us" className="w-full md:w-1/2 rounded-lg shadow-lg" />
         </section>
-        <section className="block">
-          <h1>Slide</h1>
-          <h3>For more prouduct click on the button below</h3>
-          <NavLink to={"/library"}>
-            Visit library {<ArrowForwardIcon />}
+
+        {/* Library Section */}
+        <section className="bg-[#D3C5B8] p-8 rounded-lg shadow-lg text-center mb-12">
+          <h1 className="text-4xl font-semibold text-[#333333]">Explore More</h1>
+          <h3 className="text-xl text-[#5A738E] mt-2">For more products click on the button below</h3>
+          <NavLink to="/library" className="mt-4 inline-block bg-[#333333] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#5A738E] transition">
+            Visit Library <ArrowForwardIcon className="ml-2" />
           </NavLink>
         </section>
-        <section>
-          <img src="1.jpg" alt="asd" />
-          <div>
-            <h1>Order now</h1>
-            <h3>
-              This is for clients with ideas in mind that needed to be modeled
-              and make into reality
+
+        {/* Order Section */}
+        <section className="bg-[#D3C5B8] p-8 rounded-lg shadow-lg flex flex-col md:flex-row items-center gap-8">
+          <img src="1.jpg" alt="Order now" className="w-full md:w-1/2 rounded-lg shadow-lg" />
+          <div className="md:w-1/2">
+            <h1 className="text-4xl font-semibold text-[#333333]">Order now</h1>
+            <h3 className="text-xl text-[#5A738E] mt-2">
+              This is for clients with ideas in mind that need to be modeled and made into reality
             </h3>
-            <NavLink to={"/order"}>Order now {<LocalShippingIcon />}</NavLink>
+            <NavLink to="/order" className="text-[#333333] flex items-center mt-4 font-medium">
+              Order now <LocalShippingIcon className="ml-2" />
+            </NavLink>
           </div>
         </section>
       </div>

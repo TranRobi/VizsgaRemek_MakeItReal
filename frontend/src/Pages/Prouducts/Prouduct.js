@@ -3,79 +3,85 @@ import { useParams } from "react-router-dom";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import axios from "axios";
-import "./Product.css";
-import Button from "@mui/material/Button";
-
-import { NavLink } from "react-router-dom";
 import { BasketContext } from "../../components/context/BasketContext";
-import { TextField } from "@mui/material";
+ 
 
-function Prouduct() {
+function Product() {
   const { basketList, setBasketList } = useContext(BasketContext);
-
-  const [quantity, setQuantity] = useState([]);
-
+  const [quantity, setQuantity] = useState(1);
+  const [size, setSize] = useState(50);
+  const [color, setColor] = useState("Black");
+  const [material, setMaterial] = useState("PLA");
+  const [product, setProduct] = useState(null);
   const params = useParams();
-  const [product, setProduct] = useState([]);
+
   useEffect(() => {
     axios
       .get(`/api/products/${params.id}`)
-      .then((response) => {
-        setProduct(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, []);
+      .then((response) => setProduct(response.data))
+      .catch((error) => console.error(error));
+  }, [params.id]);
 
   function addToBasket() {
-    const item = {
-      id: product.id,
-      name: product.name,
-      quantity: quantity,
-    };
+    const item = { id: product.id, name: product.name, quantity, size, color, material };
     setBasketList([...basketList, item]);
-    // localStorage.setItem("basketList", JSON.stringify(basketList));
-    // console.log(localStorage.getItem("basketList"));
   }
+
+  if (!product) return <p>Loading...</p>;
+
   return (
     <>
       <Navbar />
-
-      <div className="w-[800px] m-auto h-screen flex">
-        <div id="images">
-          <img src="/image1.png" />
+      <div className="container mx-auto px-6 py-12 w-4/5 grid md:grid-cols-2 gap-12">
+        {/* Product Image */}
+        <div className="bg-gray-100 p-6 rounded-lg shadow-md flex justify-center">
+          <img src={product.image} alt={product.name} className="max-w-full h-auto" />
         </div>
-        <div>
-          <div>
-            <h2 id="productName">A {product.name}</h2>
-            <p id="desc">{product.description}</p>
-            <p>Quantity: {quantity}</p>
-            <TextField
-              onChange={(e) => setQuantity(e.target.value)}
-            ></TextField>
-          </div>
-          <div>
-            <NavLink to="/library" className="mr-3">
-              Back to Library
-            </NavLink>
 
-            <Button
-              variant="outlined"
-              className="h-fit"
-              onClick={() => {
-                addToBasket();
-              }}
-            >
-              Add to basket
-            </Button>
+        {/* Product Details */}
+        <div className="space-y-6">
+          <h2 className="text-3xl font-semibold text-gray-900">{product.name}</h2>
+          <p className="text-gray-600">{product.description}</p>
+
+          {/* Size Scale */}
+          <div>
+            <label className="block font-semibold">Size: {size}%</label>
+            <input type="range" min="50" max="150" value={size} onChange={(e) => setSize(e.target.value)} className="w-full" />
           </div>
+
+          {/* Material Selector */}
+          <div>
+            <label className="block font-semibold">Material:</label>
+            <select value={material} onChange={(e) => setMaterial(e.target.value)} className="border p-2 rounded w-full">
+              {['PLA', 'PETG', 'ABS'].map(mat => <option key={mat} value={mat}>{mat}</option>)}
+            </select>
+          </div>
+
+          {/* Color Selector */}
+          <div>
+            <label className="block font-semibold">Color:</label>
+            <div className="flex space-x-2">
+              {['Red', 'Green', 'Blue', 'Yellow', 'Black', 'White', 'Gray'].map((col) => (
+                <button key={col} className={`w-8 h-8 rounded-full border-2 ${color === col ? 'border-black' : ''}`} style={{ backgroundColor: col.toLowerCase() }} onClick={() => setColor(col)}></button>
+              ))}
+            </div>
+          </div>
+
+          {/* Quantity Selector */}
+          <div>
+            <label className="block font-semibold">Quantity:</label>
+            <input type="number" min="1" value={quantity} onChange={(e) => setQuantity(e.target.value)} className="border p-2 rounded w-full" />
+          </div>
+
+          {/* Add to Basket Button */}
+          <button onClick={addToBasket} className="w-full bg-gray-600 text-white py-3 rounded-lg font-semibold hover:bg-gray-900">
+            Add to bag
+          </button>
         </div>
       </div>
-
       <Footer />
     </>
   );
 }
 
-export default Prouduct;
+export default Product;
