@@ -42,7 +42,7 @@
 .cardp {
 	width: fit-content;
 	margin: auto;
-	padding: 5px;
+	font-size: small;
 }
 
 .card a {

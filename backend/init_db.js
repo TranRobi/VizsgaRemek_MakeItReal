@@ -2,8 +2,8 @@
 
 import { unlinkSync } from "fs";
 import sqlite3 from "sqlite3";
-import CONFIG from './config.js';
-import { generate_salt, hash_password } from './secret.js';
+import CONFIG from "./config.js";
+import { generate_salt, hash_password } from "./secret.js";
 
 sqlite3.verbose();
 
@@ -19,9 +19,9 @@ console.log("SQLite adatbázis létrehozva");
 const query = (q) =>
 	db.run(q, (err) => {
 		if (err) {
-            console.log(err);
-            throw err;
-        }
+			console.log(err);
+			throw err;
+		}
 	});
 
 db.serialize(() => {
@@ -83,51 +83,46 @@ db.serialize(() => {
         ('Magyarország', 'Szabolcs-Szatmár-Bereg', 'Nyíregyháza', 4400, 'Street utca 3', '+36701234567', 'Kriszh Advice');
     `);
 
-    const salt = generate_salt();
-    const pw = hash_password('888888', salt);
-    db.run(`
+	const salt = generate_salt();
+	const pw = hash_password("888888", salt);
+	db.run(
+		`
         INSERT INTO users(address_id, email_address, display_name, password_hash, salt)
             VALUES(
                 (SELECT rowid FROM address WHERE name = 'Vicc Elek'),
                 ?, ?, ?, ?);
-    `, 'viccelek@citromail.hu', 'ViccElek', pw, salt);
+    `,
+		"viccelek@citromail.hu",
+		"ViccElek",
+		pw,
+		salt
+	);
 
 	query(`
         INSERT INTO products VALUES 
         ('Spártai pajzs', '300 egyike', '/dev/null', '/dev/null', 1),
-        ('Spártai', '300', '/dev/null', '/dev/null', 2),
-        ('Spártai pajzs', '300 egyike', '/dev/null', '/dev/null', 3),
-        ('Spártai', '300', '/dev/null', '/dev/null', 4),
-        ('Spártai', '300', '/dev/null', '/dev/null', 5),
-        ('Spártai', '300', '/dev/null', '/dev/null', 6),
-        ('Spártai', '300', '/dev/null', '/dev/null', 7),
-        ('Spártai', '300', '/dev/null', '/dev/null', 8),
-        ('Spártai', '300', '/dev/null', '/dev/null', 9),
-        ('Spártai', '300', '/dev/null', '/dev/null', 10),
-        ('Spártai', '300', '/dev/null', '/dev/null', 11),
-        ('Spártai', '300', '/dev/null', '/dev/null', 12),
-        ('Spártai', '300', '/dev/null', '/dev/null', 13),
-        ('Spártai', '300', '/dev/null', '/dev/null', 14),
-        ('Spártai', '300', '/dev/null', '/dev/null', 15),
-        ('Spártai', '300', '/dev/null', '/dev/null', 16),
-        ('Spártai', '300', '/dev/null', '/dev/null', 17),
-        ('Spártai', '300', '/dev/null', '/dev/null', 18),
-        ('Spártai', '300', '/dev/null', '/dev/null', 19),
-        ('Spártai', '300', '/dev/null', '/dev/null', 20),
-        ('Spártai', '300', '/dev/null', '/dev/null', 21),
-        ('Spártai', '300', '/dev/null', '/dev/null', 22),
-        ('Spártai', '300', '/dev/null', '/dev/null', 23),
-        ('Spártai', '300', '/dev/null', '/dev/null', 24),
-        ('Spártai', '300', '/dev/null', '/dev/null', 25),
-        ('Spártai', '300', '/dev/null', '/dev/null', 26),
-        ('Spártai', '300', '/dev/null', '/dev/null', 27),
-        ('Spártai', '300', '/dev/null', '/dev/null', 28),
-        ('Spártai', '300', '/dev/null', '/dev/null', 29),
-        ('Spártai', '300', '/dev/null', '/dev/null', 30),
-        ('Spártai', '300', '/dev/null', '/dev/null', 31),
-        ('Spártai', '300', '/dev/null', '/dev/null', 32),
-        ('Spártai', '300', '/dev/null', '/dev/null', 33),
-        ('Spártai', '300', '/dev/null', '/dev/null', 34);
+        ('Mester Máté', '1', '/dev/null', '/dev/null', 2),
+        ('Vadász Zsolt', '1 egyike', '/dev/null', '/dev/null', 3),
+        ('Tran Duy Dat', '300000000', '/dev/null', '/dev/null', 4),
+        ('Girl ', '300', '/dev/null', '/dev/null', 5),
+        ('Lány', '300', '/dev/null', '/dev/null', 6),
+        ('Older MIlf', '300', '/dev/null', '/dev/null', 7),
+        ('Wolf cut alter milf 9 foot 10 inches', '300', '/dev/null', '/dev/null', 8),
+        ('Linear alternitve girl', '300', '/dev/null', '/dev/null', 9),
+        ('uWu girl', '300', '/dev/null', '/dev/null', 10),
+        ('Hello kitty lover', '300', '/dev/null', '/dev/null', 11),
+        ('ginger girl', '300', '/dev/null', '/dev/null', 12),
+        ('blonde petite', '300', '/dev/null', '/dev/null', 13),
+        ('Blue hair cosplayer', '300', '/dev/null', '/dev/null', 14),
+        ('Redhead milf', '300', '/dev/null', '/dev/null', 15),
+        ('Rainbow haired girl', '300', '/dev/null', '/dev/null', 16),
+        ('Battle girl', '300', '/dev/null', '/dev/null', 17),
+        ('Big personality girl', '300', '/dev/null', '/dev/null', 18),
+        ('BUNDA girl', '300', '/dev/null', '/dev/null', 19),
+        ('CHERRY girl', '300', '/dev/null', '/dev/null', 20),
+        ('Farmer girl', '300', '/dev/null', '/dev/null', 21),
+        ('Cowboy woman', '300', '/dev/null', '/dev/null', 22),
+        ('ADHD alter mix', '300', '/dev/null', '/dev/null', 23)
     `);
 });
 
