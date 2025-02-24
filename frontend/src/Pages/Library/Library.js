@@ -38,10 +38,10 @@ function Library() {
 				</form>
 			</div>
 			<div>
-				<div className="cards justify-center h-[90vh] ">
+				<div className="cards justify-center h-[90vh]">
 					{product
 						.map((prod, index) => {
-							return <Card key={index} prod={prod} />;
+							return <Card key={index} prod={prod}/>;
 						})
 						.filter((e) =>
 							search.toLowerCase() === ""
@@ -55,7 +55,7 @@ function Library() {
 			<div className="flex justify-center items-center">
 				<IconButton
 					onClick={() => {
-						if (currentPage != 1) {
+						if (currentPage !== 1) {
 							setCurrentPage(currentPage - 1);
 						}
 					}}
