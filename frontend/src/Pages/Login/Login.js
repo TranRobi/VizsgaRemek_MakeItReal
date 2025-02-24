@@ -75,7 +75,7 @@ function Login({ close, open }) {
               <CancelIcon fontSize="large" onClick={(e) => close(e)} />
             </a>
           </div>
-          <form onSubmit={handleSubmit}>
+          <form>
             <FormControl fullWidth>
               <Stack spacing={2}>
                 <div className="relative">
@@ -105,22 +105,23 @@ function Login({ close, open }) {
                   ></TextField>
                   <KeyIcon className="absolute top-1/2 right-0" />
                 </div>
-                <button>Login</button>
+                <Button
+                  variant="contained"
+                  color="warning"
+                  className="w-fit "
+                  onClick={(e) => handleSubmit(e)}
+                >
+                  Login
+                </Button>
                 <div className="flex items-center justify-between">
                   <Typography
                     variant="subtitle2"
                     color="primary"
-                    className="mr-4"
-                  >
-                    Don't have an account?
-                  </Typography>
-                  <Button
-                    variant="contained"
-                    color="warning"
+                    className="mr-4 cursor-pointer"
                     onClick={(e) => handleOpenRegister(e)}
                   >
-                    Register
-                  </Button>
+                    Don't have an account? Register here!
+                  </Typography>
                 </div>
               </Stack>
             </FormControl>
