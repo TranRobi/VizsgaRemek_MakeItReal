@@ -11,7 +11,7 @@ import cors from "cors";
 
 import CONFIG from "./config.js";
 import { generate_salt, hash_password } from "./secret.js";
-import { rename_key } from './util.js';
+import { rename_key } from "./util.js";
 
 const PORT = 8080;
 const SWAGGER_OPTS = {
@@ -436,7 +436,6 @@ app.post("/api/delivery-information", (req, res) => {
   });
 });
 
-
 /**
  * @swagger
  * /api/delivery-information:
@@ -490,32 +489,37 @@ app.post("/api/delivery-information", (req, res) => {
  *                     A backenden valami nagyon nem jó, ha a backendes nem béna,
  *                     ez sose történik meg
  */
-app.get('/api/delivery-information', (req, res) => {
-    if (!req.cookies || !req.cookies['LOGIN_TOKEN']) {
-        return res.status(403).send();
-    }
-    const user = logged_in_users.find(e => e.token === req.cookies['LOGIN_TOKEN']);
-    console.log(user);
-    if (!user) {
-        return res.status(404).send();
-    }
+app.get("/api/delivery-information", (req, res) => {
+  if (!req.cookies || !req.cookies["LOGIN_TOKEN"]) {
+    return res.status(403).send();
+  }
+  const user = logged_in_users.find(
+    (e) => e.token === req.cookies["LOGIN_TOKEN"]
+  );
+  console.log(user);
+  if (!user) {
+    return res.status(404).send();
+  }
 
-    db.serialize(() => {
-        const stmt = db.prepare('SELECT * FROM address WHERE rowid = (SELECT address_id FROM users WHERE rowid = ?)', user.id);
-        stmt.get((err, row) => {
-            if (err) {
-                console.log(err);
-                return res.status(500).send();
-            }
-            if (!row) {
-                return res.status(404).send();
-            }
-            rename_key(row, 'postal_code', 'postal-code');
-            rename_key(row, 'street_number', 'street-number');
-            rename_key(row, 'phone_number', 'phone-number');
-            return res.status(200).json(row);
-        });
+  db.serialize(() => {
+    const stmt = db.prepare(
+      "SELECT * FROM address WHERE rowid = (SELECT address_id FROM users WHERE rowid = ?)",
+      user.id
+    );
+    stmt.get((err, row) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).send();
+      }
+      if (!row) {
+        return res.status(404).send();
+      }
+      rename_key(row, "postal_code", "postal-code");
+      rename_key(row, "street_number", "street-number");
+      rename_key(row, "phone_number", "phone-number");
+      return res.status(200).json(row);
     });
+  });
 });
 
 /**
@@ -570,6 +574,26 @@ app.get("/api/products", (req, res) => {
   });
 });
 
+app.post("/api/products", (req, res) => {
+  const { name, description } = req.body;
+  if (!name || !description) {
+    return res.status(406).send();
+  }
+  db.serialize(() => {
+    const stmt = db.prepare(
+      `INSERT INTO products (name, description) VALUES (?,?) RETURNING rowid`,
+      name,
+      description
+    );
+    stmt.get((err, row) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).send();
+      }
+      return res.status(201).json({ id: row.rowid });
+    });
+  });
+});
 /** @swagger
  * /api/products/{id}:
  *     get:
