@@ -29,10 +29,24 @@ function Profile() {
     navigate("/");
   };
 
+  const sendUserCookie = () => {
+    axios.post(
+      "/api/products",
+      {
+        name: "asd",
+        description: "Product",
+      },
+      {
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+        Cookie: document.cookie,
+      }
+    );
+  };
   return (
     <div className="h-screen w-full bg-white">
       <Navbar />
       <div className=" flex">
+        <Button onClick={sendUserCookie}>Send</Button>
         <div className="h-screen w-full bg-white">
           <Delivery />
           <MyOrders />
