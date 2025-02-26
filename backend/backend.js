@@ -574,26 +574,110 @@ app.get("/api/products", (req, res) => {
   });
 });
 
+
+/**
+ * @swagger
+ * /api/products:
+ *     post:
+ *         summary: Termék hozzáadása
+ *         tags:
+ *           - Termékek
+ *         description: Visszaadja a termékek listáját, azokhoz tartozó cikkek, képek, stb.
+ *         parameters:
+ *             - name: LOGIN_TOKEN
+ *               in: cookie
+ *               type: string
+ *               required: true
+ *         security: []
+ *         requestBody:
+ *             required: true
+ *             content:
+ *                 application/x-www-form-urlencoded:
+ *                     schema:
+ *                         type: object
+ *                         properties:
+ *                             name:
+ *                                 type: string
+ *                                 description: Termék neve
+ *                             description:
+ *                                 type: string
+ *                                 description: Termék leírása
+ *         responses:
+ *             200:
+ *                 description:
+ *                     Termék sikeresen létrehozva
+ *                 content:
+ *                     application/json:
+ *                         schema:
+ *                             type: object
+ *                             properties:
+ *                                 id:
+ *                                     type: integer
+ *                                     description: Termék ID
+ *                                 name:
+ *                                     type: string
+ *                                     description: Termék neve
+ *                                 description:
+ *                                     type: string
+ *                                     description: Termék leírása
+ *             401:
+ *                 description:
+ *                     Nincs belépve a felhasználó
+ *                     vagy a frontend nem küldte
+ *                     el a `LOGIN_TOKEN` cookie-t
+ *             406:
+ *                 description:
+ *                     Nem formdata, hibás formdata, vagy a formdata-ban a mezők nevei rosszak,
+ *                     vagy túl hosszúak az adatok (init_db.js-ben vannak egyelőre
+ *                     dokumentálva mezők hosszai)
+ *             500:
+ *                 description:
+ *                     Nincs a backendnek `products` táblája, futtasd az `init_db.js` scriptet!
+ *                     Csak teszteléskor jöhet elő.
+ */
 app.post("/api/products", (req, res) => {
+  console.log(req.cookies);
+  if (!req.cookies || !req.cookies['LOGIN_TOKEN'])
+    return res.status(401).send();
+  const user_id = logged_in_users.find((elem) => elem.token === req.cookies['LOGIN_TOKEN']);
+  console.log(`user id ${user_id}`);
+  if (!user_id)
+    return res.status(401).send();
   const { name, description } = req.body;
-  if (!name || !description) {
+  console.log(req.body);
+  if (!name || !description || description.length > 512 || name.length > 64) {
     return res.status(406).send();
   }
   db.serialize(() => {
     const stmt = db.prepare(
-      `INSERT INTO products (name, description) VALUES (?,?) RETURNING rowid`,
+      `INSERT INTO products (
+          name,
+          description,
+          uploader_id,
+          stl_file_path,
+          display_image_file_path
+      ) VALUES (?, ?, ?, 'MAJD', 'LESZ') RETURNING rowid AS id, name, description`,
       name,
-      description
+      description,
+      user_id,
+      err => {
+          if (err) {
+              console.log(err);
+              return res.status(500).send();
+          }
+      }
     );
     stmt.get((err, row) => {
       if (err) {
         console.log(err);
         return res.status(500).send();
       }
-      return res.status(201).json({ id: row.rowid });
+      console.log(row);
+      return res.status(201).json(row);
     });
   });
 });
+
 /** @swagger
  * /api/products/{id}:
  *     get:
