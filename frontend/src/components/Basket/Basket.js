@@ -7,7 +7,10 @@ function Basket({ close, basketList, setBasketList }) {
 	const { user } = useContext(AuthContext);
 	const navigate = useNavigate();
 	const removeItem = (id) => {
-		basketList.splice(basketList.indexOf(0, 1));
+		basketList.splice(
+			basketList.findIndex((item) => item.id === id),
+			1
+		);
 		setBasketList([...basketList]);
 	};
 
@@ -33,7 +36,7 @@ function Basket({ close, basketList, setBasketList }) {
 									<p>{basket.name + " x" + basket.quantity}</p>
 									<button
 										onClick={() => {
-											removeItem(basket.id);
+											removeItem(index);
 										}}
 										className="text-red-600"
 									>
