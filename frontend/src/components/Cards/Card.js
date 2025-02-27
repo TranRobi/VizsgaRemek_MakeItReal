@@ -10,7 +10,12 @@ function Card({ prod }) {
       <h2>{prod.name}</h2>
       <p className="cardp">{prod.description}</p>
       <div>
-        <NavLink to={`/library/${prod.id}`}>View prouduct</NavLink>
+        <NavLink
+          to={`/library/${prod.id}`}
+          className="w-fit absolute bottom-4"
+        >
+          View prouduct
+        </NavLink>
       </div>
       <span></span>
     </div>
