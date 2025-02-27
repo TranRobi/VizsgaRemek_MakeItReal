@@ -6,21 +6,16 @@ import { Button } from "@mui/material";
 import { useState } from "react";
 import Login from "../../Pages/Login/Login";
 import Register from "../../Pages/Register/Register";
-import Basket from "../Basket/Basket";
 import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
-import { BasketContext } from "../context/BasketContext";
-import Profile from "../Profile/Profile";
 
 import "./Navbar.css";
 import { AuthContext } from "../context/AuthContext";
 function Navbar() {
-  const { basketList, setBasketList } = useContext(BasketContext);
   const [isOpened, setIsOpened] = useState(false);
   const [isOpenedRegister, setIsOpenedRegister] = useState(false);
   const navigate = useNavigate();
-  const [basket, setBasket] = useState(false);
 
-  const { user, setUser } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
   const closeLogin = (e) => {
     e.preventDefault();
@@ -42,9 +37,6 @@ function Navbar() {
   const home = () => {
     navigate("/");
   };
-  function closeBasket() {
-    setBasket(!basket);
-  }
   return (
     <>
       <div>
@@ -80,29 +72,13 @@ function Navbar() {
                 )}
               </li>
               <li>
-                <ShoppingBasketIcon
-                  onClick={() => {
-                    setBasket(!basket);
-                  }}
-                  className="text-6xl m-2 pr-3 text-white hover:text-blue-500 transition"
-                />
+                <NavLink to="/basket">
+                  <ShoppingBasketIcon className="text-6xl m-2 pr-3 text-white hover:text-blue-500 transition" />
+                </NavLink>
               </li>
             </ul>
           </div>
         </nav>
-        <div
-          className={
-            basket
-              ? "w-1/5 h-full absolute top-0 bg-slate-50 bg-opacity-35 right-0 z-10"
-              : "w-1/5 h-full absolute top-0 bg-slate-50 bg-opacity-35 right-0 z-10 hidden"
-          }
-        >
-          <Basket
-            close={closeBasket}
-            basketList={basketList}
-            setBasketList={setBasketList}
-          />
-        </div>
       </div>
       <Modal open={isOpened}>
         <div>
