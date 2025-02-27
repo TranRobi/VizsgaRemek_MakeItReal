@@ -9,16 +9,25 @@ function ProfileNav({ setActiveTab }) {
   const navigate = useNavigate();
   const handleLogout = () => {
     setUser(!user);
-    axios.post(
-      "/api/logout",
-      {
-        LOGIN_TOKEN: storedUser,
-      },
-      {
-        headers: { "content-type": "application/x-www-form-urlencoded" },
-      }
-    );
-    setUser(false);
+    axios
+      .post(
+        "/api/logout",
+        {
+          LOGIN_TOKEN: storedUser,
+        },
+        {
+          headers: { "content-type": "application/x-www-form-urlencoded" },
+        }
+      )
+      .then((response) => {
+        if (response.status === 200) {
+          setUser(false);
+          console.log("Sikeres kijelentkezés " + user);
+        } else {
+          console.log("Nem sikerült kijelentkezni: " + response.data.error);
+        }
+      });
+
     navigate("/");
   };
   return (
