@@ -24,13 +24,22 @@ function Product() {
   }, [params.id]);
 
   function addToBasket() {
-    if (basketList.find((basket) => basket.id === product.id)) {
-      const updatedBasket = basketList.map((basket) =>
-        basket.id === product.id
-          ? { ...basket, quantity: basket.quantity + quantity }
-          : basket
-      );
-      setBasketList(updatedBasket);
+    const item = {
+      id: product.id,
+      name: product.name,
+      quantity,
+      size,
+      color,
+      material,
+    };
+
+    if (basketList.some((item) => item.id === product.id)) {
+      const index = basketList.findIndex((item) => item.id === product.id);
+      basketList[index].quantity += quantity;
+      setBasketList([...basketList]);
+    } else {
+      console.log(item);
+      setBasketList([...basketList, item]);
     }
   }
 
@@ -111,7 +120,7 @@ function Product() {
               type="number"
               min="1"
               value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
+              onChange={(e) => setQuantity(parseInt(e.target.value))}
               className="border p-2 rounded w-full"
             />
           </div>

@@ -1,9 +1,12 @@
 import React, { useContext, useEffect } from "react";
-import CloseIcon from "@mui/icons-material/Close";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-
-function Basket({ close, basketList, setBasketList }) {
+import Navbar from "../Navbar/Navbar";
+import Footer from "../Footer/Footer";
+import { Button } from "@mui/material";
+import IconButton from "@mui/material/IconButton";
+import ClearIcon from "@mui/icons-material/Clear";
+function Basket({ basketList, setBasketList }) {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const removeItem = (index) => {
@@ -13,38 +16,38 @@ function Basket({ close, basketList, setBasketList }) {
 
   return (
     <>
-      <div className="bg-slate-50">
+      <Navbar />
+      <div className="h-screen">
         <div className="flex justify-between items-center h-fit p-4">
-          <h1 className="text-black">Shopping Basket</h1>
-          <CloseIcon
-            onClick={() => {
-              close();
-            }}
-            className="text-red-600"
-          />
+          <h1 className="text-black text-4xl">Shopping Basket</h1>
         </div>
-        <div className="flex flex-col items-center h-fit p-4 text-black">
+        <div className="flex flex-col p-4 text-black ">
           {basketList.length === 0 ? (
             <p>No items found</p>
           ) : (
             basketList.map((basket, index) => {
               return (
-                <div key={index} className="flex justify-between w-3/4">
+                <div
+                  key={index}
+                  className="flex justify-between w-full p-2 shadow-md"
+                >
                   <p>{basket.name + " x" + basket.quantity}</p>
-                  <button
+                  <IconButton
                     onClick={() => {
                       removeItem(index);
                     }}
-                    className="text-red-600"
                   >
-                    X
-                  </button>
+                    <ClearIcon fontSize="small" color="error" />
+                  </IconButton>
                 </div>
               );
             })
           )}
-          <button
-            className="w-full bg-green-500 text-white font-semibold hover:bg-green-400 transition"
+          <Button
+            className="w-fit"
+            sx={{ marginTop: "10px" }}
+            variant="contained"
+            color="success"
             onClick={() => {
               if (user) {
                 navigate("/payment");
@@ -54,9 +57,10 @@ function Basket({ close, basketList, setBasketList }) {
             }}
           >
             Checkout
-          </button>
+          </Button>
         </div>
       </div>
+      <Footer />
     </>
   );
 }
