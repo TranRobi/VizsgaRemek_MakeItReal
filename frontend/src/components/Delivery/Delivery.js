@@ -5,16 +5,39 @@ import { FormControl, Stack, Paper, TextField, Button } from "@mui/material";
 import { AuthContext } from "../context/AuthContext";
 
 function Delivery() {
-  const [deliveryInformation, setDeliveryInformation] = useState([]);
+  const [deliveryInformation, setDeliveryInformation] = useState({
+    name: "",
+    phone_number: "",
+    country: "",
+    city: "",
+    county: "",
+    street: "",
+    postal_code: "",
+  });
+  const [enabled, setEnabled] = useState(true);
   useEffect(() => {
     axios
       .get("/api/delivery-information", {
         Cookie: document.cookie,
       })
       .then((response) => {
-        setDeliveryInformation(response.data);
+        if (response.status === 200) {
+          setDeliveryInformation({
+            name: response.data.name,
+            phone_number: response.data["phone-number"],
+            country: response.data.country,
+            city: response.data.city,
+            county: response.data.county,
+            street: response.data["street-number"],
+            postal_code: response.data["postal-code"],
+          });
+        }
       });
   }, []);
+
+  function sendChanges() {
+    console.log("updated delivery information");
+  }
 
   return (
     <div>
@@ -26,37 +49,50 @@ function Delivery() {
             </h1>
             <Stack gap={3}>
               <TextField
+                label="Full name"
                 variant="standard"
-                disabled
-                value={deliveryInformation["name"]}
+                disabled={enabled}
+                value={deliveryInformation.name}
               ></TextField>
               <TextField
                 variant="standard"
-                disabled
-                value={deliveryInformation["phone-number"]}
+                disabled={enabled}
+                value={deliveryInformation.phone_number}
               ></TextField>
               <TextField
                 variant="standard"
-                value={deliveryInformation["country"]}
-                disabled
+                value={deliveryInformation.country}
+                disabled={enabled}
               ></TextField>
               <TextField
                 variant="standard"
-                value={deliveryInformation["city"]}
-                disabled
+                value={deliveryInformation.city}
+                disabled={enabled}
               ></TextField>
               <TextField
                 variant="standard"
                 value={
-                  deliveryInformation["postal-code"] +
+                  deliveryInformation.postal_code +
                   " " +
-                  deliveryInformation["street-number"]
+                  deliveryInformation.street
                 }
-                disabled
+                disabled={enabled}
               ></TextField>
 
-              <Button variant="contained" className="w-fit" onClick={() => {}}>
-                Edit delivery information
+              <Button
+                variant="contained"
+                className="w-fit"
+                onClick={() => {
+                  if (enabled) {
+                    setEnabled(false);
+                  } else {
+                    //send changes to the backend server
+                    sendChanges();
+                    setEnabled(true);
+                  }
+                }}
+              >
+                {enabled ? "Edit delivery information" : "Save changes"}
               </Button>
             </Stack>
           </Paper>
