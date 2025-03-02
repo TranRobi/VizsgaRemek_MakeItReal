@@ -12,6 +12,7 @@ import cors from "cors";
 import CONFIG from "./config.js";
 import { generate_salt, hash_password } from "./secret.js";
 import { rename_key } from "./util.js";
+import { async_get, async_run } from './async_helpers.js';
 
 const PORT = 8080;
 const SWAGGER_OPTS = {
@@ -307,7 +308,7 @@ app.post("/api/logout", (req, res) => {
 /**
  * @swagger
  * /api/delivery-information:
- *     post:
+ *     put:
  *         summary: Szállítási adatok rögzítése az adatbázisba
  *         tags:
  *           - Szállítási adatok
@@ -365,7 +366,7 @@ app.post("/api/logout", (req, res) => {
  *                     A backenden valami nagyon nem jó, ha a backendes nem béna,
  *                     ez sose történik meg
  */
-app.post("/api/delivery-information", (req, res) => {
+app.put("/api/delivery-information", (req, res) => {
 	if (!req.cookies) return res.status(403).send();
 	const token = req.cookies["LOGIN_TOKEN"];
 	const user = logged_in_users.find((elem) => elem.token === token);
@@ -397,43 +398,52 @@ app.post("/api/delivery-information", (req, res) => {
 		return res.status(406).send();
 	}
 
-	const [set_error, get_error] = new_db_error_ctx();
-	db.serialize(() => {
-		let stmt = db.prepare(
-			`INSERT INTO address VALUES
-            (?, ?, ?, ?, ?, ?, ?) RETURNING rowid`,
-			country,
-			county,
-			city,
-			postal_code,
-			street_number,
-			phone_number,
-			name,
-			set_error
-		);
-		if (get_error()) {
-			return res.status(500).send();
-		}
-		let address_id = undefined;
-		stmt.get((err, row) => {
-			if (err) {
-				console.log(err);
-				return res.status(500).send();
-			}
-			address_id = row.rowid;
-		});
-		// frissitjuk a users tablat
-		stmt = db.prepare(
-			`UPDATE users
-            SET address_id = ?
-            WHERE rowid = ?`,
-			address_id,
-			user_id
-		);
-		stmt.run(set_error);
-		if (get_error()) return res.status(500).send();
-		else return res.status(201).send();
-	});
+    db.serialize(() => {
+        async_get(db, `SELECT address_id FROM users WHERE rowid = ?`, user_id)
+            .then(row => {
+                console.log(row);
+                if (!row.address_id) {
+                    console.log(`hozzaad, user id ${user_id}`);
+                    // uj sor
+                    async_get(db,
+                        `INSERT INTO address VALUES
+                        (?, ?, ?, ?, ?, ?, ?) RETURNING rowid`,
+	                	country,
+	                	county,
+	                	city,
+	                	postal_code,
+	                	street_number,
+	                	phone_number,
+	                	name
+                    )
+                    .then(row => {
+                        console.log(`inserted rowid ${row.rowid}`);
+                        async_run(db,
+                            `UPDATE users
+                            SET address_id = ?
+                            WHERE rowid = ?`,
+                            row.rowid,
+                            user_id)
+                             .then(() => {
+                                console.log('siker');
+                                return res.status(200).send();
+                            });
+                    },
+                    err => {
+                        console.log(err);
+                        return res.status(500).send();
+                    });
+                } else {
+                    // TODO frissites
+                    console.log('frissul');
+                    return res.status(200).send();
+                }
+            },
+            err => {
+                console.log(err);
+                return res.status(500).send();
+            });
+    });
 });
 
 /**
@@ -519,148 +529,6 @@ app.get("/api/delivery-information", (req, res) => {
 			rename_key(row, "phone_number", "phone-number");
 			return res.status(200).json(row);
 		});
-	});
-});
-/** @swagger
- * paths:
- *   /api/delivery-information:
- *     patch:
- *       summary: "Update delivery information"
- *       description: "Update the delivery address for the logged-in user."
- *       tags:
- *         - Szállítási adatok
- *       parameters:
- *         - in: "body"
- *           name: "deliveryInformation"
- *           description: "The updated delivery information"
- *           required: true
- *           schema:
- *             type: "object"
- *             properties:
- *               country:
- *                 type: "string"
- *                 maxLength: 64
- *               county:
- *                 type: "string"
- *                 maxLength: 128
- *               city:
- *                 type: "string"
- *                 maxLength: 128
- *               postal_code:
- *                 type: "integer"
- *                 minimum: 1
- *               street_number:
- *                 type: "string"
- *                 maxLength: 128
- *               phone_number:
- *                 type: "string"
- *                 maxLength: 12
- *               name:
- *                 type: "string"
- *                 maxLength: 64
- *       responses:
- *         200:
- *           description: "Delivery information successfully updated."
- *         400:
- *           description: "Bad request, validation failed."
- *         403:
- *           description: "Forbidden, user is not logged in."
- *         404:
- *           description: "User not found."
- *         406:
- *           description: "Validation failed on input data."
- *         500:
- *           description: "Internal server error."
- */
-
-app.patch("/api/delivery-information", (req, res) => {
-	// Check if LOGIN_TOKEN exists in cookies
-	if (!req.cookies || !req.cookies["LOGIN_TOKEN"]) {
-		return res.status(403).send();
-	}
-
-	const token = req.cookies["LOGIN_TOKEN"];
-	const user = logged_in_users.find((elem) => elem.token === token);
-
-	if (!user) {
-		return res.status(404).send();
-	}
-
-	const user_id = user.id;
-	const {
-		country,
-		county,
-		city,
-		postal_code,
-		street_number,
-		phone_number,
-		name,
-	} = req.body;
-
-	// Validate request body
-	if (
-		!country ||
-		!county ||
-		!city ||
-		!postal_code ||
-		!street_number ||
-		!phone_number ||
-		!name ||
-		phone_number.length > 12 ||
-		country.length > 64 ||
-		county.length > 128 ||
-		city.length > 128 ||
-		street_number.length > 128 ||
-		name.length > 64 ||
-		postal_code < 1
-	) {
-		return res.status(406).send();
-	}
-
-	const [set_error, get_error] = new_db_error_ctx();
-
-	db.serialize(() => {
-		// Prepare the first UPDATE statement to update the address
-		const stmt = db.prepare(
-			`UPDATE address 
-           SET country = ?, county = ?, city = ?, postal_code = ?, street_number = ?, phone_number = ?, name = ? 
-           WHERE address_id = ?`
-		);
-
-		stmt.run(
-			country,
-			county,
-			city,
-			postal_code,
-			street_number,
-			phone_number,
-			name,
-			user_id,
-			function (err) {
-				if (err) {
-					console.log(err);
-					return res.status(500).send();
-				}
-
-				// Update the user's address_id in the users table
-				const address_id = this.lastID;
-
-				const stmt2 = db.prepare(
-					`UPDATE users 
-               SET address_id = ? 
-               WHERE rowid = ?`
-				);
-
-				stmt2.run(address_id, user_id, function (err) {
-					if (err) {
-						console.log(err);
-						return res.status(500).send();
-					}
-
-					return res.status(200).send(); // Address updated successfully
-				});
-			}
-		);
 	});
 });
 
