@@ -194,6 +194,10 @@ app.post("/api/register", (req, res) => {
  *                 description:
  *                     Sikeres belépés, a `LOGIN_TOKEN` sütit beállítja,
  *                     melyet a logint igénylő végpontok innentől el fognak várni
+ *                 content:
+ *                     text/plain:
+ *                         schema:
+ *                             type: string
  *                 headers:
  *                     Set-Cookie:
  *                         schema:
@@ -262,7 +266,7 @@ app.post("/api/login", (req, res) => {
 			});
 			console.log(token);
 			res.cookie("LOGIN_TOKEN", token);
-			return res.status(201).send();
+			return res.status(201).send(token);
 		});
 	});
 });
