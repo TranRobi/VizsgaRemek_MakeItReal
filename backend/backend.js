@@ -330,24 +330,31 @@ app.post("/api/logout", (req, res) => {
  *                             country:
  *                                 type: string
  *                                 description: Ország
+ *                                 example: Szudán
  *                             county:
  *                                 type: string
  *                                 description: Megye/Állam
+ *                                 example: Szabolcs-Szatmár-Bereg
  *                             city:
  *                                 type: string
  *                                 description: Város/Község
+ *                                 example: Tokió
  *                             postal-code:
  *                                 type: number
  *                                 description: Postakód
+ *                                 example: 4558
  *                             street-number:
  *                                 type: string
  *                                 description: Utca, házszám
+ *                                 example: Ash Tree Lane 2
  *                             phone-number:
  *                                 type: string
  *                                 description: Telefonszám
+ *                                 example: +36702223344
  *                             name:
  *                                 type: string
  *                                 description: Név
+ *                                 example: Tóth László
  *         responses:
  *             200:
  *                 description:
@@ -610,9 +617,11 @@ app.get("/api/products", (req, res) => {
  *                             name:
  *                                 type: string
  *                                 description: Termék neve
+ *                                 example: Torment Nexus
  *                             description:
  *                                 type: string
  *                                 description: Termék leírása
+ *                                 example: We built the Torment Nexus from the sci-fi novel Do not build the Torment Nexus
  *         responses:
  *             200:
  *                 description:
