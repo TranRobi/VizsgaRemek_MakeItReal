@@ -180,9 +180,11 @@ app.post("/api/register", (req, res) => {
  *                             email-address:
  *                                 type: string
  *                                 description: Email cím
+ *                                 example: viccelek@citromail.hu
  *                             password:
  *                                 type: string
  *                                 description: Jelszó
+ *                                 example: 888888
  *                         required:
  *                             - email-address
  *                             - password
