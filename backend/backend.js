@@ -11,8 +11,7 @@ import cors from "cors";
 
 import CONFIG from "./config.js";
 import { generate_salt, hash_password } from "./secret.js";
-import { rename_key, get_api_key } from "./util.js";
-import { async_get, async_run } from './async_helpers.js';
+import { rename_key, get_api_key, async_get, async_run } from "./util.js";
 
 const PORT = 8080;
 const SWAGGER_OPTS = {
