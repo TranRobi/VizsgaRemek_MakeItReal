@@ -373,7 +373,6 @@ app.put("/api/delivery-information", (req, res) => {
 	if (!token) return res.status(403).send();
 	const user = logged_in_users.find((elem) => elem.token === token);
 	if (!user) return res.status(404).send();
-	const user_id = user.id;
 	const country = req.body["country"];
 	const county = req.body["county"];
 	const city = req.body["city"];
@@ -401,11 +400,11 @@ app.put("/api/delivery-information", (req, res) => {
 	}
 
     db.serialize(() => {
-        async_get(db, `SELECT address_id FROM users WHERE rowid = ?`, user_id)
+        async_get(db, `SELECT address_id FROM users WHERE rowid = ?`, user.id)
             .then(row => {
                 console.log(row);
                 if (!row.address_id) {
-                    console.log(`hozzaad, user id ${user_id}`);
+                    console.log(`hozzaad, user id ${user.id}`);
                     // uj sor
                     async_get(db,
                         `INSERT INTO address VALUES
@@ -425,7 +424,7 @@ app.put("/api/delivery-information", (req, res) => {
                             SET address_id = ?
                             WHERE rowid = ?`,
                             row.rowid,
-                            user_id)
+                            user.id)
                              .then(() => {
                                 console.log('siker');
                                 return res.status(200).send();
@@ -438,7 +437,30 @@ app.put("/api/delivery-information", (req, res) => {
                 } else {
                     // TODO frissites
                     console.log('frissul');
-                    return res.status(200).send();
+                    async_run(db,
+                        `UPDATE address SET
+                            country = ?,
+                            county = ?,
+                            city = ?,
+                            postal_code = ?,
+                            street_number = ?,
+                            phone_number = ?,
+                            name = ? WHERE rowid = ?`,
+                        country,
+                        county,
+                        city,
+                        postal_code,
+                        street_number,
+                        phone_number,
+                        name,
+                        row.address_id)
+                        .then(() => {
+                            return res.status(200).send();
+                        },
+                        err => {
+                            console.log(err);
+                            return res.status(500).send();
+                        });
                 }
             },
             err => {
