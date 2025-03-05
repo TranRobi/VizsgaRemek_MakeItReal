@@ -11,7 +11,7 @@ import cors from "cors";
 
 import CONFIG from "./config.js";
 import { generate_salt, hash_password } from "./secret.js";
-import { rename_key } from "./util.js";
+import { rename_key, get_api_key } from "./util.js";
 import { async_get, async_run } from './async_helpers.js';
 
 const PORT = 8080;
@@ -28,16 +28,16 @@ const SWAGGER_OPTS = {
 		},
 		components: {
 			securitySchemes: {
-				cookieAuth: {
+				apiKeyAuth: {
 					type: "apiKey",
-					in: "cookie",
+					in: "header",
 					name: "LOGIN_TOKEN",
 				},
 			},
 		},
-		security: {
-			cookieAuth: [],
-		},
+		security: [{
+			apiKeyAuth: [],
+		}],
 		servers: [
 			{
 				url: `http://localhost:${PORT}/`,
@@ -279,12 +279,6 @@ app.post("/api/login", (req, res) => {
  *         tags:
  *           - Auth rendszer
  *         description: Kilépteti a bejelentkezett felhasználót
- *         security: []
- *         parameters:
- *             - name: LOGIN_TOKEN
- *               in: cookie
- *               type: string
- *               required: true
  *         responses:
  *             "200":
  *                 description:
@@ -294,16 +288,16 @@ app.post("/api/login", (req, res) => {
  *                     Nincs ilyen belépett felhasználó
  */
 app.post("/api/logout", (req, res) => {
-	console.log(req.cookies);
+    const token = get_api_key(req);
+	console.log(`token: ${token}`);
 	if (
-		!req.cookies ||
-		!req.cookies["LOGIN_TOKEN"] ||
-		!logged_in_users.find((elem) => elem.token === req.cookies["LOGIN_TOKEN"])
+		!token ||
+		!logged_in_users.find(elem => elem.token === token)
 	)
 		return res.status(404).send();
 	logged_in_users.splice(
 		logged_in_users.indexOf(
-			(elem) => elem.token === req.cookies["LOGIN_TOKEN"]
+			elem => elem.token === token
 		),
 		1
 	);
@@ -319,11 +313,6 @@ app.post("/api/logout", (req, res) => {
  *         tags:
  *           - Szállítási adatok
  *         description: Rögzíti a bejelentkezett felhasználó szállítási adatait
- *         parameters:
- *             - name: LOGIN_TOKEN
- *               in: cookie
- *               type: string
- *               required: true
  *         requestBody:
  *             required: true
  *             content:
@@ -380,8 +369,8 @@ app.post("/api/logout", (req, res) => {
  *                     ez sose történik meg
  */
 app.put("/api/delivery-information", (req, res) => {
-	if (!req.cookies) return res.status(403).send();
-	const token = req.cookies["LOGIN_TOKEN"];
+	const token = get_api_key(req);
+	if (!token) return res.status(403).send();
 	const user = logged_in_users.find((elem) => elem.token === token);
 	if (!user) return res.status(404).send();
 	const user_id = user.id;
@@ -472,7 +461,6 @@ app.put("/api/delivery-information", (req, res) => {
  *               in: cookie
  *               type: string
  *               required: true
- *         security: []
  *         responses:
  *             200:
  *                 content:
@@ -513,11 +501,12 @@ app.put("/api/delivery-information", (req, res) => {
  *                     ez sose történik meg
  */
 app.get("/api/delivery-information", (req, res) => {
-	if (!req.cookies || !req.cookies["LOGIN_TOKEN"]) {
+    const token = get_api_key(req);
+	if (!token) {
 		return res.status(403).send();
 	}
 	const user = logged_in_users.find(
-		(e) => e.token === req.cookies["LOGIN_TOKEN"]
+		(e) => e.token === token
 	);
 	console.log(user);
 	if (!user) {
@@ -605,12 +594,6 @@ app.get("/api/products", (req, res) => {
  *         tags:
  *           - Termékek
  *         description: Visszaadja a termékek listáját, azokhoz tartozó cikkek, képek, stb.
- *         parameters:
- *             - name: LOGIN_TOKEN
- *               in: cookie
- *               type: string
- *               required: true
- *         security: []
  *         requestBody:
  *             required: true
  *             content:
@@ -669,11 +652,12 @@ app.get("/api/products", (req, res) => {
  *           - Termékek
  */
 app.patch("/api/products", (req, res) => {
-	console.log(req.cookies);
-	if (!req.cookies || !req.cookies["LOGIN_TOKEN"])
+    const token = get_api_key(req);
+	console.log(`token ${token}`);
+	if (!token)
 		return res.status(401).send();
 	const user_id = logged_in_users.find(
-		(elem) => elem.token === req.cookies["LOGIN_TOKEN"]
+		(elem) => elem.token === token
 	);
 	console.log(`user id ${user_id}`);
 	if (!user_id) return res.status(401).send();
@@ -703,15 +687,17 @@ app.patch("/api/products", (req, res) => {
 		});
 	});
 });
+
 app.post("/api/products", (req, res) => {
 	console.log(req.cookies);
-	if (!req.cookies || !req.cookies["LOGIN_TOKEN"])
+	console.log(`header token ${req.get('LOGIN_TOKEN')}`);
+	if (!get_api_key(req))
 		return res.status(401).send();
-	const user_id = logged_in_users.find(
-		(elem) => elem.token === req.cookies["LOGIN_TOKEN"]
+	const user = logged_in_users.find(
+		(elem) => elem.token === get_api_key(req)
 	);
-	console.log(`user id ${user_id}`);
-	if (!user_id) return res.status(401).send();
+	console.log(`user ${user}`);
+	if (!user) return res.status(401).send();
 	const { name, description } = req.body;
 	console.log(req.body);
 	if (!name || !description || description.length > 512 || name.length > 64) {
@@ -728,7 +714,7 @@ app.post("/api/products", (req, res) => {
       ) VALUES (?, ?, ?, 'MAJD', 'LESZ') RETURNING rowid AS id, name, description`,
 			name,
 			description,
-			user_id,
+			user.id,
 			(err) => {
 				if (err) {
 					console.log(err);
