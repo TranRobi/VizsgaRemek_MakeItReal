@@ -15,6 +15,18 @@ function Delivery() {
     postal_code: "",
   });
   const [enabled, setEnabled] = useState(true);
+
+  const handleChange = (event) => {
+    console.log(event.target.value);
+    if (!event.target) {
+      setDeliveryInformation((values) => ({ ...values, expire_at: event.$d }));
+    } else {
+      setDeliveryInformation((values) => ({
+        ...values,
+        [event.target.name]: event.target.value,
+      }));
+    }
+  };
   useEffect(() => {
     axios
       .get("/api/delivery-information", {
@@ -36,7 +48,25 @@ function Delivery() {
   }, []);
 
   function sendChanges() {
-    console.log("updated delivery information");
+    axios
+      .put(
+        "/api/delivery-information",
+        {
+          name: deliveryInformation.name,
+          country: deliveryInformation.country,
+          city: deliveryInformation.city,
+          county: deliveryInformation.county,
+          "street-number": deliveryInformation.street,
+          "postal-code": deliveryInformation.postal_code,
+          "phone-number": deliveryInformation.phone_number,
+        },
+        {
+          headers: { "content-type": "application/x-www-form-urlencoded" },
+        }
+      )
+      .then((response) => {
+        console.log(response);
+      });
   }
 
   return (
@@ -52,32 +82,67 @@ function Delivery() {
                 label="Full name"
                 variant="standard"
                 disabled={enabled}
+                name="name"
                 value={deliveryInformation.name}
+                onChange={(e) => {
+                  console.log("delivery informatio");
+                  handleChange(e);
+                }}
               ></TextField>
               <TextField
                 variant="standard"
                 disabled={enabled}
+                name="phone_number"
+                label="Phone number"
                 value={deliveryInformation.phone_number}
+                onChange={(e) => {
+                  handleChange(e);
+                }}
               ></TextField>
               <TextField
                 variant="standard"
+                name="country"
+                label="Country"
                 value={deliveryInformation.country}
+                onChange={(e) => {
+                  handleChange(e);
+                }}
                 disabled={enabled}
               ></TextField>
               <TextField
                 variant="standard"
+                name="city"
+                label="City"
                 value={deliveryInformation.city}
+                onChange={(e) => {
+                  handleChange(e);
+                }}
                 disabled={enabled}
               ></TextField>
-              <TextField
-                variant="standard"
-                value={
-                  deliveryInformation.postal_code +
-                  " " +
-                  deliveryInformation.street
-                }
-                disabled={enabled}
-              ></TextField>
+              <div className="flex w-full">
+                <TextField
+                  sx={{ width: "10%", marginRight: "1.5rem" }}
+                  name="postal_code"
+                  label="Postal Code"
+                  variant="standard"
+                  value={deliveryInformation.postal_code}
+                  disabled={enabled}
+                  onChange={(e) => {
+                    handleChange(e);
+                  }}
+                ></TextField>
+                <TextField
+                  sx={{ width: "100%" }}
+                  variant="standard"
+                  name="street"
+                  label="Street"
+                  value={deliveryInformation.street}
+                  disabled={enabled}
+                  onChange={(e) => {
+                    handleChange(e);
+                  }}
+                ></TextField>
+              </div>
 
               <Button
                 variant="contained"
