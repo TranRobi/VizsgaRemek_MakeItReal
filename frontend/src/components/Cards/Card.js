@@ -14,7 +14,7 @@ function Card({ prod }) {
           to={`/library/${prod.id}`}
           className="w-fit absolute bottom-4"
         >
-          View prouduct
+          View product
         </NavLink>
       </div>
       <span></span>

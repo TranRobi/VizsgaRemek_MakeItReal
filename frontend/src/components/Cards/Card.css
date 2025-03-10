@@ -1,7 +1,4 @@
-.cards {
-	display: flex;
-	flex-wrap: wrap;
-}
+
 .card {
 	padding: 10px;
 	margin: 20px;
@@ -9,6 +6,7 @@
 	position: relative;
 	background-color: #0e191f;
 	width: 15%;
+	min-width: 200px;
 	height: 35vh;
 	transition: 0.5s;
 	border-radius: 15px;

@@ -1,15 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 
 function ContactUs() {
+  useEffect(()=> {
+    window.scrollTo(0,0)
+  })
   return (
     <>
       <Navbar />
       <div className="bg-white py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
+            <h2 className="text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl" id="asd2">
               Get in touch
             </h2>
           </div>
