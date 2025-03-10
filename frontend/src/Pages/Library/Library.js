@@ -24,6 +24,9 @@ function Library() {
 				console.error(err);
 			});
 	}, []);
+	useEffect(()=> {
+		window.scrollTo(0,0)
+	})
 	return (
 		<>
 			<Navbar />

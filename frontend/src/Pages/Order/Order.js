@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import {
@@ -31,6 +31,9 @@ function Order({ setBasketList, basketList }) {
       }));
     }
   };
+  useEffect(()=> {
+    window.scrollTo(0,0)
+  })
   return (
     <>
       <Navbar basketList={basketList} />

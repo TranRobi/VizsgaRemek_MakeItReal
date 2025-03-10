@@ -17,6 +17,7 @@ function Product() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    window.scrollTo(0,0)
     axios
       .get(`/api/products/${params.id}`)
       .then((response) => setProduct(response.data))
