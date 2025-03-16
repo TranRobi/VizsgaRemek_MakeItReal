@@ -607,12 +607,125 @@ app.get("/api/products", (req, res) => {
 
 /**
  * @swagger
+ * /api/products/{id}:
+ *      patch:
+ *         summary: Termék módosítása
+ *         tags:
+ *           - Termékek
+ *         description: Módosít egy már létező termék sort
+ *         parameters:
+ *             - in: path
+ *               name: id
+ *               schema:
+ *                   type: integer
+ *               required: true
+ *               description: Termék ID
+ *         requestBody:
+ *             required: true
+ *             content:
+ *                 application/x-www-form-urlencoded:
+ *                     schema:
+ *                         type: object
+ *                         properties:
+ *                             name:
+ *                                 type: string
+ *                                 description: Termék neve
+ *                                 example: Torment Nexus
+ *                             description:
+ *                                 type: string
+ *                                 description: Termék leírása
+ *                                 example: We built the Torment Nexus from the sci-fi novel Do not build the Torment Nexus
+ *         responses:
+ *             200:
+ *                 description:
+ *                     Termék sikeresen módosítva
+ *                 content:
+ *                     application/json:
+ *                         schema:
+ *                             type: object
+ *                             properties:
+ *                                 id:
+ *                                     type: integer
+ *                                     description: Termék ID
+ *                                 name:
+ *                                     type: string
+ *                                     description: Termék neve
+ *                                 description:
+ *                                     type: string
+ *                                     description: Termék leírása
+ *             401:
+ *                 description:
+ *                     Nincs belépve a felhasználó
+ *                     vagy a frontend nem küldte
+ *                     el a `LOGIN_TOKEN` cookie-t
+ *             404:
+ *                 description:
+ *                     Nincs ilyen ID!
+ *             406:
+ *                 description:
+ *                     Nem formdata, hibás formdata, vagy a formdata-ban a mezők nevei rosszak,
+ *                     vagy túl hosszúak az adatok (init_db.js-ben vannak egyelőre
+ *                     dokumentálva mezők hosszai)
+ *             500:
+ *                 description:
+ *                     Nincs a backendnek `products` táblája, futtasd az `init_db.js` scriptet!
+ *                     Csak teszteléskor jöhet elő.
+ */
+app.patch("/api/products/:id", (req, res) => {
+    const token = get_api_key(req);
+	console.log(`token ${token}`);
+	if (!token)
+		return res.status(401).send();
+	const user = logged_in_users.find(
+		(elem) => elem.token === token
+	);
+	if (!user)
+        return res.status(401).send();
+	console.log(`user id ${user.id}`);
+	const { name, description } = req.body;
+	console.log(req.body);
+	if (!name || !description || description.length > 512 || name.length > 64) {
+		return res.status(406).send();
+	}
+	db.serialize(() => {
+        async_get(db,
+            `UPDATE products SET
+                name = ?,
+                description = ?,
+                stl_file_path = 'MAJD',
+                display_image_file_path = 'LESZ'
+            WHERE rowid = ?
+            RETURNING rowid AS id, uploader_id, name, description`,
+            name,
+            description,
+            req.params.id)
+            .then(row => {
+                if (!row) {
+                    return res.status(404).send();
+                }
+                console.log(row);
+                return res.status(201).json(row);
+            },
+            err => {
+                console.log(err);
+                // TODO lekezelni a különböző hibákat
+                if (err === SQLITE_ERROR) {
+                    return res.status(500).send();
+                } else {
+                    return res.status(500).send();
+                }
+            });
+	});
+});
+
+/**
+ * @swagger
  * /api/products:
  *     post:
  *         summary: Termék hozzáadása
  *         tags:
  *           - Termékek
- *         description: Visszaadja a termékek listáját, azokhoz tartozó cikkek, képek, stb.
+ *         description: Hozzáad egy terméket az adatbázishoz
  *         requestBody:
  *             required: true
  *             content:
@@ -640,6 +753,9 @@ app.get("/api/products", (req, res) => {
  *                                 id:
  *                                     type: integer
  *                                     description: Termék ID
+ *                                 uploader_id:
+ *                                     type: integer
+ *                                     description: Feltöltő ID-je
  *                                 name:
  *                                     type: string
  *                                     description: Termék neve
@@ -661,52 +777,6 @@ app.get("/api/products", (req, res) => {
  *                     Nincs a backendnek `products` táblája, futtasd az `init_db.js` scriptet!
  *                     Csak teszteléskor jöhet elő.
  */
-
-/**
- * @swagger
- * /api/products:
- *      patch:
- *         summary: Termék módosítása
- *         tags:
- *           - Termékek
- */
-app.patch("/api/products", (req, res) => {
-    const token = get_api_key(req);
-	console.log(`token ${token}`);
-	if (!token)
-		return res.status(401).send();
-	const user_id = logged_in_users.find(
-		(elem) => elem.token === token
-	);
-	console.log(`user id ${user_id}`);
-	if (!user_id) return res.status(401).send();
-	const { name, description } = req.body;
-	console.log(req.body);
-	if (!name || !description || description.length > 512 || name.length > 64) {
-		return res.status(406).send();
-	}
-	db.serialize(() => {
-		const stmt = db.prepare(
-			`UPDATE products SET 
-        name =?, 
-        description =?, 
-        stl_file_path = "MAJD",
-        display_image_file_path= "LESZ" 
-      WHERE rowid =?`,
-			name,
-			description,
-			user_id
-		);
-		stmt.run((err) => {
-			if (err) {
-				console.log(err);
-				return res.status(500).send();
-			}
-			return res.status(200).json({ name, description });
-		});
-	});
-});
-
 app.post("/api/products", (req, res) => {
 	console.log(req.cookies);
 	console.log(`header token ${req.get('LOGIN_TOKEN')}`);
