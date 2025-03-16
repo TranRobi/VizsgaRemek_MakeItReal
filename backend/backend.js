@@ -33,6 +33,84 @@ const SWAGGER_OPTS = {
 					name: "LOGIN_TOKEN",
 				},
 			},
+            schemas: {
+                product_request: {
+                    type: 'object',
+                    properties: {
+                        name: {
+                            type: 'string',
+                            description: 'Termék neve',
+                            example: 'Torment Nexus',
+                        },
+                        description: {
+                            type: 'string',
+                            description: 'Termék leírása',
+                            example: 'We built the Torment Nexus from the sci-fi novel Do not build the Torment Nexus',
+                        },
+                    },
+                },
+                product_response: {
+                    type: 'object',
+                    properties: {
+                        id: {
+                            type: 'integer',
+                            description: 'Termék ID',
+                        },
+                        uploader_id: {
+                            type: 'integer',
+                            description: 'Feltöltő ID-je',
+                        },
+                        name: {
+                            type: 'string',
+                            description: 'Termék neve',
+                        },
+                        description: {
+                            type: 'string',
+                            description: 'Termék leírása',
+                        },
+                    }
+                },
+                delivery_information_request: {
+                    type: 'object',
+                    properties: {
+                        country: {
+                            type: 'string',
+                            description: 'Ország',
+                            example: 'Csád',
+                        },
+                        county: {
+                            type: 'string',
+                            description: 'Megye/Állam',
+                            example: 'Kanto',
+                        },
+                        city: {
+                            type: 'string',
+                            description: 'Város',
+                            example: 'Shenzen',
+                        },
+                        postal_code: {
+                            type: 'number',
+                            description: 'Irányítószám',
+                            example: '6666',
+                        },
+                        'street-number': {
+                            type: 'string',
+                            description: 'Utca, házszám, emelet, ajtó, stb.',
+                            example: '308 Negra Arroyo Lane',
+                        },
+                        'phone-number': {
+                            type: 'string',
+                            description: 'Telefonszám',
+                            example: '+36701234567',
+                        },
+                        name: {
+                            type: 'string',
+                            description: 'Számlázási név',
+                            example: 'John Buyer',
+                        },
+                    },
+                },
+            }
 		},
 		security: [{
 			apiKeyAuth: [],
@@ -317,36 +395,7 @@ app.post("/api/logout", (req, res) => {
  *             content:
  *                 application/x-www-form-urlencoded:
  *                     schema:
- *                         type: object
- *                         properties:
- *                             country:
- *                                 type: string
- *                                 description: Ország
- *                                 example: Szudán
- *                             county:
- *                                 type: string
- *                                 description: Megye/Állam
- *                                 example: Szabolcs-Szatmár-Bereg
- *                             city:
- *                                 type: string
- *                                 description: Város/Község
- *                                 example: Tokió
- *                             postal-code:
- *                                 type: number
- *                                 description: Postakód
- *                                 example: 4558
- *                             street-number:
- *                                 type: string
- *                                 description: Utca, házszám
- *                                 example: Ash Tree Lane 2
- *                             phone-number:
- *                                 type: string
- *                                 description: Telefonszám
- *                                 example: +36702223344
- *                             name:
- *                                 type: string
- *                                 description: Név
- *                                 example: Tóth László
+ *                         $ref: '#/components/schemas/delivery_information_request'
  *         responses:
  *             200:
  *                 description:
@@ -487,29 +536,7 @@ app.put("/api/delivery-information", (req, res) => {
  *                 content:
  *                     application/json:
  *                         schema:
- *                             type: object
- *                             properties:
- *                                 country:
- *                                     type: string
- *                                     description: Ország
- *                                 county:
- *                                     type: string
- *                                     description: Megye/Állam
- *                                 city:
- *                                     type: string
- *                                     description: Város/Község
- *                                 postal-code:
- *                                     type: number
- *                                     description: Postakód
- *                                 street-number:
- *                                     type: string
- *                                     description: Utca, házszám
- *                                 phone-number:
- *                                     type: string
- *                                     description: Telefonszám
- *                                 name:
- *                                     type: string
- *                                     description: Név
+ *                             $ref: '#/components/schemas/delivery_information_request'
  *             403:
  *                 description:
  *                     Frontend nem küldte el a `LOGIN_TOKEN` cookie-t
@@ -571,21 +598,7 @@ app.get("/api/delivery-information", (req, res) => {
  *                 content:
  *                     application/json:
  *                         schema:
- *                             type: object
- *                             properties:
- *                                 id:
- *                                     type: integer
- *                                     description: Termék ID
- *                                 uploader_id:
- *                                     type: integer
- *                                     description: Feltöltő ID-je
- *                                 name:
- *                                     type: string
- *                                     description: Termék neve
- *                                 description:
- *                                     type: string
- *                                     description: Termék leírása
- *
+ *                             $ref: '#/components/schemas/product_response'
  *             500:
  *                 description:
  *                     Nincs a backendnek `products` táblája, futtasd az `init_db.js` scriptet!
@@ -625,16 +638,7 @@ app.get("/api/products", (req, res) => {
  *             content:
  *                 application/x-www-form-urlencoded:
  *                     schema:
- *                         type: object
- *                         properties:
- *                             name:
- *                                 type: string
- *                                 description: Termék neve
- *                                 example: Torment Nexus
- *                             description:
- *                                 type: string
- *                                 description: Termék leírása
- *                                 example: We built the Torment Nexus from the sci-fi novel Do not build the Torment Nexus
+ *                         $ref: '#/components/schemas/product_request'
  *         responses:
  *             200:
  *                 description:
@@ -642,17 +646,8 @@ app.get("/api/products", (req, res) => {
  *                 content:
  *                     application/json:
  *                         schema:
- *                             type: object
- *                             properties:
- *                                 id:
- *                                     type: integer
- *                                     description: Termék ID
- *                                 name:
- *                                     type: string
- *                                     description: Termék neve
- *                                 description:
- *                                     type: string
- *                                     description: Termék leírása
+ *                             $ref: '#/components/schemas/product_response'
+ *
  *             401:
  *                 description:
  *                     Nincs belépve a felhasználó
@@ -731,16 +726,7 @@ app.patch("/api/products/:id", (req, res) => {
  *             content:
  *                 application/x-www-form-urlencoded:
  *                     schema:
- *                         type: object
- *                         properties:
- *                             name:
- *                                 type: string
- *                                 description: Termék neve
- *                                 example: Torment Nexus
- *                             description:
- *                                 type: string
- *                                 description: Termék leírása
- *                                 example: We built the Torment Nexus from the sci-fi novel Do not build the Torment Nexus
+ *                         $ref: '#/components/schemas/product_request'
  *         responses:
  *             200:
  *                 description:
@@ -748,20 +734,7 @@ app.patch("/api/products/:id", (req, res) => {
  *                 content:
  *                     application/json:
  *                         schema:
- *                             type: object
- *                             properties:
- *                                 id:
- *                                     type: integer
- *                                     description: Termék ID
- *                                 uploader_id:
- *                                     type: integer
- *                                     description: Feltöltő ID-je
- *                                 name:
- *                                     type: string
- *                                     description: Termék neve
- *                                 description:
- *                                     type: string
- *                                     description: Termék leírása
+ *                             $ref: '#/components/schemas/product_response'
  *             401:
  *                 description:
  *                     Nincs belépve a felhasználó
@@ -844,17 +817,7 @@ app.post("/api/products", (req, res) => {
  *                 content:
  *                     application/json:
  *                         schema:
- *                             type: object
- *                             properties:
- *                                 id:
- *                                     type: integer
- *                                     description: Termék ID
- *                                 name:
- *                                     type: string
- *                                     description: Termék neve
- *                                 description:
- *                                     type: string
- *                                     description: Termék leírása
+ *                             $ref: '#/components/schemas/product_response'
  *             404:
  *                 description:
  *                     Nincs ilyen ID!
