@@ -576,6 +576,9 @@ app.get("/api/delivery-information", (req, res) => {
  *                                 id:
  *                                     type: integer
  *                                     description: Termék ID
+ *                                 uploader_id:
+ *                                     type: integer
+ *                                     description: Feltöltő ID-je
  *                                 name:
  *                                     type: string
  *                                     description: Termék neve
@@ -590,19 +593,14 @@ app.get("/api/delivery-information", (req, res) => {
  */
 app.get("/api/products", (req, res) => {
 	db.serialize(() => {
-		const stmt = db.prepare(`SELECT rowid, name, description FROM products`);
+		const stmt = db.prepare(`SELECT rowid AS id, uploader_id, name, description FROM products`);
 		stmt.all((err, rows) => {
 			if (err) {
 				console.log(err);
 				return res.status(500).send();
 			}
 
-			const json = rows.map((row) => ({
-				id: Number(row.rowid),
-				name: row.name,
-				description: row.description,
-			}));
-			return res.status(200).json(json);
+			return res.status(200).json(rows);
 		});
 	});
 });
