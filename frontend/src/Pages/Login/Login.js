@@ -50,7 +50,7 @@ function Login({ close, open }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     axios
-      .post("/api/login", formData, {
+      .post("http://localhost:8080/api/login", formData, {
         headers: { "content-type": "application/x-www-form-urlencoded" },
       })
       .then((response) => {

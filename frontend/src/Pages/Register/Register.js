@@ -65,7 +65,7 @@ function Register({ close, open }) {
       return;
     } else {
       axios
-        .post("/api/register", formData, {
+        .post("http://localhost:8080/api/register", formData, {
           headers: {
             "content-type": "application/x-www-form-urlencoded",
           },

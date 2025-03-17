@@ -11,7 +11,7 @@ function ProfileNav({ setActiveTab }) {
 		setUser(!user);
 		axios
 			.post(
-				"/api/logout",
+				"http://localhost:8080/api/logout",
 				{
 					LOGIN_TOKEN: storedUser,
 				},

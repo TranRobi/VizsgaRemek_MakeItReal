@@ -6,7 +6,7 @@ import Button from "@mui/material/Button";
 function MyOrders() {
   const sendUserCookie = () => {
     axios.post(
-      "/api/products",
+      "http://localhost:8080/api/products",
       {
         name: "asd",
         description: "Product",

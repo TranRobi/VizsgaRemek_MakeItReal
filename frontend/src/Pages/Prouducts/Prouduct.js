@@ -19,7 +19,7 @@ function Product() {
   useEffect(() => {
     window.scrollTo(0,0)
     axios
-      .get(`/api/products/${params.id}`)
+      .get(`http://localhost:8080/api/products/${params.id}`)
       .then((response) => setProduct(response.data))
       .catch((error) => console.error(error));
   }, [params.id]);

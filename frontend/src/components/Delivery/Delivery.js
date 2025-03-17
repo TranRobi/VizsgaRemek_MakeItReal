@@ -29,7 +29,7 @@ function Delivery() {
   };
   useEffect(() => {
     axios
-      .get("/api/delivery-information", {
+      .get("http://localhost:8080/api/delivery-information", {
         Cookie: document.cookie,
       })
       .then((response) => {
