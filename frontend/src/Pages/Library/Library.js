@@ -24,9 +24,9 @@ function Library() {
 				console.error(err);
 			});
 	}, []);
-	useEffect(()=> {
-		window.scrollTo(0,0)
-	})
+	useEffect(() => {
+		window.scrollTo(0, 0);
+	});
 	return (
 		<>
 			<Navbar />
@@ -35,7 +35,10 @@ function Library() {
 					<input
 						type="search"
 						className="bg-white block mr-auto ml-auto p-2 w-4/5 mt-4 mb-4"
-						onChange={(e) => setSearch(e.target.value)}
+						onChange={(e) => {
+							setSearch(e.target.value);
+							setCurrentPage(1);
+						}}
 						placeholder="Search items here"
 					/>
 				</form>
@@ -44,17 +47,17 @@ function Library() {
 				<div className="cards justify-center h-4/5 min-h-96 flex-wrap flex">
 					{product
 						.map((prod, index) => {
-							return <Card key={index} prod={prod}/>;
+							return <Card key={index} prod={prod} />;
 						})
 						.filter((e) =>
 							search.toLowerCase() === ""
 								? e
-								: e.props.prod.name.includes(search) ||
-								  e.props.prod.description.includes(search)
+								: e.props.prod.name.toLowerCase().includes(search) ||
+								  e.props.prod.description.toLowerCase().includes(search)
 						)
 						.slice(currentPage * pageSize - pageSize, currentPage * pageSize)}
 				</div>
-			</div>
+			</div>	
 			<div className="flex justify-center items-center">
 				<IconButton
 					onClick={() => {
