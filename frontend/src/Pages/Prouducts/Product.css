@@ -1,7 +1,8 @@
+@import "tailwindcss";
 #productName {
-    font-size: 2rem;
+  font-size: 2rem;
 }
 
 #desc {
-    display: block;
+  display: block;
 }

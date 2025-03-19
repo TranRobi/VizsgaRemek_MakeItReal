@@ -3,7 +3,7 @@ import { Navigate, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import axios from "axios";
-import { BasketContext } from "../../components/context/BasketContext";
+import { BasketContext } from "../../context/BasketContext";
 
 function Product() {
   const { basketList, setBasketList } = useContext(BasketContext);
@@ -17,9 +17,9 @@ function Product() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    window.scrollTo(0,0)
+    window.scrollTo(0, 0);
     axios
-      .get(`http://localhost:8080/api/products/${params.id}`)
+      .get(`/api/products/${params.id}`)
       .then((response) => setProduct(response.data))
       .catch((error) => console.error(error));
   }, [params.id]);

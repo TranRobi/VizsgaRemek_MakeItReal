@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 
 import axios from "axios";
 import { FormControl, Stack, Paper, TextField, Button } from "@mui/material";
-import { AuthContext } from "../context/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 
 function Delivery() {
   const [deliveryInformation, setDeliveryInformation] = useState({
@@ -29,7 +29,7 @@ function Delivery() {
   };
   useEffect(() => {
     axios
-      .get("http://localhost:8080/api/delivery-information", {
+      .get("/api/delivery-information", {
         Cookie: document.cookie,
       })
       .then((response) => {

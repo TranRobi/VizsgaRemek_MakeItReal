@@ -14,7 +14,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import KeyIcon from "@mui/icons-material/Key";
 
 import axios from "axios";
-import { AuthContext } from "../../components/context/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 
 function Login({ close, open }) {
   const { user, setUser } = useContext(AuthContext);
@@ -50,12 +50,11 @@ function Login({ close, open }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     axios
-      .post("http://localhost:8080/api/login", formData, {
+      .post("/api/login", formData, {
         headers: { "content-type": "application/x-www-form-urlencoded" },
       })
       .then((response) => {
         if (response.status === 201) {
-          localStorage.setItem("token", response.data.token);
           setUser(true);
           console.log("Sikeres bejelentkezés " + user);
 
@@ -66,8 +65,8 @@ function Login({ close, open }) {
   };
   return (
     <ThemeProvider theme={theme}>
-      <div className="w-full h-screen flex justify-center items-center">
-        <div className="p-5 rounded-xl w-1/3 login h-fit">
+      <div className="w-full h-screen flex justify-center items-center ">
+        <div className="p-5 rounded-xl w-1/3 login h-fit bg-white">
           <div className="flex justify-between align-middle">
             <h1 className="text-3xl font-bold pb-6 ">Login</h1>
 

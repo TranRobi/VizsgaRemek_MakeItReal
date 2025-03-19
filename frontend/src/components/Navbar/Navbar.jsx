@@ -9,7 +9,7 @@ import Register from "../../Pages/Register/Register";
 import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
 
 import "./Navbar.css";
-import { AuthContext } from "../context/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 function Navbar() {
   const [isOpened, setIsOpened] = useState(false);
   const [isOpenedRegister, setIsOpenedRegister] = useState(false);
@@ -41,12 +41,7 @@ function Navbar() {
     <>
       <div>
         <nav className="h-fit">
-          <img
-            className="logo"
-            src={process.env.PUBLIC_URL + "/logo.png"}
-            alt="logo"
-            onClick={home}
-          />
+          <img className="logo" src={"logo.png"} alt="logo" onClick={home} />
 
           <div className="mr-4">
             <ul>

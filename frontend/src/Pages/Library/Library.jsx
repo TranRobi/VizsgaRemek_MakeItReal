@@ -16,7 +16,7 @@ function Library() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/api/products")
+      .get("/api/products")
       .then((res) => {
         setProduct(res.data);
       })
