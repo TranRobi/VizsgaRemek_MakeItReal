@@ -14,6 +14,15 @@ function Library() {
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
 
+  function searchFilter() {
+    let searchArray = product.filter(
+      (item) =>
+        item.name.toLowerCase().includes(search.toLowerCase()) ||
+        item.description.toLowerCase().includes(search.toLowerCase())
+    );
+
+    return searchArray;
+  }
   useEffect(() => {
     axios
       .get("/api/products")
@@ -45,17 +54,15 @@ function Library() {
       </div>
       <div>
         <div className="cards justify-center h-4/5 min-h-96 flex-wrap flex">
-          {product
-            .map((prod, index) => {
-              return <Card key={index} prod={prod} />;
-            })
-            .filter((e) =>
-              search.toLowerCase() === ""
-                ? e
-                : e.props.prod.name.toLowerCase().includes(search) ||
-                  e.props.prod.description.toLowerCase().includes(search)
-            )
-            .slice(currentPage * pageSize - pageSize, currentPage * pageSize)}
+          {searchFilter().length > 0 ? (
+            searchFilter()
+              .map((prod, index) => {
+                return <Card key={index} prod={prod} />;
+              })
+              .slice(currentPage * pageSize - pageSize, currentPage * pageSize)
+          ) : (
+            <p>No items found</p>
+          )}
         </div>
       </div>
       <div className="flex justify-center items-center">

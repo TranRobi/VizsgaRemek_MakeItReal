@@ -8,7 +8,7 @@ import Order from "./Pages/Order/Order.jsx";
 import ContactUs from "./Pages/ContactUs/ContactUs.jsx";
 import AboutUs from "./Pages/AboutUs/AboutUs.jsx";
 import Prouduct from "./Pages/Prouducts/Prouduct.jsx";
-import Profile from "./components/Profile/Profile.jsx";
+import Profile from "./Pages/Profile/Profile.jsx";
 import Basket from "./components/Basket/Basket.jsx";
 
 import { BasketContext } from "./context/BasketContext";
