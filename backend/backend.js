@@ -8,6 +8,7 @@ import body_parser from "body-parser";
 const { urlencoded } = body_parser;
 import cookie_parser from "cookie-parser";
 import cors from "cors";
+import multer from 'multer';
 
 import CONFIG from "./config.js";
 import { generate_salt, hash_password } from "./secret.js";
@@ -34,6 +35,34 @@ const SWAGGER_OPTS = {
 				},
 			},
             schemas: {
+                product_post_request: {
+                    type: 'object',
+                    properties: {
+                        name: {
+                            type: 'string',
+                            description: 'Termék neve',
+                            example: 'Torment Nexus',
+                        },
+                        description: {
+                            type: 'string',
+                            description: 'Termék leírása',
+                            example: 'We built the Torment Nexus from the sci-fi novel Do not build the Torment Nexus',
+                        },
+                        'stl-file': {
+                            type: 'string',
+                            format: 'binary',
+                        },
+                    },
+                    encoding: {
+                        'stl-file': {
+                            contentType: [
+                                'model/stl',
+                                'application/vnd.ms-pki.stl',
+                                'model/x.stl-ascii model/x.stl-binary',
+                            ],
+                        },
+                    },
+                },
                 product_request: {
                     type: 'object',
                     properties: {
@@ -123,6 +152,17 @@ const SWAGGER_OPTS = {
 	},
 	apis: ["./backend.js"],
 };
+
+const file_name_from_date = () => Number(new Date()).toString('16');
+
+const stl_storage = multer.diskStorage({
+    destination: './stl',
+    filename: (req, file, callback) => callback(null, file_name_from_date() + '.stl'),
+});
+
+const stl_upload = multer({
+    storage: stl_storage
+});
 
 // kenyelmi closure
 const new_db_error_ctx = () => {
@@ -686,9 +726,7 @@ app.patch("/api/products/:id", (req, res) => {
         async_get(db,
             `UPDATE products SET
                 name = ?,
-                description = ?,
-                stl_file_path = 'MAJD',
-                display_image_file_path = 'LESZ'
+                description = ?
             WHERE rowid = ?
             RETURNING rowid AS id, uploader_id, name, description`,
             name,
@@ -724,11 +762,11 @@ app.patch("/api/products/:id", (req, res) => {
  *         requestBody:
  *             required: true
  *             content:
- *                 application/x-www-form-urlencoded:
+ *                 multipart/form-data:
  *                     schema:
- *                         $ref: '#/components/schemas/product_request'
+ *                         $ref: '#/components/schemas/product_post_request'
  *         responses:
- *             200:
+ *             201:
  *                 description:
  *                     Termék sikeresen létrehozva
  *                 content:
@@ -750,7 +788,8 @@ app.patch("/api/products/:id", (req, res) => {
  *                     Nincs a backendnek `products` táblája, futtasd az `init_db.js` scriptet!
  *                     Csak teszteléskor jöhet elő.
  */
-app.post("/api/products", (req, res) => {
+app.post("/api/products", stl_upload.single('stl-file'), (req, res) => {
+    console.log(req.file);
 	console.log(req.cookies);
 	console.log(`header token ${req.get('LOGIN_TOKEN')}`);
 	if (!get_api_key(req))
@@ -762,7 +801,7 @@ app.post("/api/products", (req, res) => {
 	if (!user) return res.status(401).send();
 	const { name, description } = req.body;
 	console.log(req.body);
-	if (!name || !description || description.length > 512 || name.length > 64) {
+	if (!name || !description || description.length > 512 || name.length > 64 || !req.file || !req.file.filename) {
 		return res.status(406).send();
 	}
 	db.serialize(() => {
@@ -773,10 +812,11 @@ app.post("/api/products", (req, res) => {
           uploader_id,
           stl_file_path,
           display_image_file_path
-      ) VALUES (?, ?, ?, 'MAJD', 'LESZ') RETURNING rowid AS id, name, description`,
+      ) VALUES (?, ?, ?, ?, 'LESZ') RETURNING rowid AS id, name, description`,
 			name,
 			description,
 			user.id,
+            req.file.filename,
 			(err) => {
 				if (err) {
 					console.log(err);
