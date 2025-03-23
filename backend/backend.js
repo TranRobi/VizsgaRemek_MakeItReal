@@ -9,6 +9,7 @@ const { urlencoded } = body_parser;
 import cookie_parser from "cookie-parser";
 import cors from "cors";
 import multer from 'multer';
+import { cwd } from 'node:process';
 
 import CONFIG from "./config.js";
 import { generate_salt, hash_password } from "./secret.js";
@@ -19,7 +20,10 @@ import {
     async_run,
     file_name_from_date
 } from "./util.js";
-import { generate_stl_thumbnail } from './slicer.js'
+import {
+    generate_stl_thumbnail,
+    convert_model_to_stl
+} from './slicer.js'
 
 const PORT = 8080;
 const SWAGGER_OPTS = {
@@ -809,37 +813,95 @@ app.post("/api/products", stl_upload.single('stl-file'), (req, res) => {
 	if (!name || !description || description.length > 512 || name.length > 64 || !req.file || !req.file.path) {
 		return res.status(406).send();
 	}
-    const thumbnail = generate_stl_thumbnail(req.file.path);
+    const stl_path = convert_model_to_stl(req.file.path);
+    const thumbnail = generate_stl_thumbnail(stl_path);
 	db.serialize(() => {
-		const stmt = db.prepare(
-			`INSERT INTO products (
-          name,
-          description,
-          uploader_id,
-          stl_file_path,
-          display_image_file_path
-      ) VALUES (?, ?, ?, ?, ?) RETURNING rowid AS id, name, description`,
-			name,
-			description,
-			user.id,
-            req.file.path,
-            thumbnail,
-			(err) => {
-				if (err) {
-					console.log(err);
-					return res.status(500).send();
-				}
-			}
-		);
-		stmt.get((err, row) => {
-			if (err) {
-				console.log(err);
-				return res.status(500).send();
-			}
-			console.log(row);
-			return res.status(201).json(row);
-		});
+        async_get(db,
+            `INSERT INTO products (
+                name,
+                description,
+                uploader_id,
+                stl_file_path,
+                display_image_file_path
+            ) VALUES (?, ?, ?, ?, ?)
+            RETURNING rowid AS id, name, description
+            `,
+		    name,
+		    description,
+		    user.id,
+            stl_path,
+            thumbnail
+        ).then(
+            row => {
+		        console.log(row);
+		        return res.status(201).json(row);
+            },
+            err => {
+                console.log(err);
+                return res.status(500).send();
+            }
+        );
 	});
+});
+
+
+/** @swagger
+ * /api/products/images/{id}:
+ *     get:
+ *         summary: Egy termék képének visszaadása
+ *         tags:
+ *           - Termékek
+ *         description: Visszaadja a megadott termék képét
+ *         security: []
+ *         parameters:
+ *             - in: path
+ *               name: id
+ *               schema:
+ *                   type: integer
+ *               required: true
+ *               description: Termék ID
+ *         responses:
+ *             200:
+ *                 description:
+ *                     Visszaad egy PNG képet
+ *                 content:
+ *                     image/png:
+ *                         type: string
+ *                         format: binary
+ *             404:
+ *                 description:
+ *                     Nincs ilyen ID!
+ *             406:
+ *                 description:
+ *                     Rossz a path paraméter
+ *             500:
+ *                 description:
+ *                     Nincs a backendnek `products` táblája, futtasd az `init_db.js` scriptet!
+ *                     Csak teszteléskor jöhet elő.
+ */
+app.get('/api/products/images/:id', (req, res) => {
+	if (!req.params.id || !PATH_ID_REGEX.test(req.params.id))
+		return res.status(406).send();
+    console.log(req.params.id);
+
+    db.serialize(() => {
+        async_get(db,
+            `SELECT display_image_file_path AS thumbnail FROM products
+            WHERE rowid = ?`,
+            req.params.id
+        ).then(
+            row => {
+                console.log(row);
+                if (!row) return res.status(500).send();
+                return res.status(200).sendFile(row.thumbnail, {
+                    root: cwd()
+                });
+            },
+            err => {
+                return res.status(404).send();
+            }
+        );
+    });
 });
 
 /** @swagger

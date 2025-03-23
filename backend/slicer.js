@@ -2,7 +2,7 @@
 
 import os from 'node:os';
 import { execSync } from 'node:child_process';
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, unlinkSync } from 'node:fs';
 
 import { file_name_from_date } from './util.js';
 
@@ -57,6 +57,28 @@ export const is_stl_thumb_installed = () => {
             return false;
         }
     }
+};
+
+/*
+ * Egy `stl-thumb` hiányosságot szűr ki
+ *
+ * Egy STL fájl lehet bináris, vagy szöveges formátumú.
+ * A szöveges formátum hivatalos neve STEP, amit az
+ * `stl-thumb` NEM támogat:
+ * https://github.com/unlimitedbacon/stl-thumb/issues/77
+ *
+ * Ez a függvény bináris STL fájl-lá konvertálja,
+ * majd kitörli a régit
+ */
+export const convert_model_to_stl = model_file => {
+    const stl_path = `stl/${file_name_from_date()}.stl`
+    execSync(`${slicer} \\
+        --output ${stl_path} \\
+        --export-stl \\
+        ${model_file}
+        `);
+    unlinkSync(model_file);
+    return stl_path;
 };
 
 // TODO jobb keresés Windows exe fájlokra

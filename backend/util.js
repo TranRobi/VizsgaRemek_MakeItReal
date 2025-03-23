@@ -30,9 +30,14 @@ const async_get = (db, sql, ...params) => new Promise((resolve, reject) => {
     const stmt = db.prepare(sql, params, err => {
         if (err) reject(err);
     });
+    let r = undefined;
     stmt.get((err, row) => {
         if (err) reject(err);
-        else resolve(row);
+        else r = row;
+    });
+    stmt.finalize(err => {
+        if (err) reject(err);
+        else resolve(r);
     });
 });
 
