@@ -8,6 +8,7 @@ const mkdir_wrapper = dirname => {
     try {
         mkdirSync(dirname);
     } catch (e) {
+        // hasznos olvasmány: unix hibakódok
         if (e.code !== 'EEXIST') {
             throw e;
         }
@@ -21,7 +22,12 @@ export const slicer_init_directories = () => {
 
 export const is_slicer_installed = () => {
     if (os.type() === 'Windows_NT') {
-        // TODO windows
+        try {
+            execSync('prusa-slicer.exe --help');
+            return true;
+        } catch(e) {
+            return false;
+        }
         return false;
     } else {
         try {
