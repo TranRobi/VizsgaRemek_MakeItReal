@@ -12,7 +12,14 @@ import multer from 'multer';
 
 import CONFIG from "./config.js";
 import { generate_salt, hash_password } from "./secret.js";
-import { rename_key, get_api_key, async_get, async_run } from "./util.js";
+import {
+    rename_key,
+    get_api_key,
+    async_get,
+    async_run,
+    file_name_from_date
+} from "./util.js";
+import { generate_stl_thumbnail } from './slicer.js'
 
 const PORT = 8080;
 const SWAGGER_OPTS = {
@@ -152,8 +159,6 @@ const SWAGGER_OPTS = {
 	},
 	apis: ["./backend.js"],
 };
-
-const file_name_from_date = () => Number(new Date()).toString('16');
 
 const stl_storage = multer.diskStorage({
     destination: './stl',
@@ -801,9 +806,10 @@ app.post("/api/products", stl_upload.single('stl-file'), (req, res) => {
 	if (!user) return res.status(401).send();
 	const { name, description } = req.body;
 	console.log(req.body);
-	if (!name || !description || description.length > 512 || name.length > 64 || !req.file || !req.file.filename) {
+	if (!name || !description || description.length > 512 || name.length > 64 || !req.file || !req.file.path) {
 		return res.status(406).send();
 	}
+    const thumbnail = generate_stl_thumbnail(req.file.path);
 	db.serialize(() => {
 		const stmt = db.prepare(
 			`INSERT INTO products (
@@ -812,11 +818,12 @@ app.post("/api/products", stl_upload.single('stl-file'), (req, res) => {
           uploader_id,
           stl_file_path,
           display_image_file_path
-      ) VALUES (?, ?, ?, ?, 'LESZ') RETURNING rowid AS id, name, description`,
+      ) VALUES (?, ?, ?, ?, ?) RETURNING rowid AS id, name, description`,
 			name,
 			description,
 			user.id,
-            req.file.filename,
+            req.file.path,
+            thumbnail,
 			(err) => {
 				if (err) {
 					console.log(err);

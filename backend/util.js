@@ -49,7 +49,10 @@ const async_run = (db, sql, ...params) => new Promise((resolve, reject) => {
     });
 });
 
+const file_name_from_date = () => Number(new Date()).toString('16');
+
 export {
     async_get,
-    async_run
+    async_run,
+    file_name_from_date
 };
