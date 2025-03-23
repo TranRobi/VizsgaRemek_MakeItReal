@@ -4,6 +4,7 @@ import { unlinkSync } from "fs";
 import sqlite3 from "sqlite3";
 import CONFIG from "./config.js";
 import { generate_salt, hash_password } from "./secret.js";
+import { slicer_init_directories } from './slicer.js';
 
 sqlite3.verbose();
 
@@ -127,3 +128,14 @@ db.serialize(() => {
 });
 
 db.close();
+
+slicer_init_directories();
+console.log('`stl` és `product-images` mappák sikeresen létrehozva');
+
+console.log(`
+A backend Prusa Slicert és \`stl-thumb\`-ot használ G-Code és termék-kép
+generáláshoz.
+
+Prusa Slicer: telepítheti a https://github.com/prusa3d/PrusaSlicer/releases
+stl-thumb: https://github.com/unlimitedbacon/stl-thumb/releases/tag/v0.5.0
+`);

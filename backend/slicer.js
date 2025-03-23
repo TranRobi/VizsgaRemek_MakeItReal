@@ -2,6 +2,22 @@
 
 import os from 'node:os';
 import { execSync } from 'node:child_process';
+import { mkdirSync } from 'node:fs';
+
+const mkdir_wrapper = dirname => {
+    try {
+        mkdirSync(dirname);
+    } catch (e) {
+        if (e.code !== 'EEXIST') {
+            throw e;
+        }
+    }
+};
+
+export const slicer_init_directories = () => {
+    mkdir_wrapper('./stl');
+    mkdir_wrapper('./product-images');
+};
 
 export const is_slicer_installed = () => {
     if (os.type() === 'Windows_NT') {
@@ -45,4 +61,7 @@ export const slice_stl_to_gcode = (stl_path, gcode_path) => {
         --pad-around-object
         --supports-enable`);
     return true;
+};
+
+export const generate_stl_thumbnail = stl_path => {
 };
