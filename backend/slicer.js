@@ -82,8 +82,8 @@ export const convert_model_to_stl = model_file => {
 };
 
 // TODO jobb keresés Windows exe fájlokra
-const slicer = os.type() === 'Windows_NT' ? 'prusa-slicer.exe' : execSync('which prusa-slicer').toString().trim();
-const stl_thumb = os.type() === 'Windows_NT' ? 'stl-thumb.exe' : execSync('which stl-thumb').toString().trim();
+const slicer = os.type() === 'Windows_NT' ? execSync('where /r "C:\\Program Files" prusa-slicer.exe').toString().trim() : execSync('which prusa-slicer').toString().trim();
+const stl_thumb = os.type() === 'Windows_NT' ? execSync('where /r "C:\\Program Files" stl-thumb.exe').toString().trim() : execSync('which stl-thumb').toString().trim();
 
 export const slice_stl_to_gcode = (stl_path, gcode_path) => {
     // TODO check success
