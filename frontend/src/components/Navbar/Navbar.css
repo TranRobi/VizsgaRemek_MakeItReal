@@ -4,25 +4,25 @@ nav {
   justify-content: space-between;
   display: flex;
   width: 100%;
-  background-color: #333333;
-  height: 5rem;
+  background-color: #000000;
+  height: 100%;
   align-items: center;
   padding: 3px;
 }
 
 nav a {
   position: relative;
-  color: #d3c5b8;
+  color: #ff0000;
   font-weight: bold;
   text-decoration: none;
   font-size: larger;
   margin-right: 20px;
   padding: 10px 10px;
   transition: 0.5s;
-  text-shadow: 1px 2px 5px black;
+  text-shadow: 1px 2px 5px #1d1b1b;
 }
 nav a:hover {
-  color: #5a738e;
+  color: #950101;
 }
 nav a span {
   position: absolute;
@@ -32,11 +32,11 @@ nav a span {
   height: 100%;
   transform: scale(0) translateY(50px);
   border-radius: 15px;
-  border-bottom: #5a738e 4px solid;
+  border-bottom: #950101 4px solid;
   transition: 0.5s;
 }
 nav a.active {
-  color: #5a738e;
+  color: #950101;
 }
 nav a.active span {
   position: absolute;
@@ -46,7 +46,7 @@ nav a.active span {
   height: 100%;
   transform: scale(1) translateY(0);
   border-radius: 15px;
-  border-bottom: #5a738e 4px solid;
+  border-bottom: #950101 4px solid;
 }
 nav a:hover span {
   transform: scale(1) translateY(0);
@@ -63,13 +63,62 @@ nav li {
 }
 
 .logo {
-  width: 5%;
+  max-width: 100px;
+  max-height: 100px;
   height: 100%;
+  width: 100%;
+  border-radius: 100%;
   margin: 10px;
-  border-radius: 25%;
 }
 .LoginContainer {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.mobile {
+  display: inline-flex;
+}
+
+.pc {
+  display: none;
+}
+
+@media only screen and (max-width: 900px) {
+  nav {
+    flex-direction: column;
+  }
+  nav a {
+    width: 100%;
+    font-size: medium;
+    text-align: center;
+    border-bottom: none;
+  }
+  nav a span {
+    display: none;
+  }
+  nav a.active {
+    border-bottom: #950101 4px solid;
+  }
+  nav a:hover {
+    color: #950101;
+  }
+  nav h1 {
+    margin-left: 0;
+    margin-bottom: 10px;
+  }
+  nav ul {
+    display: none;
+  }
+  nav.mobile {
+    display: none;
+  }
+  nav.pc {
+    display: inline-flex;
+  }
+  .logo {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 10px;
+  }
 }

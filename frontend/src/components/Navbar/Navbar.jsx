@@ -2,11 +2,14 @@ import { Modal } from "@mui/material";
 import React, { useContext } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
 
 import { useState } from "react";
 import Login from "../../Pages/Login/Login";
 import Register from "../../Pages/Register/Register";
 import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
+import LoginIcon from "@mui/icons-material/Login";
+import AccountBoxIcon from "@mui/icons-material/AccountBox";
 
 import "./Navbar.css";
 import { AuthContext } from "../../context/AuthContext";
@@ -42,9 +45,8 @@ function Navbar() {
       <div>
         <nav className="h-fit">
           <img className="logo" src={"logo.png"} alt="logo" onClick={home} />
-
           <div className="mr-4">
-            <ul>
+            <ul className="items-center mobile">
               <li>
                 <NavLink to="/library">
                   Library<span></span>
@@ -57,24 +59,36 @@ function Navbar() {
               </li>
               <li>
                 {user ? (
-                  <NavLink to="/profile">
-                    Profile<span></span>
-                  </NavLink>
+                  <AccountBoxIcon
+                    sx={{ fontSize: "4xxl", color: "#FF0000" }}
+                    onClick={() => {
+                      navigate("/profile");
+                    }}
+                  />
                 ) : (
-                  <Button onClick={openLogin} variant="contained">
-                    Login<span></span>
-                  </Button>
+                  <LoginIcon
+                    onClick={openLogin}
+                    sx={{ fontSize: "4xxl", color: "#FF0000" }}
+                  />
                 )}
               </li>
               <li>
-                <NavLink to="/basket">
-                  <ShoppingBasketIcon className="text-6xl m-2 pr-3 text-white hover:text-blue-500 transition" />
-                </NavLink>
+                <ShoppingBasketIcon
+                  sx={{
+                    fontSize: "4xxl",
+                    color: "#FF0000",
+                    marginLeft: "20px",
+                  }}
+                  onClick={() => {
+                    navigate("/basket");
+                  }}
+                />
               </li>
             </ul>
           </div>
         </nav>
       </div>
+
       <Modal open={isOpened}>
         <div>
           <Login close={closeLogin} open={openRegister} />
