@@ -35,7 +35,7 @@ function Home() {
         </section>
 
         {/* About Us Section */}
-        <section className=" p-8 rounded-lg shadow-lg mb-12 flex flex-col md:flex-row items-center gap-8">
+        <section className=" p-8 rounded-lg mb-12 flex flex-col md:flex-row items-center gap-8">
           <div className="md:w-1/2">
             <h1 className="text-4xl font-semibold text-[#333333]">About us</h1>
             <h2 className="text-2xl text-[#5A738E] mt-2">Who are we?</h2>
@@ -43,7 +43,7 @@ function Home() {
             <h2 className="text-2xl text-[#5A738E]">What are we doing?</h2>
             <NavLink
               to="/aboutus"
-              className="mt-4 inline-block bg-[#333333] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#5A738E] transition"
+              className="mt-4 inline-block bg-[#333333] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#000000] transition"
             >
               See for yourself here <ReadMoreIcon className="ml-2" />
             </NavLink>
@@ -66,13 +66,13 @@ function Home() {
             </h3>
             <NavLink
               to="/contactus"
-              className="mt-4 inline-block bg-[#333333] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#5A738E] transition"
+              className="mt-4 inline-block bg-[#333333] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#000000] transition"
             >
               Contact us now <ArrowForwardIcon className="ml-2" />
             </NavLink>
           </div>
           <img
-            src="contactImg.png"
+            src="contactUs.jpg"
             alt="Contact us"
             className="w-full md:w-1/2 rounded-lg shadow-lg"
           />
@@ -88,7 +88,7 @@ function Home() {
           </h3>
           <NavLink
             to="/library"
-            className="mt-4 inline-block bg-[#333333] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#5A738E] transition"
+            className="mt-4 inline-block bg-[#333333] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#000000] transition"
           >
             Visit Library <ArrowForwardIcon className="ml-2" />
           </NavLink>
@@ -103,7 +103,7 @@ function Home() {
           </h3>
           <NavLink
             to="/order"
-            className="mt-4 inline-block bg-[#333333] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#5A738E] transition"
+            className="mt-4 inline-block bg-[#333333] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#000000] transition"
           >
             Order now <LocalShippingIcon className="ml-2" />
           </NavLink>

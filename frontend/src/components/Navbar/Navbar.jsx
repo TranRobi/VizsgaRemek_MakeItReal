@@ -2,7 +2,6 @@ import { Modal } from "@mui/material";
 import React, { useContext } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
 
 import { useState } from "react";
 import Login from "../../Pages/Login/Login";
@@ -60,7 +59,15 @@ function Navbar() {
               <li>
                 {user ? (
                   <AccountBoxIcon
-                    sx={{ fontSize: "4xxl", color: "#212121" }}
+                    sx={{
+                      fontSize: "4xxl",
+                      color: "#212121",
+                      ":hover": {
+                        scale: "1.2",
+                        transition: "ease-in 0.1s",
+                        color: "red",
+                      },
+                    }}
                     onClick={() => {
                       navigate("/profile");
                     }}
@@ -68,7 +75,16 @@ function Navbar() {
                 ) : (
                   <LoginIcon
                     onClick={openLogin}
-                    sx={{ fontSize: "4xxl", color: "#212121" }}
+                    sx={{
+                      fontSize: "4xxl",
+                      color: "#212121",
+                      scale: "1",
+                      "&:hover": {
+                        scale: "1.2",
+                        transition: "ease-in 0.1s",
+                        color: "red",
+                      },
+                    }}
                   />
                 )}
               </li>
@@ -78,6 +94,11 @@ function Navbar() {
                     fontSize: "4xxl",
                     color: "#212121",
                     marginLeft: "20px",
+                    ":hover": {
+                      scale: "1.2",
+                      transition: "ease-in 0.1s",
+                      color: "red",
+                    },
                   }}
                   onClick={() => {
                     navigate("/basket");

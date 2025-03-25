@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 
 import axios from "axios";
 import { AuthContext } from "../../context/AuthContext";
@@ -31,8 +31,22 @@ function ProfileNav({ setActiveTab }) {
     navigate("/");
   };
   return (
-    <ul className="w-fit bg-neutral-900 text-white max-h-full p-2 flex flex-col justify-between">
-      <div>
+    <ul className="w-full md:w-fit bg-neutral-900 text-white h-fit md:h-full p-2 flex-col justify-between text-center">
+      <div className="flex items-center justify-between ">
+        <Button
+          onClick={() => {
+            handleLogout();
+          }}
+          className="p-2"
+          color="error"
+          variant="contained"
+          sx={{ marginX: "auto" }}
+        >
+          Log out
+        </Button>
+      </div>
+
+      <div className={" block "}>
         <li className="mb-2">
           <a
             onClick={() => {
@@ -68,20 +82,6 @@ function ProfileNav({ setActiveTab }) {
           >
             Statistics
           </a>
-        </li>
-      </div>
-      <div>
-        <li className="justify-end">
-          <Button
-            onClick={() => {
-              handleLogout();
-            }}
-            className="p-2"
-            color="error"
-            variant="contained"
-          >
-            Log out
-          </Button>
         </li>
       </div>
     </ul>

@@ -71,11 +71,14 @@ function Delivery() {
 
   return (
     <div>
-      <div className=" m-4">
+      <div className="m-4">
         <FormControl fullWidth className="flex items-center">
-          <Paper elevation={3} className="w-1/2 p-6">
+          <Paper
+            elevation={3}
+            className="w-full md:w-1/2 p-6 active:text-red-700 ease-in duration-75 transition"
+          >
             <h1 className="text-4xl font-serif text-black w-fit p-2 ">
-              Order now
+              Delivery information
             </h1>
             <Stack gap={3}>
               <TextField

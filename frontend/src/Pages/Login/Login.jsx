@@ -66,7 +66,7 @@ function Login({ close, open }) {
   return (
     <ThemeProvider theme={theme}>
       <div className="w-full h-screen flex justify-center items-center ">
-        <div className="p-5 rounded-xl w-4/5 login h-fit bg-white ">
+        <div className="p-5 rounded-xl w-4/5 md:w-1/3 login h-fit bg-white ">
           <div className="flex justify-between align-middle">
             <h1 className="text-3xl font-bold pb-6 ">Login</h1>
 

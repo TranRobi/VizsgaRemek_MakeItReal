@@ -32,7 +32,7 @@ function Library() {
       .catch((err) => {
         console.error(err);
       });
-  }, []);
+  }, [pageSize]);
   useEffect(() => {
     window.scrollTo(0, 0);
   });
@@ -40,20 +40,37 @@ function Library() {
     <>
       <Navbar />
       <div>
-        <form>
+        <form className="flex justify-between w-4/5 mx-auto items-center">
           <input
             type="search"
-            className="bg-white block mr-auto ml-auto p-2 w-4/5 mt-4 mb-4"
+            className="bg-white block mr-auto ml-auto p-2 w-full mt-4 mb-4"
             onChange={(e) => {
               setSearch(e.target.value);
               setCurrentPage(1);
             }}
             placeholder="Search items here"
           />
+          <select
+            className="text-white w-fit h-fit
+            "
+            onChange={(e) => {
+              setPageSize(e.target.value);
+            }}
+          >
+            <option value={10} className="text-black">
+              10 items per page
+            </option>
+            <option value={5} className="text-black">
+              5 items per page
+            </option>
+            <option value={1} className="text-black">
+              1 items per page
+            </option>
+          </select>
         </form>
       </div>
       <div>
-        <div className="cards justify-center h-4/5 min-h-96 flex-wrap flex">
+        <div className=" justify-center h-1/4 flex-wrap flex">
           {searchFilter().length > 0 ? (
             searchFilter()
               .map((prod, index) => {
@@ -61,11 +78,11 @@ function Library() {
               })
               .slice(currentPage * pageSize - pageSize, currentPage * pageSize)
           ) : (
-            <p>No items found</p>
+            <p className="h-screen text-4xl text-[white]">No items found</p>
           )}
         </div>
       </div>
-      <div className="flex justify-center items-center">
+      <div className="flex justify-center items-center text-white">
         <IconButton
           onClick={() => {
             if (currentPage !== 1) {
@@ -75,7 +92,9 @@ function Library() {
         >
           <ArrowBackIcon fontSize="large" />
         </IconButton>
-        <span>Page {currentPage}</span>
+        <span>
+          Page {currentPage} / {Math.ceil(searchFilter().length / pageSize)}
+        </span>
         <IconButton
           onClick={() => {
             if (
