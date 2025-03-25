@@ -60,7 +60,7 @@ function Navbar() {
               <li>
                 {user ? (
                   <AccountBoxIcon
-                    sx={{ fontSize: "4xxl", color: "#FF0000" }}
+                    sx={{ fontSize: "4xxl", color: "#212121" }}
                     onClick={() => {
                       navigate("/profile");
                     }}
@@ -68,7 +68,7 @@ function Navbar() {
                 ) : (
                   <LoginIcon
                     onClick={openLogin}
-                    sx={{ fontSize: "4xxl", color: "#FF0000" }}
+                    sx={{ fontSize: "4xxl", color: "#212121" }}
                   />
                 )}
               </li>
@@ -76,7 +76,7 @@ function Navbar() {
                 <ShoppingBasketIcon
                   sx={{
                     fontSize: "4xxl",
-                    color: "#FF0000",
+                    color: "#212121",
                     marginLeft: "20px",
                   }}
                   onClick={() => {

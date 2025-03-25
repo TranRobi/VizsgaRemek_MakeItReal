@@ -1,10 +1,9 @@
 nav {
-  border-bottom: solid 4px black;
   position: relative;
   justify-content: space-between;
   display: flex;
   width: 100%;
-  background-color: #000000;
+  background-color: transparent;
   height: 100%;
   align-items: center;
   padding: 3px;

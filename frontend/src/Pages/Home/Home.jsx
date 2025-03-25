@@ -49,9 +49,9 @@ function Home() {
             </NavLink>
           </div>
           <img
-            src="1.jpeg"
+            src="team.JPEG"
             alt="About us"
-            className="w-full md:w-1/2 rounded-lg shadow-lg"
+            className="w-full md:w-1/2 rounded-2xl shadow-lg"
           />
         </section>
 

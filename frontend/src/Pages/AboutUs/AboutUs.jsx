@@ -8,7 +8,7 @@ function AboutUs() {
       <Navbar />
       <div className="min-h-screen">
         <div className="container mx-auto px-6 py-12">
-          <div className="text-center bg-[#5A738E] text-white py-16 rounded-lg shadow-lg">
+          <div className="text-center text-[#6a6868] py-16 rounded-lg shadow-lg">
             <h1 className="text-4xl font-bold mb-4">Who are we?</h1>
             <p className="text-lg max-w-2xl mx-auto">
               We have brought together a description of who we are, what we are
@@ -16,8 +16,8 @@ function AboutUs() {
             </p>
           </div>
 
-          <section className="mt-12">
-            <h2 className="text-3xl font-semibold text-center mb-8 text-[#333333]">
+          <section className="mt-12 shadow-2xl">
+            <h2 className="text-5xl font-semibold text-center mb-8 text-[#333333]">
               Our Team
             </h2>
             <div className="grid md:grid-cols-3 gap-8">
@@ -32,6 +32,7 @@ function AboutUs() {
                 </p>
               </div>
               <div className="bg-[#E0E0E0] p-6 rounded-lg shadow-md">
+                <img src="tran.JPEG" alt="" />
                 <h3 className="text-xl font-semibold mb-2 text-[#333333]">
                   Tran Duy Dat
                 </h3>
@@ -58,29 +59,38 @@ function AboutUs() {
             </div>
           </section>
 
-          <section className="mt-12">
-            <h2 className="text-3xl font-semibold text-center mb-6 text-[#333333]">
-              How did we start?
-            </h2>
-            <p className="text-lg max-w-3xl mx-auto text-center text-[#333333]">
-              We started working together in 2021 when we participated in a
-              national robotics championship. Since then, we have competed in
-              several national and international competitions, winning four
-              Hungarian championships. The idea for this application was born
-              from our experience designing 3D models for competitions.
-            </p>
+          <section className="mt-12 shadow-2xl bg-gray-200 p-3 flex flex-col  sm:flex-row md:flex-row items-center rounded-2xl">
+            <img src="start.jpg" alt="" className="w-4/5" />
+            <div className="w-3/4 md:w-full ">
+              <h2 className="text-2xl  font-semibold text-center mb-6 text-[#333333] md:text-4xl">
+                How did we start?
+              </h2>
+              <p className="text-sm md:text-lg max-w-3xl mx-auto text-center text-[#333333]">
+                We started working together in 2021 when we participated in a
+                national robotics championship. Since then, we have competed in
+                several national and international competitions, winning four
+                Hungarian championships. The idea for this application was born
+                from our experience designing 3D models for competitions.
+              </p>
+            </div>
           </section>
 
-          <section className="mt-12">
-            <h2 className="text-3xl font-semibold text-center mb-6 text-[#333333]">
-              What are we doing?
-            </h2>
-            <p className="text-lg max-w-3xl mx-auto text-center text-[#333333]">
-              We bring your ideas to life. If you know how to 3D model, send us
-              your design, and we'll print and ship it to you. If you don’t know
-              how to model, no problem! Send us a description, and we’ll design,
-              print, and ship it for you.
-            </p>
+          <section
+            className="mt-12 shadow-2xl bg-gray-200 p-3 flex flex-col  sm:flex-row md:flex-row items-center rounded-2xl
+          "
+          >
+            <div className="w-3/4">
+              <h2 className="text-2xl md:text-4xl font-semibold text-center mb-6 text-[#333333]">
+                What are we doing?
+              </h2>
+              <p className="text-sm md:text-lg max-w-3xl mx-auto text-center text-[#333333]">
+                We bring your ideas to life. If you know how to 3D model, send
+                us your design, and we'll print and ship it to you. If you don’t
+                know how to model, no problem! Send us a description, and we’ll
+                design, print, and ship it for you.
+              </p>
+            </div>
+            <img src="3dPrintAbout.jpg" className="w-4/5" />
           </section>
         </div>
       </div>

@@ -100,7 +100,7 @@ function Register({ close, open }) {
   return (
     <ThemeProvider theme={theme}>
       <div className="w-full h-screen flex justify-center items-center">
-        <div className="p-5 rounded-xl w-1/3 login bg-white">
+        <div className="p-5 rounded-xl w-4/5 login bg-white">
           <div className="flex justify-between align-middle">
             <h1 className="text-3xl font-bold pb-6 ">Register</h1>
 
