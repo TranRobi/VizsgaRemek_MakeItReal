@@ -22,43 +22,6 @@ export const slicer_init_directories = () => {
     mkdir_wrapper('./product-images');
 };
 
-export const is_slicer_installed = () => {
-    if (os.type() === 'Windows_NT') {
-        try {
-            execSync('prusa-slicer.exe --help');
-            return true;
-        } catch(e) {
-            return false;
-        }
-        return false;
-    } else {
-        try {
-            execSync('prusa-slicer --help');
-            return true;
-        } catch(e) {
-            return false;
-        }
-    }
-};
-
-export const is_stl_thumb_installed = () => {
-    if (os.type() === 'Windows_NT') {
-        try {
-            execSync('stl-thumb.exe --version');
-            return true;
-        } catch (e) {
-            return false;
-        }
-    } else {
-        try {
-            execSync('stl-thumb --version');
-            return true;
-        } catch (e) {
-            return false;
-        }
-    }
-};
-
 /*
  * Egy `stl-thumb` hiányosságot szűr ki
  *
@@ -81,9 +44,34 @@ export const convert_model_to_stl = model_file => {
     return stl_path;
 };
 
+console.log(`
+A backend a PrusaSlicer és az STL-Thumb külső programokat használja
+G-Code és termék-kép generálásra.
+
+Ezeket így telepítheti Windows rendszeren:
+winget install -e --id Prusa3D.PrusaSlicer
+winget install -e --id UnlimitedBacon.STL-Thumb
+`);
+
 // TODO jobb keresés Windows exe fájlokra
-const slicer = os.type() === 'Windows_NT' ? execSync('where /r "C:\\Program Files" prusa-slicer.exe').toString().trim() : execSync('which prusa-slicer').toString().trim();
-const stl_thumb = os.type() === 'Windows_NT' ? execSync('where /r "C:\\Program Files" stl-thumb.exe').toString().trim() : execSync('which stl-thumb').toString().trim();
+try {
+    const slicer = os.type() === 'Windows_NT' ?
+        execSync('where /r "C:\\Program Files" prusa-slicer.exe').toString().trim() :
+        execSync('which prusa-slicer').toString().trim();
+} catch (e) {
+    console.log('PrusaSlicer nincs telepítve! Így telepítheti:');
+    console.log('winget install -e --id Prusa3D.PrusaSlicer');
+    process.exit(1);
+}
+try {
+    const stl_thumb = os.type() === 'Windows_NT' ?
+        execSync('where /r "C:\\Program Files" stl-thumb.exe').toString().trim() :
+        execSync('which stl-thumb').toString().trim();
+} catch (e) {
+    console.log('stl-thumb nincs telepítve! Így telepítheti:');
+    console.log('winget install -e --id UnlimitedBacon.STL-Thumb');
+    process.exit(1);
+}
 
 export const slice_stl_to_gcode = (stl_path, gcode_path) => {
     // TODO check success
