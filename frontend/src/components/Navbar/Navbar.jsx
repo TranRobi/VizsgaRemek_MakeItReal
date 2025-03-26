@@ -52,12 +52,33 @@ function Navbar() {
           <div className="mr-4">
             <ul className="items-center mobile">
               <li>
-                <NavLink to="/library">
+                <NavLink to="/library"
+                  sx={{
+                    fontSize: "4xxl",
+                    color: "#ff0000",
+                    scale: "1",
+                    "&:hover": {
+                      scale: "1.2",
+                      transition: "ease-in 0.1s",
+                      color: "red",
+                    },
+                  }}
+                >
                   Library<span></span>
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/aboutus">
+                <NavLink to="/aboutus"
+                  sx={{
+                    fontSize: "4xxl",
+                    color: "#ff0000",
+                    scale: "1",
+                    "&:hover": {
+                      scale: "1.2",
+                      transition: "ease-in 0.1s",
+                      color: "red",
+                    },
+                  }}>
                   About us<span></span>
                 </NavLink>
               </li>
@@ -66,7 +87,7 @@ function Navbar() {
                   <AccountBoxIcon
                     sx={{
                       fontSize: "4xxl",
-                      color: "#212121",
+                      color: "#ff0000",
                       ":hover": {
                         scale: "1.2",
                         transition: "ease-in 0.1s",
@@ -82,7 +103,7 @@ function Navbar() {
                     onClick={openLogin}
                     sx={{
                       fontSize: "4xxl",
-                      color: "#212121",
+                      color: "#ff0000",
                       scale: "1",
                       "&:hover": {
                         scale: "1.2",
@@ -97,7 +118,7 @@ function Navbar() {
                 <ShoppingCartIcon
                   sx={{
                     fontSize: "4xxl",
-                    color: "#212121",
+                    color: "#ff0000",
                     marginLeft: "20px",
                     ":hover": {
                       scale: "1.2",
