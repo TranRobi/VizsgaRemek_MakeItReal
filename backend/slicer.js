@@ -35,11 +35,7 @@ export const slicer_init_directories = () => {
  */
 export const convert_model_to_stl = model_file => {
     const stl_path = `stl/${file_name_from_date()}.stl`
-    execSync(`${slicer} \\
-        --output ${stl_path} \\
-        --export-stl \\
-        ${model_file}
-        `);
+    execSync(`${slicer} --output ${stl_path} --export-stl ${model_file}`);
     unlinkSync(model_file);
     return stl_path;
 };
@@ -54,18 +50,20 @@ winget install -e --id UnlimitedBacon.STL-Thumb
 `);
 
 // TODO jobb keresés Windows exe fájlokra
+let slicer = undefined;
 try {
-    const slicer = os.type() === 'Windows_NT' ?
-        execSync('where /r "C:\\Program Files" prusa-slicer.exe').toString().trim() :
+    slicer = os.type() === 'Windows_NT' ?
+        `"${execSync('where /r "C:\\Program Files" prusa-slicer.exe').toString().trim()}"` :
         execSync('which prusa-slicer').toString().trim();
 } catch (e) {
     console.log('PrusaSlicer nincs telepítve! Így telepítheti:');
     console.log('winget install -e --id Prusa3D.PrusaSlicer');
     process.exit(1);
 }
+let stl_thumb = undefined;
 try {
-    const stl_thumb = os.type() === 'Windows_NT' ?
-        execSync('where /r "C:\\Program Files" stl-thumb.exe').toString().trim() :
+    stl_thumb = os.type() === 'Windows_NT' ?
+        `"${execSync('where /r "C:\\Program Files" stl-thumb.exe').toString().trim()}"` :
         execSync('which stl-thumb').toString().trim();
 } catch (e) {
     console.log('stl-thumb nincs telepítve! Így telepítheti:');
@@ -86,11 +84,6 @@ export const slice_stl_to_gcode = (stl_path, gcode_path) => {
 export const generate_stl_thumbnail = stl_path => {
     const thumbnail_path = `product-images/${file_name_from_date()}.png`
     // TODO check success
-    execSync(`${stl_thumb} \\
-        --background 000000ff \\
-        --size 640 \\
-        ${stl_path} \\
-        ${thumbnail_path}
-        `);
+    execSync(`${stl_thumb} --background 000000ff --size 640 ${stl_path} ${thumbnail_path}`);
     return thumbnail_path;
 };
