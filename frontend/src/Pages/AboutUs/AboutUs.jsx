@@ -8,7 +8,7 @@ function AboutUs() {
       <Navbar />
       <div className="min-h-screen">
         <div className="container mx-auto px-6 py-12">
-          <div className="text-center text-[#6a6868] py-16 rounded-lg shadow-lg">
+          <div className="text-center text-[#E0E0E0] py-16 rounded-lg shadow-lg">
             <h1 className="text-4xl font-bold mb-4">Who are we?</h1>
             <p className="text-lg max-w-2xl mx-auto">
               We have brought together a description of who we are, what we are
