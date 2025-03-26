@@ -11,7 +11,7 @@ import {
 
 import Paper from "@mui/material/Paper";
 
-function Order({ setBasketList, basketList }) {
+function Order({ setCartList, cartList }) {
   const [formData, setFormData] = useState({
     fullname: "",
     email: "",
@@ -36,7 +36,7 @@ function Order({ setBasketList, basketList }) {
   })
   return (
     <>
-      <Navbar basketList={basketList} />
+      <Navbar cartList={cartList} />
       <div className=" m-4">
         <FormControl fullWidth className="flex items-center">
           <Paper elevation={3} className="w-1/2 p-6">
@@ -92,7 +92,7 @@ function Order({ setBasketList, basketList }) {
                 name="address"
                 onChange={handleChange}
               ></TextField>
-              <label>Prouduct description</label>
+              <label>Product description</label>
               <TextareaAutosize
                 aria-label="minimum height"
                 variant="outlined"

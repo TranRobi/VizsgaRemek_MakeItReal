@@ -6,7 +6,7 @@ import { Button } from "@mui/material";
 import { useState } from "react";
 import Login from "../../Pages/Login/Login";
 import Register from "../../Pages/Register/Register";
-import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import LoginIcon from "@mui/icons-material/Login";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 
@@ -89,7 +89,7 @@ function Navbar() {
                 )}
               </li>
               <li>
-                <ShoppingBasketIcon
+                <ShoppingCartIcon
                   sx={{
                     fontSize: "4xxl",
                     color: "#212121",
@@ -101,7 +101,7 @@ function Navbar() {
                     },
                   }}
                   onClick={() => {
-                    navigate("/basket");
+                    navigate("/cart");
                   }}
                 />
               </li>

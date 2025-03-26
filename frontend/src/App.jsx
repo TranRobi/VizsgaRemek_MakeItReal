@@ -7,16 +7,16 @@ import Library from "./Pages/Library/Library.jsx";
 import Order from "./Pages/Order/Order.jsx";
 import ContactUs from "./Pages/ContactUs/ContactUs.jsx";
 import AboutUs from "./Pages/AboutUs/AboutUs.jsx";
-import Prouduct from "./Pages/Prouducts/Prouduct.jsx";
+import Product from "./Pages/Product/Product.jsx";
 import Profile from "./Pages/Profile/Profile.jsx";
-import Basket from "./components/Basket/Basket.jsx";
+import Cart from "./components/Cart/Cart.jsx";
 
-import { BasketContext } from "./context/BasketContext";
+import { CartContext } from "./context/CartContext";
 import { useContext } from "react";
 
 function App() {
-  const { basketList, setBasketList } = useContext(BasketContext);
-  useEffect(() => {}, [basketList, setBasketList]);
+  const { cartList, setCartList } = useContext(CartContext);
+  useEffect(() => {}, [cartList, setCartList]);
   return (
     <div className="App">
       <BrowserRouter
@@ -28,15 +28,15 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/library" element={<Library />} />
           <Route
-            path="/basket"
+            path="/cart"
             element={
-              <Basket basketList={basketList} setBasketList={setBasketList} />
+              <Cart cartList={cartList} setCartList={setCartList} />
             }
           />
           <Route path="/order" element={<Order />} />
           <Route path="/contactus" element={<ContactUs />} />
           <Route path="/aboutus" element={<AboutUs />} />
-          <Route path="/library/:id" element={<Prouduct />} />
+          <Route path="/library/:id" element={<Product />} />
           <Route path="/profile" element={<Profile />} />
         </Routes>
       </BrowserRouter>

@@ -22,6 +22,7 @@ function AboutUs() {
             </h2>
             <div className="grid md:grid-cols-3 gap-8">
               <div className="bg-[#E0E0E0] p-6 rounded-lg shadow-md">
+              <img src="mester.jpg" alt="" />
                 <h3 className="text-xl font-semibold mb-2 text-[#333333]">
                   Mester Máté
                 </h3>
@@ -29,6 +30,10 @@ function AboutUs() {
                   I have 3 years of experience in 3D printing and designing.
                   With my colleagues, we've taken part in several competitions
                   in which we had to make a lot of 3D designs.
+                </p>
+                <p className="text-[#333333]">
+                  I also have experience in electrical engineering, which I
+                  gained during the competitions.
                 </p>
               </div>
               <div className="bg-[#E0E0E0] p-6 rounded-lg shadow-md">
@@ -49,11 +54,17 @@ function AboutUs() {
                 </p>
               </div>
               <div className="bg-[#E0E0E0] p-6 rounded-lg shadow-md">
+                <img src="vzs.jpg" alt="erlany" />
                 <h3 className="text-xl font-semibold mb-2 text-[#333333]">
                   Vadász Zsolt
                 </h3>
                 <p className="text-[#333333]">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                 I have been programming for several years at a hobby level.
+                 I mostly dabble in systems programming.
+                </p>
+                <p className="text-[#333333]">
+                  I wrote most of the backend, in the future I do not want to
+                  touch web development.
                 </p>
               </div>
             </div>
