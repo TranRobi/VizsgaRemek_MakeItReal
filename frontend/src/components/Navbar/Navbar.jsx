@@ -43,7 +43,12 @@ function Navbar() {
     <>
       <div>
         <nav className="h-fit">
-          <img className="logo" src={"logo.png"} alt="logo" onClick={home} />
+          <img
+            className="logo"
+            src="../../logo.png"
+            alt="logo"
+            onClick={home}
+          />
           <div className="mr-4">
             <ul className="items-center mobile">
               <li>

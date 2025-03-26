@@ -49,7 +49,7 @@ function Product() {
   return (
     <>
       <Navbar />
-      <div className="container mx-auto px-6 py-12 w-4/5 grid md:grid-cols-2 gap-12">
+      <div className="container mx-auto px-6 py-12 w-4/5 grid md:grid-cols-2 gap-12 min-h-[80vh] h-full">
         {/* Product Image */}
         <div className="bg-gray-100 p-6 rounded-lg shadow-md flex justify-center">
           <img
@@ -60,11 +60,9 @@ function Product() {
         </div>
 
         {/* Product Details */}
-        <div className="space-y-6">
-          <h2 className="text-3xl font-semibold text-gray-900">
-            {product.name}
-          </h2>
-          <p className="text-gray-600">{product.description}</p>
+        <div className="space-y-6 text-[#EEEEEE] self-center ">
+          <h2 className="text-3xl font-semibold ">{product.name}</h2>
+          <p className="text-[#EEEEEE]">{product.description}</p>
 
           {/* Size Scale */}
           <div>
@@ -85,7 +83,7 @@ function Product() {
             <select
               value={material}
               onChange={(e) => setMaterial(e.target.value)}
-              className="border p-2 rounded w-full"
+              className="border p-2 rounded w-full bg-red-950"
             >
               {["PLA", "PETG", "ABS"].map((mat) => (
                 <option key={mat} value={mat}>
@@ -127,18 +125,18 @@ function Product() {
           </div>
 
           {/* Add to Cart Button */}
-          <div className="flex justify-between">
+          <div className="flex flex-col md:flex-row justify-between">
             <button
               onClick={() => {
                 navigate("/library");
               }}
-              className="w-1/3 bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-900"
+              className="w-full md:w-1/3 bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-900"
             >
               Back to library
             </button>
             <button
               onClick={addToCart}
-              className="w-1/2 bg-gray-600 text-white py-3 rounded-lg font-semibold hover:bg-gray-900"
+              className="w-full md:w-1/3 bg-gray-600 text-white py-3 rounded-lg font-semibold hover:bg-gray-900"
             >
               Add to bag
             </button>
