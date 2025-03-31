@@ -46,6 +46,19 @@ const SWAGGER_OPTS = {
 				},
 			},
             schemas: {
+                login_response: {
+                    type: 'object',
+                    properties: {
+                        id: {
+                            type: 'number',
+                            description: 'Felhasználó ID-je',
+                        },
+                        token: {
+                            type: 'string',
+                            description: 'LOGIN_TOKEN Swagger miatt itt is elküldve',
+                        },
+                    },
+                },
                 product_post_request: {
                     type: 'object',
                     properties: {
@@ -321,6 +334,10 @@ app.post("/api/register", (req, res) => {
  *                     Sikeres belépés, a `LOGIN_TOKEN` sütit beállítja,
  *                     melyet a logint igénylő végpontok innentől el fognak várni
  *                 content:
+ *                     application/json:
+ *                         schema:
+ *                             $ref: '#/components/schemas/login_response'
+ *
  *                     text/plain:
  *                         schema:
  *                             type: string
@@ -392,7 +409,7 @@ app.post("/api/login", (req, res) => {
 			});
 			console.log(token);
 			res.cookie("LOGIN_TOKEN", token);
-			return res.status(201).send(token);
+			return res.status(201).json({token: token, id: row.rowid});
 		});
 	});
 });
