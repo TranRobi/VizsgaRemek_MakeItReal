@@ -841,7 +841,7 @@ app.post("/api/products", stl_upload.single('stl-file'), (req, res) => {
                 stl_file_path,
                 display_image_file_path
             ) VALUES (?, ?, ?, ?, ?)
-            RETURNING rowid AS id, name, description
+            RETURNING rowid AS id, uploader_id, name, description
             `,
 		    name,
 		    description,
@@ -961,7 +961,7 @@ app.get("/api/products/:id", (req, res) => {
 
 	db.serialize(() => {
 		const stmt = db.prepare(
-			`SELECT rowid, name, description FROM products WHERE rowid = ?`,
+			`SELECT rowid, name, uploader_id, description FROM products WHERE rowid = ?`,
 			req.params.id
 		);
 		stmt.get((err, row) => {
