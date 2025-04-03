@@ -4,7 +4,7 @@ import { unlinkSync } from "fs";
 import sqlite3 from "sqlite3";
 import CONFIG from "./config.js";
 import { generate_salt, hash_password } from "./secret.js";
-import { slicer_init_directories } from './slicer.js';
+import { slicer_init_directories, generate_stl_thumbnail } from './slicer.js';
 
 sqlite3.verbose();
 
@@ -99,15 +99,97 @@ db.serialize(() => {
 		salt
 	);
 
-	query(`
+    const sample_products = [
+        {
+            name: 'Gyűrű tartó',
+            description: 'Gyűrű tartó, ami megvédi a gyűrűt a karcolódástól',
+            stl_path: './stl/ring_holder.stl',
+        },
+        {
+            name: 'Ventillátor tartó',
+            description: 'Ventillátor tartó, levegő szűrő hozzáadható',
+            stl_path: './stl/80mm_fan_holder.stl',
+        },
+        {
+            name: 'Fogkefe tartó',
+            description: 'Fogkefe tartó, utazáshoz',
+            stl_path: './stl/carry-on_toothbrush_case.stl',
+        },
+        {
+            name: 'Poháralátét',
+            description: 'Poháralátét, ami megvédi a bútorokat a karcolódástól, és a nedvességtől',
+            stl_path: './stl/coaster_hex.stl',
+        },
+        {
+            name: 'DC motor tartó',
+            description: 'DC motor tartó, JGA370 motorhoz',
+            stl_path: './stl/DC_motor_holder_jga370.stl',
+        },
+        {
+            name: 'Mosószer tartó pohár',
+            description: 'Mosószer tartó, a mosószer adagolásához',
+            stl_path: './stl/detergent_cup.stl',
+        },
+        {
+            name: 'Rózsás kulcstartó',
+            description: 'Rózsás kulcstartó, tökéletes ajándék hölgyeknek',
+            stl_path: './stl/keychain_rose_heart.stl',
+        },
+        {
+            name: 'Késtartó',
+            description: 'Késtartó, túrázáshoz, kempingezéshez, övre akasztható',
+            stl_path: './stl/knife_holder.stl',
+        },
+        {
+            name: 'Laptop támasztó',
+            description: 'Laptop támasztó, a jobb hűtés érdekében',
+            stl_path: './stl/laptop_stand.stl',
+        },
+        {
+            name: 'Lézertartó',
+            description: 'Lézertartó puskához, 20mm-es sínre',
+            stl_path: './stl/laser_adapter_multi_use.stl',
+        },
+        {
+            name: 'Parkside akkumulátor tartó',
+            description: 'Falra rögzíthető akkumulátor tartó, Parkside akkumulátorokhoz',
+            stl_path: './stl/parkside_x20_battery_holder.stl',
+        },
+        {
+            name: 'PowerBank',
+            description: 'PowerBank, 10db 13700-as akkumulátorokkal',
+            stl_path: './stl/powerBank_from_13700_batteries.stl',
+        },
+        {
+            name: 'Cserép',
+            description: 'Cserép, ami megvédi a növényeket a kiszáradástól',
+            stl_path: './stl/small_pot.stl',
+        },
+        {
+            name: 'Fogkefe tartó',
+            description: 'Fogkefe tartó, egy elektromos fogkeféhez, két manuális fogkeféhez és egy tubus fogkrémhez',
+            stl_path: './stl/small_pot.stl',
+        },
+    ];
+
+    console.log('Példa termékek képeinek generálása...');
+    for (const sample of sample_products) {
+        const thumbnail_path = generate_stl_thumbnail(sample.stl_path);
+        console.log(`${sample.name} termék képének generálása...`)
+        query(`
+            INSERT INTO products VALUES ('${sample.name}', '${sample.description}', '${sample.stl_path}', '${thumbnail_path}', 1)
+        `);
+    }
+
+	/*query(`
         INSERT INTO products VALUES 
         ('Spártai pajzs', '300 egyike', '/dev/null', '/dev/null', 1),
-        ('Mester Máté', '1', '/dev/null', '/dev/null', 2),
-        ('Vadász Zsolt', '1 egyike', '/dev/null', '/dev/null', 3),
-        ('Tran Duy Dat', '300000000', '/dev/null', '/dev/null', 4),
-        ('Girl ', '300', '/dev/null', '/dev/null', 5),
-        ('Lány', '300', '/dev/null', '/dev/null', 6),
-        ('Older MIlf', '300', '/dev/null', '/dev/null', 7),
+        ('Mester Máté', '1', '/dev/null', '/dev/null', 1),
+        ('Vadász Zsolt', '1 egyike', '/dev/null', '/dev/null', 1),
+        ('Tran Duy Dat', '300000000', '/dev/null', '/dev/null', 1,
+        ('Girl ', '300', '/dev/null', '/dev/null', 1),
+        ('Lány', '300', '/dev/null', '/dev/null', 1),
+        ('Older MIlf', '300', '/dev/null', '/dev/null', 1),
         ('Wolf cut alter milf 9 foot 10 inches', '300', '/dev/null', '/dev/null', 8),
         ('Linear alternitve girl', '300', '/dev/null', '/dev/null', 9),
         ('uWu girl', '300', '/dev/null', '/dev/null', 10),
@@ -124,7 +206,7 @@ db.serialize(() => {
         ('Farmer girl', '300', '/dev/null', '/dev/null', 21),
         ('Cowboy woman', '300', '/dev/null', '/dev/null', 22),
         ('ADHD alter mix', '300', '/dev/null', '/dev/null', 23)
-    `);
+    `);*/
 });
 
 db.close();
