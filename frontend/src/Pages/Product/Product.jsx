@@ -13,15 +13,11 @@ function Product() {
   const [material, setMaterial] = useState("PLA");
   const [product, setProduct] = useState(null);
   const params = useParams();
-
   const navigate = useNavigate();
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    axios
-      .get(`/api/products/${params.id}`)
-      .then((response) => setProduct(response.data))
-      .catch((error) => console.error(error));
+    getProductID();
   }, [params.id]);
 
   function addToCart() {
@@ -43,6 +39,12 @@ function Product() {
       setCartList([...cartList, item]);
     }
   }
+  function getProductID() {
+    axios
+      .get(`/api/products/${params.id}`)
+      .then((response) => setProduct(response.data))
+      .catch((error) => console.error(error));
+  }
 
   if (!product) return <p>Loading...</p>;
 
@@ -53,7 +55,7 @@ function Product() {
         {/* Product Image */}
         <div className="bg-gray-100 p-6 rounded-lg shadow-md flex justify-center">
           <img
-            src={product.image}
+            src={`/api/products/images/${params.id}`}
             alt={product.name}
             className="max-w-full h-auto"
           />
