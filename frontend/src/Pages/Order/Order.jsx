@@ -31,15 +31,15 @@ function Order({ setCartList, cartList }) {
       }));
     }
   };
-  useEffect(()=> {
-    window.scrollTo(0,0)
-  })
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  });
   return (
     <>
       <Navbar cartList={cartList} />
       <div className=" m-4">
         <FormControl fullWidth className="flex items-center">
-          <Paper elevation={3} className="w-1/2 p-6">
+          <Paper elevation={3} className="w-full lg:w-1/2 p-6">
             <h1 className="text-4xl font-serif text-black w-fit p-2 ">
               Order now
             </h1>

@@ -1,7 +1,5 @@
 import "./App.css";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
-import { useEffect } from "react";
-
 import Home from "./Pages/Home/Home.jsx";
 import Library from "./Pages/Library/Library.jsx";
 import Order from "./Pages/Order/Order.jsx";
@@ -12,13 +10,9 @@ import Profile from "./Pages/Profile/Profile.jsx";
 import Cart from "./components/Cart/Cart.jsx";
 import Payment from "./Pages/Payment/Payment.jsx";
 
-import { CartContext } from "./context/CartContext";
-import { useContext } from "react";
 import RequireAuth from "./context/RequireAuth.jsx";
 
 function App() {
-  const { cartList, setCartList } = useContext(CartContext);
-  useEffect(() => {}, [cartList, setCartList]);
   return (
     <div className="App">
       <BrowserRouter
@@ -29,10 +23,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/library" element={<Library />} />
-          <Route
-            path="/cart"
-            element={<Cart cartList={cartList} setCartList={setCartList} />}
-          />
+          <Route path="/cart" element={<Cart />} />
           <Route path="/order" element={<Order />} />
           <Route path="/contactus" element={<ContactUs />} />
           <Route path="/aboutus" element={<AboutUs />} />

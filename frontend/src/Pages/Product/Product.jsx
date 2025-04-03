@@ -38,6 +38,7 @@ function Product() {
       console.log(item);
       setCartList([...cartList, item]);
     }
+    localStorage.setItem("cart", JSON.stringify(cartList));
   }
   function getProductID() {
     axios
@@ -137,7 +138,9 @@ function Product() {
               Back to library
             </button>
             <button
-              onClick={addToCart}
+              onClick={() => {
+                addToCart();
+              }}
               className="w-full md:w-1/3 bg-gray-600 text-white py-3 rounded-lg font-semibold hover:bg-gray-900"
             >
               Add to bag
