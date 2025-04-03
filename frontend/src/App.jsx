@@ -10,9 +10,11 @@ import AboutUs from "./Pages/AboutUs/AboutUs.jsx";
 import Product from "./Pages/Product/Product.jsx";
 import Profile from "./Pages/Profile/Profile.jsx";
 import Cart from "./components/Cart/Cart.jsx";
+import Payment from "./Pages/Payment/Payment.jsx";
 
 import { CartContext } from "./context/CartContext";
 import { useContext } from "react";
+import RequireAuth from "./context/RequireAuth.jsx";
 
 function App() {
   const { cartList, setCartList } = useContext(CartContext);
@@ -29,15 +31,16 @@ function App() {
           <Route path="/library" element={<Library />} />
           <Route
             path="/cart"
-            element={
-              <Cart cartList={cartList} setCartList={setCartList} />
-            }
+            element={<Cart cartList={cartList} setCartList={setCartList} />}
           />
           <Route path="/order" element={<Order />} />
           <Route path="/contactus" element={<ContactUs />} />
           <Route path="/aboutus" element={<AboutUs />} />
           <Route path="/library/:id" element={<Product />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route element={<RequireAuth />}>
+            <Route path="/profile" element={<Profile />} />
+          </Route>
+          <Route path="/payment" element={<Payment />} />
         </Routes>
       </BrowserRouter>
     </div>
