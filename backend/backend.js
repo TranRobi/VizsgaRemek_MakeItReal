@@ -8,22 +8,19 @@ import body_parser from "body-parser";
 const { urlencoded } = body_parser;
 import cookie_parser from "cookie-parser";
 import cors from "cors";
-import multer from 'multer';
-import { cwd } from 'node:process';
+import multer from "multer";
+import { cwd } from "node:process";
 
 import CONFIG from "./config.js";
 import { generate_salt, hash_password } from "./secret.js";
 import {
-    rename_key,
-    get_api_key,
-    async_get,
-    async_run,
-    file_name_from_date
+	rename_key,
+	get_api_key,
+	async_get,
+	async_run,
+	file_name_from_date,
 } from "./util.js";
-import {
-    generate_stl_thumbnail,
-    convert_model_to_stl
-} from './slicer.js'
+import { generate_stl_thumbnail, convert_model_to_stl } from "./slicer.js";
 
 const PORT = 8080;
 const SWAGGER_OPTS = {
@@ -45,129 +42,133 @@ const SWAGGER_OPTS = {
 					name: "LOGIN_TOKEN",
 				},
 			},
-            schemas: {
-                login_response: {
-                    type: 'object',
-                    properties: {
-                        id: {
-                            type: 'number',
-                            description: 'Felhasználó ID-je',
-                        },
-                        token: {
-                            type: 'string',
-                            description: 'LOGIN_TOKEN Swagger miatt itt is elküldve',
-                        },
-                    },
-                },
-                product_post_request: {
-                    type: 'object',
-                    properties: {
-                        name: {
-                            type: 'string',
-                            description: 'Termék neve',
-                            example: 'Torment Nexus',
-                        },
-                        description: {
-                            type: 'string',
-                            description: 'Termék leírása',
-                            example: 'We built the Torment Nexus from the sci-fi novel Do not build the Torment Nexus',
-                        },
-                        'stl-file': {
-                            type: 'string',
-                            format: 'binary',
-                        },
-                    },
-                    encoding: {
-                        'stl-file': {
-                            contentType: [
-                                'model/stl',
-                                'application/vnd.ms-pki.stl',
-                                'model/x.stl-ascii model/x.stl-binary',
-                            ],
-                        },
-                    },
-                },
-                product_request: {
-                    type: 'object',
-                    properties: {
-                        name: {
-                            type: 'string',
-                            description: 'Termék neve',
-                            example: 'Torment Nexus',
-                        },
-                        description: {
-                            type: 'string',
-                            description: 'Termék leírása',
-                            example: 'We built the Torment Nexus from the sci-fi novel Do not build the Torment Nexus',
-                        },
-                    },
-                },
-                product_response: {
-                    type: 'object',
-                    properties: {
-                        id: {
-                            type: 'integer',
-                            description: 'Termék ID',
-                        },
-                        uploader_id: {
-                            type: 'integer',
-                            description: 'Feltöltő ID-je',
-                        },
-                        name: {
-                            type: 'string',
-                            description: 'Termék neve',
-                        },
-                        description: {
-                            type: 'string',
-                            description: 'Termék leírása',
-                        },
-                    }
-                },
-                delivery_information_request: {
-                    type: 'object',
-                    properties: {
-                        country: {
-                            type: 'string',
-                            description: 'Ország',
-                            example: 'Csád',
-                        },
-                        county: {
-                            type: 'string',
-                            description: 'Megye/Állam',
-                            example: 'Kanto',
-                        },
-                        city: {
-                            type: 'string',
-                            description: 'Város',
-                            example: 'Shenzen',
-                        },
-                        postal_code: {
-                            type: 'number',
-                            description: 'Irányítószám',
-                            example: '6666',
-                        },
-                        'street-number': {
-                            type: 'string',
-                            description: 'Utca, házszám, emelet, ajtó, stb.',
-                            example: '308 Negra Arroyo Lane',
-                        },
-                        'phone-number': {
-                            type: 'string',
-                            description: 'Telefonszám',
-                            example: '+36701234567',
-                        },
-                        name: {
-                            type: 'string',
-                            description: 'Számlázási név',
-                            example: 'John Buyer',
-                        },
-                    },
-                },
-            }
+			schemas: {
+				login_response: {
+					type: "object",
+					properties: {
+						id: {
+							type: "number",
+							description: "Felhasználó ID-je",
+						},
+						token: {
+							type: "string",
+							description: "LOGIN_TOKEN Swagger miatt itt is elküldve",
+						},
+					},
+				},
+				product_post_request: {
+					type: "object",
+					properties: {
+						name: {
+							type: "string",
+							description: "Termék neve",
+							example: "Torment Nexus",
+						},
+						description: {
+							type: "string",
+							description: "Termék leírása",
+							example:
+								"We built the Torment Nexus from the sci-fi novel Do not build the Torment Nexus",
+						},
+						"stl-file": {
+							type: "string",
+							format: "binary",
+						},
+					},
+					encoding: {
+						"stl-file": {
+							contentType: [
+								"model/stl",
+								"application/vnd.ms-pki.stl",
+								"model/x.stl-ascii model/x.stl-binary",
+							],
+						},
+					},
+				},
+				product_request: {
+					type: "object",
+					properties: {
+						name: {
+							type: "string",
+							description: "Termék neve",
+							example: "Torment Nexus",
+						},
+						description: {
+							type: "string",
+							description: "Termék leírása",
+							example:
+								"We built the Torment Nexus from the sci-fi novel Do not build the Torment Nexus",
+						},
+					},
+				},
+				product_response: {
+					type: "object",
+					properties: {
+						id: {
+							type: "integer",
+							description: "Termék ID",
+						},
+						uploader_id: {
+							type: "integer",
+							description: "Feltöltő ID-je",
+						},
+						name: {
+							type: "string",
+							description: "Termék neve",
+						},
+						description: {
+							type: "string",
+							description: "Termék leírása",
+						},
+					},
+				},
+				delivery_information_request: {
+					type: "object",
+					properties: {
+						country: {
+							type: "string",
+							description: "Ország",
+							example: "Csád",
+						},
+						county: {
+							type: "string",
+							description: "Megye/Állam",
+							example: "Kanto",
+						},
+						city: {
+							type: "string",
+							description: "Város",
+							example: "Shenzen",
+						},
+						postal_code: {
+							type: "number",
+							description: "Irányítószám",
+							example: "6666",
+						},
+						"street-number": {
+							type: "string",
+							description: "Utca, házszám, emelet, ajtó, stb.",
+							example: "308 Negra Arroyo Lane",
+						},
+						"phone-number": {
+							type: "string",
+							description: "Telefonszám",
+							example: "+36701234567",
+						},
+						name: {
+							type: "string",
+							description: "Számlázási név",
+							example: "John Buyer",
+						},
+					},
+				},
+			},
 		},
-		security: [{
-			apiKeyAuth: [],
-		}],
+		security: [
+			{
+				apiKeyAuth: [],
+			},
+		],
 		servers: [
 			{
 				url: `http://localhost:${PORT}/`,
@@ -178,12 +179,13 @@ const SWAGGER_OPTS = {
 };
 
 const stl_storage = multer.diskStorage({
-    destination: './stl',
-    filename: (req, file, callback) => callback(null, file_name_from_date() + '.stl'),
+	destination: "./stl",
+	filename: (req, file, callback) =>
+		callback(null, file_name_from_date() + ".stl"),
 });
 
 const stl_upload = multer({
-    storage: stl_storage
+	storage: stl_storage,
 });
 
 // kenyelmi closure
@@ -409,7 +411,7 @@ app.post("/api/login", (req, res) => {
 			});
 			console.log(token);
 			res.cookie("LOGIN_TOKEN", token);
-			return res.status(201).json({token: token, id: row.rowid});
+			return res.status(201).json({ token: token, id: row.rowid });
 		});
 	});
 });
@@ -431,17 +433,12 @@ app.post("/api/login", (req, res) => {
  *                     Nincs ilyen belépett felhasználó
  */
 app.post("/api/logout", (req, res) => {
-    const token = get_api_key(req);
+	const token = get_api_key(req);
 	console.log(`token: ${token}`);
-	if (
-		!token ||
-		!logged_in_users.find(elem => elem.token === token)
-	)
+	if (!token || !logged_in_users.find((elem) => elem.token === token))
 		return res.status(404).send();
 	logged_in_users.splice(
-		logged_in_users.indexOf(
-			elem => elem.token === token
-		),
+		logged_in_users.indexOf((elem) => elem.token === token),
 		1
 	);
 	res.clearCookie("LOGIN_TOKEN");
@@ -513,46 +510,50 @@ app.put("/api/delivery-information", (req, res) => {
 		return res.status(406).send();
 	}
 
-    db.serialize(() => {
-        async_get(db, `SELECT address_id FROM users WHERE rowid = ?`, user.id)
-            .then(row => {
-                console.log(row);
-                if (!row.address_id) {
-                    console.log(`hozzaad, user id ${user.id}`);
-                    // uj sor
-                    async_get(db,
-                        `INSERT INTO address VALUES
+	db.serialize(() => {
+		async_get(db, `SELECT address_id FROM users WHERE rowid = ?`, user.id).then(
+			(row) => {
+				console.log(row);
+				if (!row.address_id) {
+					console.log(`hozzaad, user id ${user.id}`);
+					// uj sor
+					async_get(
+						db,
+						`INSERT INTO address VALUES
                         (?, ?, ?, ?, ?, ?, ?) RETURNING rowid`,
-	                	country,
-	                	county,
-	                	city,
-	                	postal_code,
-	                	street_number,
-	                	phone_number,
-	                	name
-                    )
-                    .then(row => {
-                        console.log(`inserted rowid ${row.rowid}`);
-                        async_run(db,
-                            `UPDATE users
+						country,
+						county,
+						city,
+						postal_code,
+						street_number,
+						phone_number,
+						name
+					).then(
+						(row) => {
+							console.log(`inserted rowid ${row.rowid}`);
+							async_run(
+								db,
+								`UPDATE users
                             SET address_id = ?
                             WHERE rowid = ?`,
-                            row.rowid,
-                            user.id)
-                             .then(() => {
-                                console.log('siker');
-                                return res.status(200).send();
-                            });
-                    },
-                    err => {
-                        console.log(err);
-                        return res.status(500).send();
-                    });
-                } else {
-                    // TODO frissites
-                    console.log('frissul');
-                    async_run(db,
-                        `UPDATE address SET
+								row.rowid,
+								user.id
+							).then(() => {
+								console.log("siker");
+								return res.status(200).send();
+							});
+						},
+						(err) => {
+							console.log(err);
+							return res.status(500).send();
+						}
+					);
+				} else {
+					// TODO frissites
+					console.log("frissul");
+					async_run(
+						db,
+						`UPDATE address SET
                             country = ?,
                             county = ?,
                             city = ?,
@@ -560,28 +561,31 @@ app.put("/api/delivery-information", (req, res) => {
                             street_number = ?,
                             phone_number = ?,
                             name = ? WHERE rowid = ?`,
-                        country,
-                        county,
-                        city,
-                        postal_code,
-                        street_number,
-                        phone_number,
-                        name,
-                        row.address_id)
-                        .then(() => {
-                            return res.status(200).send();
-                        },
-                        err => {
-                            console.log(err);
-                            return res.status(500).send();
-                        });
-                }
-            },
-            err => {
-                console.log(err);
-                return res.status(500).send();
-            });
-    });
+						country,
+						county,
+						city,
+						postal_code,
+						street_number,
+						phone_number,
+						name,
+						row.address_id
+					).then(
+						() => {
+							return res.status(200).send();
+						},
+						(err) => {
+							console.log(err);
+							return res.status(500).send();
+						}
+					);
+				}
+			},
+			(err) => {
+				console.log(err);
+				return res.status(500).send();
+			}
+		);
+	});
 });
 
 /**
@@ -615,13 +619,11 @@ app.put("/api/delivery-information", (req, res) => {
  *                     ez sose történik meg
  */
 app.get("/api/delivery-information", (req, res) => {
-    const token = get_api_key(req);
+	const token = get_api_key(req);
 	if (!token) {
 		return res.status(403).send();
 	}
-	const user = logged_in_users.find(
-		(e) => e.token === token
-	);
+	const user = logged_in_users.find((e) => e.token === token);
 	console.log(user);
 	if (!user) {
 		return res.status(404).send();
@@ -672,7 +674,9 @@ app.get("/api/delivery-information", (req, res) => {
  */
 app.get("/api/products", (req, res) => {
 	db.serialize(() => {
-		const stmt = db.prepare(`SELECT rowid AS id, uploader_id, name, description FROM products`);
+		const stmt = db.prepare(
+			`SELECT rowid AS id, uploader_id, name, description FROM products`
+		);
 		stmt.all((err, rows) => {
 			if (err) {
 				console.log(err);
@@ -733,15 +737,11 @@ app.get("/api/products", (req, res) => {
  *                     Csak teszteléskor jöhet elő.
  */
 app.patch("/api/products/:id", (req, res) => {
-    const token = get_api_key(req);
+	const token = get_api_key(req);
 	console.log(`token ${token}`);
-	if (!token)
-		return res.status(401).send();
-	const user = logged_in_users.find(
-		(elem) => elem.token === token
-	);
-	if (!user)
-        return res.status(401).send();
+	if (!token) return res.status(401).send();
+	const user = logged_in_users.find((elem) => elem.token === token);
+	if (!user) return res.status(401).send();
 	console.log(`user id ${user.id}`);
 	const { name, description } = req.body;
 	console.log(req.body);
@@ -749,31 +749,34 @@ app.patch("/api/products/:id", (req, res) => {
 		return res.status(406).send();
 	}
 	db.serialize(() => {
-        async_get(db,
-            `UPDATE products SET
+		async_get(
+			db,
+			`UPDATE products SET
                 name = ?,
                 description = ?
             WHERE rowid = ?
             RETURNING rowid AS id, uploader_id, name, description`,
-            name,
-            description,
-            req.params.id)
-            .then(row => {
-                if (!row) {
-                    return res.status(404).send();
-                }
-                console.log(row);
-                return res.status(201).json(row);
-            },
-            err => {
-                console.log(err);
-                // TODO lekezelni a különböző hibákat
-                if (err === SQLITE_ERROR) {
-                    return res.status(500).send();
-                } else {
-                    return res.status(500).send();
-                }
-            });
+			name,
+			description,
+			req.params.id
+		).then(
+			(row) => {
+				if (!row) {
+					return res.status(404).send();
+				}
+				console.log(row);
+				return res.status(201).json(row);
+			},
+			(err) => {
+				console.log(err);
+				// TODO lekezelni a különböző hibákat
+				if (err === SQLITE_ERROR) {
+					return res.status(500).send();
+				} else {
+					return res.status(500).send();
+				}
+			}
+		);
 	});
 });
 
@@ -814,27 +817,36 @@ app.patch("/api/products/:id", (req, res) => {
  *                     Nincs a backendnek `products` táblája, futtasd az `init_db.js` scriptet!
  *                     Csak teszteléskor jöhet elő.
  */
-app.post("/api/products", stl_upload.single('stl-file'), (req, res) => {
-    console.log(req.file);
+app.post("/api/products", stl_upload.single("stl-file"), (req, res) => {
+	console.log(req.file);
+	console.log(req.body);
 	console.log(req.cookies);
-	console.log(`header token ${req.get('LOGIN_TOKEN')}`);
-	if (!get_api_key(req))
-		return res.status(401).send();
-	const user = logged_in_users.find(
-		(elem) => elem.token === get_api_key(req)
-	);
+	console.log(`header token ${req.get("LOGIN_TOKEN")}`);
+	if (!get_api_key(req)) return res.status(401).send();
+	const user = logged_in_users.find((elem) => elem.token === get_api_key(req));
 	console.log(`user ${user}`);
 	if (!user) return res.status(401).send();
 	const { name, description } = req.body;
 	console.log(req.body);
-	if (!name || !description || description.length > 512 || name.length > 64 || !req.file || !req.file.path) {
+	if (
+		!name ||
+		!description ||
+		description.length > 512 ||
+		name.length > 64 ||
+		!req.file ||
+		!req.file.path
+	) {
+		if (!req) console.log("no req");
+		if (!req.file) console.log("no file");
+		if (!req.file.path) console.log("aaaaaa");
 		return res.status(406).send();
 	}
-    const stl_path = convert_model_to_stl(req.file.path);
-    const thumbnail = generate_stl_thumbnail(stl_path);
+	const stl_path = convert_model_to_stl(req.file.path);
+	const thumbnail = generate_stl_thumbnail(stl_path);
 	db.serialize(() => {
-        async_get(db,
-            `INSERT INTO products (
+		async_get(
+			db,
+			`INSERT INTO products (
                 name,
                 description,
                 uploader_id,
@@ -843,24 +855,23 @@ app.post("/api/products", stl_upload.single('stl-file'), (req, res) => {
             ) VALUES (?, ?, ?, ?, ?)
             RETURNING rowid AS id, uploader_id, name, description
             `,
-		    name,
-		    description,
-		    user.id,
-            stl_path,
-            thumbnail
-        ).then(
-            row => {
-		        console.log(row);
-		        return res.status(201).json(row);
-            },
-            err => {
-                console.log(err);
-                return res.status(500).send();
-            }
-        );
+			name,
+			description,
+			user.id,
+			stl_path,
+			thumbnail
+		).then(
+			(row) => {
+				console.log(row);
+				return res.status(201).json(row);
+			},
+			(err) => {
+				console.log(err);
+				return res.status(500).send();
+			}
+		);
 	});
 });
-
 
 /** @swagger
  * /api/products/images/{id}:
@@ -896,29 +907,30 @@ app.post("/api/products", stl_upload.single('stl-file'), (req, res) => {
  *                     Nincs a backendnek `products` táblája, futtasd az `init_db.js` scriptet!
  *                     Csak teszteléskor jöhet elő.
  */
-app.get('/api/products/images/:id', (req, res) => {
+app.get("/api/products/images/:id", (req, res) => {
 	if (!req.params.id || !PATH_ID_REGEX.test(req.params.id))
 		return res.status(406).send();
-    console.log(req.params.id);
+	console.log(req.params.id);
 
-    db.serialize(() => {
-        async_get(db,
-            `SELECT display_image_file_path AS thumbnail FROM products
+	db.serialize(() => {
+		async_get(
+			db,
+			`SELECT display_image_file_path AS thumbnail FROM products
             WHERE rowid = ?`,
-            req.params.id
-        ).then(
-            row => {
-                console.log(row);
-                if (!row) return res.status(500).send();
-                return res.status(200).sendFile(row.thumbnail, {
-                    root: cwd()
-                });
-            },
-            err => {
-                return res.status(404).send();
-            }
-        );
-    });
+			req.params.id
+		).then(
+			(row) => {
+				console.log(row);
+				if (!row) return res.status(500).send();
+				return res.status(200).sendFile(row.thumbnail, {
+					root: cwd(),
+				});
+			},
+			(err) => {
+				return res.status(404).send();
+			}
+		);
+	});
 });
 
 /** @swagger
