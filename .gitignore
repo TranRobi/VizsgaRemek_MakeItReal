@@ -26,3 +26,6 @@ yarn-error.log*
 
 /backend/*.db
 /backend/.db-journal
+
+/backend/product-images
+/backend/product-images/*

@@ -61,6 +61,23 @@ function Navbar() {
 						<ul className="items-center mobile">
 							<li>
 								<NavLink
+									to="/aboutus"
+									sx={{
+										fontSize: "4xxl",
+										color: "#ff0000",
+										scale: "1",
+										"&:hover": {
+											scale: "1.2",
+											transition: "ease-in 0.1s",
+											color: "red",
+										},
+									}}
+								>
+									About us<span></span>
+								</NavLink>
+							</li>
+							<li>
+								<NavLink
 									to="/library"
 									sx={{
 										fontSize: "4xxl",
@@ -78,7 +95,7 @@ function Navbar() {
 							</li>
 							<li>
 								<NavLink
-									to="/aboutus"
+									to="/contactus"
 									sx={{
 										fontSize: "4xxl",
 										color: "#ff0000",
@@ -90,9 +107,27 @@ function Navbar() {
 										},
 									}}
 								>
-									About us<span></span>
+									Contact us<span></span>
 								</NavLink>
 							</li>
+							<li>
+								<NavLink
+									to="/order"
+									sx={{
+										fontSize: "4xxl",
+										color: "#ff0000",
+										scale: "1",
+										"&:hover": {
+											scale: "1.2",
+											transition: "ease-in 0.1s",
+											color: "red",
+										},
+									}}
+								>
+									Order now<span></span>
+								</NavLink>
+							</li>
+
 							<li>
 								{user ? (
 									<AccountBoxIcon

@@ -11,10 +11,9 @@ function Card({ prod }) {
         alt={prod.name}
         className="h-1/2 rounded-lg"
       />
-      <h2>{prod.name}</h2>
-      <p className="cardp">{prod.description}</p>
+      <h1 className="text-center">{prod.name}</h1>
       <div>
-        <NavLink to={`/library/${prod.id}`} className="w-fit absolute bottom-4">
+        <NavLink to={`/library/${prod.id}`} className="w-fit absolute bottom-4 items-center">
           View product
         </NavLink>
       </div>

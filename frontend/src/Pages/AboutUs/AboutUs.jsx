@@ -1,23 +1,20 @@
 import React from "react";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
+import { useEffect } from "react";
 
 function AboutUs() {
+  useEffect(()=> {
+    window.scrollTo(0,0)
+  })
+
   return (
     <>
       <Navbar />
       <div className="min-h-screen">
         <div className="container mx-auto px-6 py-12">
-          <div className="text-center text-[#E0E0E0] py-16 rounded-lg shadow-lg">
-            <h1 className="text-4xl font-bold mb-4">Who are we?</h1>
-            <p className="text-lg max-w-2xl mx-auto">
-              We have brought together a description of who we are, what we are
-              doing, and how we started.
-            </p>
-          </div>
-
           <section className="mt-12 shadow-2xl">
-            <h2 className="text-5xl font-semibold text-center mb-8 text-[#333333]">
+            <h2 className="text-5xl font-semibold text-center mb-8 text-white">
               Our Team
             </h2>
             <div className="grid md:grid-cols-3 gap-8">

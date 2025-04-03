@@ -4,8 +4,6 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../Navbar/Navbar";
 import Footer from "../Footer/Footer";
 import { Button } from "@mui/material";
-import IconButton from "@mui/material/IconButton";
-import ClearIcon from "@mui/icons-material/Clear";
 function Cart({ cartList, setCartList }) {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -17,11 +15,12 @@ function Cart({ cartList, setCartList }) {
   return (
     <>
       <Navbar />
-      <div className="h-screen">
+      <div className="h-screen w-4/6 items-center mx-auto ">
         <div className="flex justify-between items-center h-fit p-4">
-          <h1 className="text-black text-4xl">Shopping Cart</h1>
+          <h1 className="text-white text-4xl">Your cart</h1>
         </div>
-        <div className="flex flex-col p-4 text-black ">
+        
+        <div className="flex flex-col p-4 text-white ">
           {cartList.length === 0 ? (
             <p>No items found</p>
           ) : (
@@ -29,16 +28,26 @@ function Cart({ cartList, setCartList }) {
               return (
                 <div
                   key={index}
-                  className="flex justify-between w-full p-2 shadow-md"
+                  className="flex space-x-4  border-2 p-4 rounded-lg mb-2"
                 >
-                  <p>{cart.name + " x" + cart.quantity}</p>
-                  <IconButton
-                    onClick={() => {
-                      removeItem(index);
+                  <img src="../../image1.png" alt="image of product" className="w-36"/>
+                  <h1 className="text-3xl">{cart.name}</h1>
+                  <h2 className="text-2xl">{cart.description}</h2>
+                  <input
+                    type="number"
+                    min="1"
+                    value={cart.quantity}
+                    onChange={(e) => {
+                      cartList[index].quantity = parseInt(e.target.value);
+                      setCartList([...cartList]);
                     }}
-                  >
-                    <ClearIcon fontSize="small" color="error" />
-                  </IconButton>
+                    className="border p-2 rounded w-16 h-8 text-center"
+                  />
+                  <Button variant="outlined" color="error" className="h-8" onClick={() => {
+                      removeItem(index);
+                    }}>
+                    Remove
+                  </Button>
                 </div>
               );
             })
