@@ -5,6 +5,7 @@ import { FormControl, Stack, Paper, TextField, Button } from "@mui/material";
 import { AuthContext } from "../../context/AuthContext";
 
 function Delivery() {
+  const { user } = useContext(AuthContext);
   const [deliveryInformation, setDeliveryInformation] = useState({
     name: "",
     phone_number: "",
@@ -28,24 +29,27 @@ function Delivery() {
     }
   };
   useEffect(() => {
-    axios
-      .get("/api/delivery-information", {
-        Cookie: document.cookie,
-      })
-      .then((response) => {
-        if (response.status === 200) {
-          setDeliveryInformation({
-            name: response.data.name,
-            phone_number: response.data["phone-number"],
-            country: response.data.country,
-            city: response.data.city,
-            county: response.data.county,
-            street: response.data["street-number"],
-            postal_code: response.data["postal-code"],
-          });
-        }
-      });
-  }, []);
+    console.log(document.cookie);
+    if (user) {
+      axios
+        .get("/api/delivery-information", {
+          cookie: document.cookie,
+        })
+        .then((response) => {
+          if (response.status === 200) {
+            setDeliveryInformation({
+              name: response.data.name,
+              phone_number: response.data["phone-number"],
+              country: response.data.country,
+              city: response.data.city,
+              county: response.data.county,
+              street: response.data["street-number"],
+              postal_code: response.data["postal-code"],
+            });
+          }
+        });
+    }
+  }, [user]);
 
   function sendChanges() {
     axios

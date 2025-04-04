@@ -78,11 +78,7 @@ function Cart() {
             variant="contained"
             color="success"
             onClick={() => {
-              if (user) {
-                navigate("/payment");
-              } else {
-                navigate("/order");
-              }
+              navigate("/payment");
             }}
           >
             Checkout
