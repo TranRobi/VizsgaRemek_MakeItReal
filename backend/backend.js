@@ -650,6 +650,57 @@ app.get("/api/delivery-information", (req, res) => {
 	});
 });
 
+
+/**
+ * @swagger
+ * /api/order-history:
+ *     get:
+ *         summary: Term
+ *         tags:
+ *           - Termékek
+ *         description: Visszaadja a termékek listáját, azokhoz tartozó cikkek, képek, stb.
+ *         security: []
+ *         responses:
+ *             200:
+ *                 description:
+ *                     Ez a request nem bukhat el, visszaad minden terméket a `products` táblából
+ *                 content:
+ *                     application/json:
+ *                         schema:
+ *                             $ref: '#/components/schemas/product_response'
+ *             500:
+ *                 description:
+ *                     Nincs a backendnek `products` táblája, futtasd az `init_db.js` scriptet!
+ *                     Csak teszteléskor jöhet elő.
+ */
+app.get('/api/order-history', (req, res) => {
+    const token = get_api_key(req);
+    if (!token) {
+        return res.status(403).send();
+    }
+	const user = logged_in_users.find((e) => e.token === token);
+	console.log(user);
+	if (!user) {
+		return res.status(404).send();
+	}
+
+    db.serialize(() => {
+        async_get(db,
+            `SELECT jobs.quantity, jobs.material, jobs.state, jobs.colour, products.name, products.rowid AS product_id FROM jobs JOIN products
+            ON jobs.product_id = products.rowid
+            WHERE address_id = (SELECT address_id FROM users WHERE rowid = ${user.id})`
+        ).then(
+            row => {
+                return res.status(200).json(row);
+            },
+            err => {
+                return res.status(500).send();
+            },
+        );
+    });
+});
+
+
 /**
  * @swagger
  * /api/products:
