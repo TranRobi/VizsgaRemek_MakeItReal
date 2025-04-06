@@ -29,3 +29,5 @@ yarn-error.log*
 
 /backend/product-images
 /backend/product-images/*
+/backend/gcode
+/backend/gcode/*
