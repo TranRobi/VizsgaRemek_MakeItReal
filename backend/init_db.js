@@ -2,9 +2,10 @@
 
 import { unlinkSync } from "fs";
 import sqlite3 from "sqlite3";
-import CONFIG from "./config.js";
+import { CONFIG, JOB_COLOURS, JOB_STATES, JOB_MATERIALS } from "./config.js";
 import { generate_salt, hash_password } from "./secret.js";
-import { slicer_init_directories, generate_stl_thumbnail } from './slicer.js';
+import { slicer_cleanup_directiories, slice_stl_to_gcode, slicer_init_directories, generate_stl_thumbnail } from './slicer.js';
+import { async_get, file_name_from_date } from './util.js';
 
 sqlite3.verbose();
 
@@ -13,6 +14,8 @@ console.log("Tiszta lappal kezdünk");
 try {
 	unlinkSync(`./${CONFIG.DB_NAME}`);
 } catch (e) {}
+
+slicer_cleanup_directiories();
 
 const db = new sqlite3.Database(`./${CONFIG.DB_NAME}`);
 console.log("SQLite adatbázis létrehozva");
@@ -76,6 +79,9 @@ db.serialize(() => {
             FOREIGN KEY(uploader_id) REFERENCES users(rowid)
         );
     `);
+
+    slicer_init_directories();
+    console.log('`stl`, `gcode` és `product-images` mappák sikeresen létrehozva');
 
 	console.log("Dummy adatokkal feltöltés");
 	query(`
@@ -180,39 +186,47 @@ db.serialize(() => {
             INSERT INTO products VALUES ('${sample.name}', '${sample.description}', '${sample.stl_path}', '${thumbnail_path}', 1)
         `);
     }
-
-	/*query(`
-        INSERT INTO products VALUES 
-        ('Spártai pajzs', '300 egyike', '/dev/null', '/dev/null', 1),
-        ('Mester Máté', '1', '/dev/null', '/dev/null', 1),
-        ('Vadász Zsolt', '1 egyike', '/dev/null', '/dev/null', 1),
-        ('Tran Duy Dat', '300000000', '/dev/null', '/dev/null', 1,
-        ('Girl ', '300', '/dev/null', '/dev/null', 1),
-        ('Lány', '300', '/dev/null', '/dev/null', 1),
-        ('Older MIlf', '300', '/dev/null', '/dev/null', 1),
-        ('Wolf cut alter milf 9 foot 10 inches', '300', '/dev/null', '/dev/null', 8),
-        ('Linear alternitve girl', '300', '/dev/null', '/dev/null', 9),
-        ('uWu girl', '300', '/dev/null', '/dev/null', 10),
-        ('Hello kitty lover', '300', '/dev/null', '/dev/null', 11),
-        ('ginger girl', '300', '/dev/null', '/dev/null', 12),
-        ('blonde petite', '300', '/dev/null', '/dev/null', 13),
-        ('Blue hair cosplayer', '300', '/dev/null', '/dev/null', 14),
-        ('Redhead milf', '300', '/dev/null', '/dev/null', 15),
-        ('Rainbow haired girl', '300', '/dev/null', '/dev/null', 16),
-        ('Battle girl', '300', '/dev/null', '/dev/null', 17),
-        ('Big personality girl', '300', '/dev/null', '/dev/null', 18),
-        ('BUNDA girl', '300', '/dev/null', '/dev/null', 19),
-        ('CHERRY girl', '300', '/dev/null', '/dev/null', 20),
-        ('Farmer girl', '300', '/dev/null', '/dev/null', 21),
-        ('Cowboy woman', '300', '/dev/null', '/dev/null', 22),
-        ('ADHD alter mix', '300', '/dev/null', '/dev/null', 23)
-    `);*/
 });
+
+// segítő függvények random adat generáláshoz
+const random_quantity = () => Math.round(Math.random() * 5 + 1);
+const random_key = obj => {
+    const keys = Object.keys(obj).length;
+    const random_key_idx = Math.round(Math.random() * (keys - 1));
+    return obj[Object.keys(obj)[random_key_idx]];
+};
+
+console.log('Példa rendelések generálása...');
+const products_to_jobs = [ 1, 4, 8, 9 ];
+const promises = products_to_jobs.map(idx => new Promise((resolve, reject) => {
+    async_get(db, `SELECT stl_file_path FROM products WHERE rowid = ?`, idx + 1).then(
+        row => {
+            const gcode_path = `./gcode/${file_name_from_date()}.gcode`;
+            slice_stl_to_gcode(row.stl_file_path, gcode_path);
+            console.log(`${row.stl_file_path} -> ${gcode_path}`);
+            async_get(db, `INSERT INTO jobs VALUES
+                (${idx + 1}, 1, '${gcode_path}', ${random_quantity()},
+                 '${random_key(JOB_MATERIALS)}',
+                 '${random_key(JOB_COLOURS)}', '${random_key(JOB_STATES)}')
+                RETURNING product_id, state`).then(
+                row => {
+                    console.log(row);
+                },
+                err => {
+                    console.log(err);
+                }
+            );
+        },
+        err => {
+            console.log(err);
+        }
+    );
+}));
+Promise.all(promises).then(() => db.close());
+
 
 db.close();
 
-slicer_init_directories();
-console.log('`stl` és `product-images` mappák sikeresen létrehozva');
 
 console.log(`
 A backend Prusa Slicert és \`stl-thumb\`-ot használ G-Code és termék-kép
