@@ -2,7 +2,7 @@
 
 import os from 'node:os';
 import { execSync } from 'node:child_process';
-import { mkdirSync, unlinkSync } from 'node:fs';
+import { mkdirSync, unlinkSync, rmSync } from 'node:fs';
 
 import { file_name_from_date } from './util.js';
 
@@ -17,9 +17,20 @@ const mkdir_wrapper = dirname => {
     }
 };
 
+const rm_dir = dirname => {
+    rmSync(dirname, { recursive: true, force: true });
+};
+
 export const slicer_init_directories = () => {
     mkdir_wrapper('./stl');
     mkdir_wrapper('./product-images');
+    mkdir_wrapper('./gcode');
+};
+
+export const slicer_cleanup_directiories = () => {
+    // XXX stl mappat nem toroljuk, giten van tarolva nehany elem
+    rm_dir('./product-images');
+    rm_dir('./gcode');
 };
 
 /*
@@ -74,7 +85,7 @@ try {
 export const slice_stl_to_gcode = (stl_path, gcode_path) => {
     // TODO check success
     execSync(`${slicer} \\
-        --output-file ${gcode_path} \\
+        --output ${gcode_path} \\
         --slice ${stl_path} \\
         --pad-around-object \\
         --supports-enable`);
