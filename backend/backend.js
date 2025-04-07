@@ -17,6 +17,7 @@ import {
 	rename_key,
 	get_api_key,
 	async_get,
+	async_get_all,
 	async_run,
 	file_name_from_date,
 } from "./util.js";
@@ -655,19 +656,24 @@ app.get("/api/delivery-information", (req, res) => {
  * @swagger
  * /api/order-history:
  *     get:
- *         summary: Term
+ *         summary: Felhasználó előző rendelései
  *         tags:
  *           - Termékek
- *         description: Visszaadja a termékek listáját, azokhoz tartozó cikkek, képek, stb.
- *         security: []
+ *         description: Visszaadja a múltban rendelt termékek listáját, rendelt termékek mennyiségét
  *         responses:
  *             200:
  *                 description:
- *                     Ez a request nem bukhat el, visszaad minden terméket a `products` táblából
+ *                     Visszaadja a felhasználó múltban rendelt termékeit
  *                 content:
  *                     application/json:
  *                         schema:
  *                             $ref: '#/components/schemas/product_response'
+ *             403:
+ *                 description:
+ *                     Frontend nem küldte el a `LOGIN_TOKEN` cookie-t
+ *             404:
+ *                 description:
+ *                     Nincs ilyen BELÉPETT felhasználó
  *             500:
  *                 description:
  *                     Nincs a backendnek `products` táblája, futtasd az `init_db.js` scriptet!
@@ -685,13 +691,13 @@ app.get('/api/order-history', (req, res) => {
 	}
 
     db.serialize(() => {
-        async_get(db,
+        async_get_all(db,
             `SELECT jobs.quantity, jobs.material, jobs.state, jobs.colour, products.name, products.rowid AS product_id FROM jobs JOIN products
             ON jobs.product_id = products.rowid
             WHERE address_id = (SELECT address_id FROM users WHERE rowid = ${user.id})`
         ).then(
-            row => {
-                return res.status(200).json(row);
+            rows => {
+                return res.status(200).json(rows);
             },
             err => {
                 return res.status(500).send();

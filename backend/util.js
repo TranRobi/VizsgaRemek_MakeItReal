@@ -41,6 +41,21 @@ const async_get = (db, sql, ...params) => new Promise((resolve, reject) => {
     });
 });
 
+const async_get_all = (db, sql, ...params) => new Promise((resolve, reject) => {
+    const stmt = db.prepare(sql, params, err => {
+        if (err) reject(err);
+    });
+    let r = undefined;
+    stmt.all((err, rows) => {
+        if (err) reject(errs);
+        else r = rows;
+    });
+    stmt.finalize(err => {
+        if (err) reject(err);
+        else resolve(r);
+    });
+});
+
 const async_run = (db, sql, ...params) => new Promise((resolve, reject) => {
     const stmt = db.prepare(sql, params, err => {
         if (err) reject(err);
@@ -58,6 +73,7 @@ const file_name_from_date = () => Number(new Date()).toString('16');
 
 export {
     async_get,
+    async_get_all,
     async_run,
     file_name_from_date
 };
