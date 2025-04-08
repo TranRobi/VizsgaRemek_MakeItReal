@@ -21,6 +21,7 @@ import {
 	async_run,
 	file_name_from_date,
 } from "./util.js";
+import { validate_delivery_information } from './validations.js';
 import { generate_stl_thumbnail, convert_model_to_stl } from "./slicer.js";
 
 const PORT = 8080;
@@ -163,6 +164,96 @@ const SWAGGER_OPTS = {
 						},
 					},
 				},
+                payment_information_request: {
+                    type: 'object',
+                    properties: {
+                        'card-number': {
+                            type: 'string',
+                            description: 'Kártyaszám',
+                            example: '1234567890123456789',
+                        },
+                        'cvv': {
+                            type: 'string',
+                            description: 'CVV',
+                            example: '666',
+                        },
+                        'expiration-date': {
+                            type: 'string',
+                            description: 'Lejárati dátum (MM/YY)',
+                            example: '03/28',
+                        },
+                    },
+                },
+                order_request: {
+                    type: 'object',
+                    properties: {
+						country: {
+							type: "string",
+							description: "Ország",
+							example: "Csád",
+						},
+						county: {
+							type: "string",
+							description: "Megye/Állam",
+							example: "Kanto",
+						},
+						city: {
+							type: "string",
+							description: "Város",
+							example: "Shenzen",
+						},
+						'postal-code': {
+							type: "number",
+							description: "Irányítószám",
+							example: "6666",
+						},
+						"street-number": {
+							type: "string",
+							description: "Utca, házszám, emelet, ajtó, stb.",
+							example: "308 Negra Arroyo Lane",
+						},
+						"phone-number": {
+							type: "string",
+							description: "Telefonszám",
+							example: "+36701234567",
+						},
+						name: {
+							type: "string",
+							description: "Számlázási név",
+							example: "John Buyer",
+						},
+                        'card-number': {
+                            type: 'string',
+                            description: 'Kártyaszám',
+                            example: '1234567890123456789',
+                        },
+                        'cvv': {
+                            type: 'string',
+                            description: 'CVV',
+                            example: '666',
+                        },
+                        'expiration-date': {
+                            type: 'string',
+                            description: 'Lejárati dátum (MM/YY)',
+                            example: '03/28',
+                        },
+                        quanity: {
+                            type: 'number',
+                            description: 'Mennyiség',
+                            example: 69,
+                        },
+                        material: {
+                            type: 'string',
+                            description: 'Anyag',
+                            example: 'PLA',
+                        },
+                        colour: {
+                            type: 'string',
+                            description: 'Szín',
+                            example: 'Blue',
+                        },
+                    },
+                },
 			},
 		},
 		security: [
@@ -746,7 +837,7 @@ app.get("/api/products", (req, res) => {
 			if (err) {
 				console.log(err);
 				return res.status(500).send();
-			}
+			}o
 
 			return res.status(200).json(rows);
 		});
@@ -1056,6 +1147,78 @@ app.get("/api/products/:id", (req, res) => {
 			});
 		});
 	});
+});
+
+/** @swagger
+ * /api/order/{id}:
+ *     post:
+ *         summary: Egy feltöltött termék megrendelése
+ *         tags:
+ *             - Rendelés
+ *         description:
+ *             Vendég/belépett felhasználó megrendelhet egy az oldalra feltöltött terméket
+ *         security: []
+ *         parameters:
+ *             - in: path
+ *               name: id
+ *               schema:
+ *                   type: integer
+ *               required: true
+ *               description: Termék ID
+ *         requestBody:
+ *             required: false
+ *             content:
+ *                 application/x-www-form-urlencoded:
+ *                     schema:
+ *                         $ref: '#/components/schemas/order_request'
+ *         responses:
+ *             201:
+ *                 description:
+ *                     Sikeres rendelés
+ *             404:
+ *                 description:
+ *                     Nincs ilyen termék!
+ *             401:
+ *                 description:
+ *                     Nem vendégként rendelt, de még vannak hiányzó adatok (fizetés, szállítás)
+ *             406:
+ *                 description:
+ *                     Vendégként rendelt, de nem küldött el minden szükséges adatot
+ */
+app.post('/api/order/:id', (req, res) => {
+    const token = get_api_key(req);
+	const user = logged_in_users.find((e) => e.token === token);
+	console.log(user);
+    const is_guest = user !== undefined;
+
+    // mindent kiszedunk a requestbol
+	const country = req.body["country"];
+    console.log(country);
+	const county = req.body["county"];
+    console.log(county);
+	const city = req.body["city"];
+    console.log(city);
+	const postal_code = req.body["postal-code"];
+    console.log(postal_code);
+	const street_number = req.body["street-number"];
+    console.log(street_number);
+	const phone_number = req.body["phone-number"];
+    console.log(phone_number);
+	const name = req.body["name"];
+    const card_number = req.body['card-number'];
+    const cvv = req.body['cvv'];
+    const expiration_date = req.body['expiration-date'];
+    const colour = req.body['colour'];
+    const material = req.body['material'];
+    const quantity = req.body['quantity'];
+    const email_address = req.body['email-address'];
+
+    // TODO validalni a dolgokat
+
+    if (is_guest) {
+    } else {
+        async_get(db, `SELECT address.rowid AS address_id, payment_info.rowid AS payment_info_id`);
+    }
 });
 
 app.listen(PORT, () => {
