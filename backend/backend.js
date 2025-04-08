@@ -141,7 +141,7 @@ const SWAGGER_OPTS = {
 							description: "Város",
 							example: "Shenzen",
 						},
-						postal_code: {
+						'postal-code': {
 							type: "number",
 							description: "Irányítószám",
 							example: "6666",
@@ -482,16 +482,24 @@ app.post("/api/logout", (req, res) => {
  */
 app.put("/api/delivery-information", (req, res) => {
 	const token = get_api_key(req);
+	console.log(`token: ${token}`);
 	if (!token) return res.status(403).send();
 	const user = logged_in_users.find((elem) => elem.token === token);
 	if (!user) return res.status(404).send();
 	const country = req.body["country"];
+    console.log(country);
 	const county = req.body["county"];
+    console.log(county);
 	const city = req.body["city"];
+    console.log(city);
 	const postal_code = req.body["postal-code"];
+    console.log(postal_code);
 	const street_number = req.body["street-number"];
+    console.log(street_number);
 	const phone_number = req.body["phone-number"];
+    console.log(phone_number);
 	const name = req.body["name"];
+    console.log(name);
 	if (
 		!country ||
 		!county ||
