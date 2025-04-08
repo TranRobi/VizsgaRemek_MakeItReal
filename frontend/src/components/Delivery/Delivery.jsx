@@ -118,6 +118,16 @@ function Delivery() {
               ></TextField>
               <TextField
                 variant="standard"
+                name="county"
+                label="County"
+                value={deliveryInformation.county}
+                onChange={(e) => {
+                  handleChange(e);
+                }}
+                disabled={enabled}
+              ></TextField>
+              <TextField
+                variant="standard"
                 name="city"
                 label="City"
                 value={deliveryInformation.city}
