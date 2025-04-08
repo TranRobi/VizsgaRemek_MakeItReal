@@ -42,17 +42,29 @@ db.serialize(() => {
         );
     `);
 
+    console.log("'payment_info' tábla létrehozása");
+    query(`
+        CREATE TABLE payment_info (
+            card_number VARCHAR(19) NOT NULL,
+            cvv VARCHAR(4) NOT NULL,
+            expiration_year VARCHAR(2) NOT NULL,
+            expiration_month VARCHAR(2) NOT NULL
+        );
+    `);
+
 	console.log("'jobs' tábla létrehozása");
 	query(`
         CREATE TABLE jobs (
             product_id INT NULL,
+            payment_info_id INT NOT NULL,
             address_id INT NOT NULL,
             gcode_file_path VARCHAR(256) NOT NULL,
             quantity INT NOT NULL,
             material TEXT CHECK(material IN ('PLA', 'PETG', 'ABS')),
             colour TEXT CHECK(colour IN ('Red', 'Green', 'Blue', 'Yellow', 'Black', 'White', 'Gray')),
             state TEXT CHECK(state IN('pending', 'in_production', 'shipped', 'done')),
-            FOREIGN KEY(address_id) REFERENCES address(rowid)
+            FOREIGN KEY(address_id) REFERENCES address(rowid),
+            FOREIGN KEY(payment_info_id) REFERENCES payment_info(rowid)
         );
     `);
 
@@ -60,11 +72,13 @@ db.serialize(() => {
 	query(`
         CREATE TABLE users (
             address_id INT NULL,
+            payment_info_id INT NULL,
             email_address VARCHAR(256) NOT NULL,
             display_name VARCHAR(64) NOT NULL,
             password_hash VARCHAR(${CONFIG.PASSWORD_HASH_SIZE}) NOT NULL,
             salt VARCHAR(${CONFIG.SALT_SIZE}) NOT NULL,
-            FOREIGN KEY(address_id) REFERENCES address(rowid)
+            FOREIGN KEY(address_id) REFERENCES address(rowid),
+            FOREIGN KEY(payment_info_id) REFERENCES payment_info(rowid)
         );
     `);
 
@@ -88,6 +102,9 @@ db.serialize(() => {
         INSERT INTO address(country, county, city, postal_code, street_number, phone_number, name) VALUES
         ('Magyarország', 'Pest', 'Budapest', 4000, 'Street utca 2', 36701234567, 'Vicc Elek'),
         ('Magyarország', 'Szabolcs-Szatmár-Bereg', 'Nyíregyháza', 4400, 'Street utca 3', '+36701234567', 'Kriszh Advice');
+    `);
+    query(`
+        INSERT INTO payment_info VALUES (1234567890123456789, '666', '03', '28');
     `);
 
 	const salt = generate_salt();
@@ -205,7 +222,7 @@ const promises = products_to_jobs.map(idx => new Promise((resolve, reject) => {
             slice_stl_to_gcode(row.stl_file_path, gcode_path);
             console.log(`${row.stl_file_path} -> ${gcode_path}`);
             async_get(db, `INSERT INTO jobs VALUES
-                (${idx + 1}, 1, '${gcode_path}', ${random_quantity()},
+                (${idx + 1}, 1, 1, '${gcode_path}', ${random_quantity()},
                  '${random_key(JOB_MATERIALS)}',
                  '${random_key(JOB_COLOURS)}', '${random_key(JOB_STATES)}')
                 RETURNING product_id, state`).then(
