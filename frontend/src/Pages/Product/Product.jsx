@@ -24,10 +24,11 @@ function Product() {
     const item = {
       id: product.id,
       name: product.name,
-      quantity,
-      size,
-      color,
-      material,
+      description: product.description,
+      quantity: quantity,
+      size: size,
+      color: color,
+      material: material,
     };
 
     if (cartList.some((item) => item.id === product.id)) {
@@ -38,6 +39,7 @@ function Product() {
       console.log(item);
       setCartList([...cartList, item]);
     }
+
     localStorage.setItem("cart", JSON.stringify(cartList));
   }
   function getProductID() {

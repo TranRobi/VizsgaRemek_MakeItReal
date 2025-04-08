@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import PersonalInfoForm from "../../components/PaymentForm/PersonalInfoForm";
 import ShippingForm from "../../components/PaymentForm/ShippingForm";
@@ -8,11 +8,13 @@ import CardInfoForm from "../../components/PaymentForm/CardInfoForn";
 
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
+import { CartContext } from "../../context/CartContext";
 
 const MultiStepForm = () => {
   const { storedUser } = React.useContext(AuthContext);
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({});
+  const { cartList } = useContext(CartContext);
 
   useEffect(() => {
     console.log(storedUser);
@@ -44,8 +46,8 @@ const MultiStepForm = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-[86vh] flex flex-col md:flex-row items-center">
-        <div className="w-3/4">
+      <div className="min-h-[86vh]  flex flex-col md:flex-row items-center">
+        <div className="w-3/4 h-full">
           <Container maxWidth="md">
             <Card>
               <CardContent>
@@ -86,7 +88,50 @@ const MultiStepForm = () => {
             </div>
           </div>
         </div>
-        <div className="w-3/4 h-[80vh] bg-gray-200 m-5"></div>
+        <div class=" bg-white shadow-md rounded-2xl p-6 space-y-4 w-2/3  md:w-full">
+          <h2 class="text-xl font-semibold text-gray-800">Payment Summary</h2>
+          {cartList.map((item) => {
+            return (
+              <div class="flex justify-between text-gray-700">
+                <img
+                  src={`/api/products/images/${item.id}`}
+                  className="w-1/9"
+                />
+                <div className="flex justify-between w-full">
+                  <div>
+                    <h4>Name: </h4>
+                    <span>{item.name}</span>
+                  </div>
+                  <div>
+                    <h4>Description: </h4>
+                    <span className="w-1/3 ">{item.description}</span>
+                  </div>
+                  <div>
+                    <h4>Quantity: </h4>
+                    <span>{item.quantity}</span>
+                  </div>
+                  <div>
+                    <h4>Price: </h4>
+                    <span>{0}</span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
+          <div class="flex justify-between text-gray-700">
+            <span>Shipping</span>
+            <span>$5.00</span>
+          </div>
+          <div className="">
+            <hr class="my-2 border-gray-300" />
+
+            <div class="flex justify-between text-lg font-bold text-gray-900">
+              <span>Total</span>
+              <span>$50.48</span>
+            </div>
+          </div>
+        </div>
       </div>
       <Footer />
     </>

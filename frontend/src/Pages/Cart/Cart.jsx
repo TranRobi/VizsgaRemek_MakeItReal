@@ -1,8 +1,8 @@
 import React, { useContext, useEffect } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../Navbar/Navbar";
-import Footer from "../Footer/Footer";
+import Navbar from "../../components/Navbar/Navbar";
+import Footer from "../../components/Footer/Footer";
 import { Button } from "@mui/material";
 import { CartContext } from "../../context/CartContext";
 function Cart() {
@@ -33,19 +33,21 @@ function Cart() {
               return (
                 <div
                   key={index}
-                  className="flex flex-col  space-x-4  border-2 p-4 rounded-lg mb-2"
+                  className="flex flex-col md:flex-row   border-2 p-4 rounded-lg mb-2 w-full"
                 >
                   <img
                     src={`/api/products/images/${cart.id}`}
                     alt="image of product"
                     className="w-1/3 mx-auto "
                   />
-                  <div>
-                    <div className="text-center">
+                  <div className="">
+                    <div className="">
                       <h1 className="text-3xl">{cart.name}</h1>
-                      <h2 className="text-2xl">{cart.description}</h2>
+                      <p className="text-left w-full md:w-3/4 p-1">
+                        {cart.description}
+                      </p>
                     </div>
-                    <div className="flex flex-col items-center">
+                    <div className="flex flex-col">
                       <input
                         type="number"
                         min="1"
@@ -54,7 +56,7 @@ function Cart() {
                           cartList[index].quantity = parseInt(e.target.value);
                           setCartList([...cartList]);
                         }}
-                        className="border p-2 rounded w-full md:w-2/3 h-8 text-center "
+                        className="border p-2 rounded w-full md:w-2/3 h-8 text-center mb-3"
                       />
                       <Button
                         variant="outlined"

@@ -6,70 +6,27 @@
   background-image: linear-gradient(black, rgb(26, 26, 26));
   width: 15%;
   min-width: 250px;
-  transition: 0.5s;
+  transition: 0.3s ease-in;
   border-radius: 15px;
-}
-@property --angle {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
-}
-.cards .card span:after {
-  box-shadow: 5px 5px 5px rgb(34, 1, 1);
-  content: "";
-  width: 100%;
-  height: 100%;
-  background-image: conic-gradient(from var(--angle), #3d606e, #090f13);
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  translate: -50% -50%;
-  z-index: -1;
-  border-radius: 15px;
-  padding: 5px;
-  animation: 3s spin linear infinite;
+  display: flex;
+  flex-direction: column;
 }
 
-.cards .card span::before {
-  filter: blur(3rem);
+.card:hover {
+  background-image: linear-gradient(rgb(26, 26, 26), red);
+  transform: scale(1.05);
 }
-
-.card h2,
+.card h1,
 .cardp {
   width: fit-content;
   margin: auto;
-  font-size: small;
-}
-
-.card a {
-  display: flex;
-  justify-content: center;
-  padding: 10px;
-  border-radius: 15px;
-  color: white;
-  background-color: #090f13;
-  border: 2px white solid;
-}
-
-.card a:hover {
-  color: #5a738e;
-  border-color: #5a738e;
-  transition: 0.5s;
-  background: #0e191f;
-}
-@keyframes spin {
-  from {
-    --angle: 0deg;
-  }
-  to {
-    --angle: 360deg;
-  }
+  font-size: larger;
+  align-self: center;
 }
 
 .card img {
   display: block;
-  margin-left: auto;
-  margin-right: auto;
-  height: 60%;
+  margin: auto;
+  height: 75%;
   object-fit: cover;
 }

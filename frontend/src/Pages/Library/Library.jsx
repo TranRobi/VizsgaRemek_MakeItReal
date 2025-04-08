@@ -51,8 +51,7 @@ function Library() {
             placeholder="Search items here"
           />
           <select
-            className="text-white w-fit h-fit
-            "
+            className="text-white w-fit h-fit"
             onChange={(e) => {
               setPageSize(e.target.value);
             }}

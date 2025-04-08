@@ -7,7 +7,7 @@ import ContactUs from "./Pages/ContactUs/ContactUs.jsx";
 import AboutUs from "./Pages/AboutUs/AboutUs.jsx";
 import Product from "./Pages/Product/Product.jsx";
 import Profile from "./Pages/Profile/Profile.jsx";
-import Cart from "./components/Cart/Cart.jsx";
+import Cart from "./Pages/Cart/Cart.jsx";
 import Payment from "./Pages/Payment/Payment.jsx";
 
 import RequireAuth from "./context/RequireAuth.jsx";

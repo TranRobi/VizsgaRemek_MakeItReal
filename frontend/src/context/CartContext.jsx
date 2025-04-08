@@ -3,16 +3,14 @@ import { createContext } from "react";
 
 const CartContext = createContext();
 const CartProvider = ({ children }) => {
-  const [cartList, setCartList] = React.useState([]);
-  const storedCart = localStorage.getItem("cart");
+  const [cartList, setCartList] = React.useState(() => {
+    const storedCart = localStorage.getItem("cart");
+    return storedCart ? JSON.parse(storedCart) : [];
+  });
 
   useEffect(() => {
-    if (storedCart) {
-      setCartList(JSON.parse(storedCart));
-    } else {
-      localStorage.setItem("cart", JSON.stringify(cartList));
-    }
-  }, [storedCart]);
+    localStorage.setItem("cart", JSON.stringify(cartList));
+  }, [cartList]);
 
   return (
     <CartContext.Provider value={{ cartList, setCartList }}>
