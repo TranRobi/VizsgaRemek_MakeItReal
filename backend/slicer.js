@@ -84,11 +84,7 @@ try {
 
 export const slice_stl_to_gcode = (stl_path, gcode_path) => {
     // TODO check success
-    execSync(`${slicer} \\
-        --output ${gcode_path} \\
-        --slice ${stl_path} \\
-        --pad-around-object \\
-        --supports-enable`);
+    execSync(`${slicer} --output ${gcode_path} --slice ${stl_path} --pad-around-object --supports-enable`);
     return true;
 };
 
