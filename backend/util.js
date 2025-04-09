@@ -71,9 +71,12 @@ const async_run = (db, sql, ...params) => new Promise((resolve, reject) => {
 
 const file_name_from_date = () => Number(new Date()).toString('16');
 
+const first_letter_uppercase = str => str[0].toUpperCase().concat(str.slice(1));
+
 export {
     async_get,
     async_get_all,
     async_run,
-    file_name_from_date
+    file_name_from_date,
+    first_letter_uppercase,
 };

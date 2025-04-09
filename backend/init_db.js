@@ -46,6 +46,7 @@ db.serialize(() => {
     query(`
         CREATE TABLE payment_info (
             card_number VARCHAR(19) NOT NULL,
+            name VARCHAR(64) NOT NULL,
             cvv VARCHAR(4) NOT NULL,
             expiration_year VARCHAR(2) NOT NULL,
             expiration_month VARCHAR(2) NOT NULL
@@ -56,6 +57,7 @@ db.serialize(() => {
 	query(`
         CREATE TABLE jobs (
             product_id INT NULL,
+            email_address VARCHAR(128) NULL,
             payment_info_id INT NOT NULL,
             address_id INT NOT NULL,
             gcode_file_path VARCHAR(256) NOT NULL,
@@ -104,16 +106,17 @@ db.serialize(() => {
         ('Magyarország', 'Szabolcs-Szatmár-Bereg', 'Nyíregyháza', 4400, 'Street utca 3', '+36701234567', 'Kriszh Advice');
     `);
     query(`
-        INSERT INTO payment_info VALUES (1234567890123456789, '666', '03', '28');
+        INSERT INTO payment_info VALUES (1234567890123456789, 'Vicc Elek', '666', '03', '28');
     `);
 
 	const salt = generate_salt();
 	const pw = hash_password("888888", salt);
 	db.run(
 		`
-        INSERT INTO users(address_id, email_address, display_name, password_hash, salt)
+        INSERT INTO users(address_id, payment_info_id, email_address, display_name, password_hash, salt)
             VALUES(
                 (SELECT rowid FROM address WHERE name = 'Vicc Elek'),
+                (SELECT rowid FROM payment_info WHERE name = 'Vicc Elek'),
                 ?, ?, ?, ?);
     `,
 		"viccelek@citromail.hu",
@@ -222,7 +225,7 @@ const promises = products_to_jobs.map(idx => new Promise((resolve, reject) => {
             slice_stl_to_gcode(row.stl_file_path, gcode_path);
             console.log(`${row.stl_file_path} -> ${gcode_path}`);
             async_get(db, `INSERT INTO jobs VALUES
-                (${idx + 1}, 1, 1, '${gcode_path}', ${random_quantity()},
+                (${idx + 1}, NULL, 1, 1, '${gcode_path}', ${random_quantity()},
                  '${random_key(JOB_MATERIALS)}',
                  '${random_key(JOB_COLOURS)}', '${random_key(JOB_STATES)}')
                 RETURNING product_id, state`).then(

@@ -23,6 +23,7 @@ import {
 } from "./util.js";
 import { validate_delivery_information } from './validations.js';
 import { generate_stl_thumbnail, convert_model_to_stl } from "./slicer.js";
+import { query_place_order } from './queries.js';
 
 const PORT = 8080;
 const SWAGGER_OPTS = {
@@ -237,7 +238,7 @@ const SWAGGER_OPTS = {
                             description: 'Lejárati dátum (MM/YY)',
                             example: '03/28',
                         },
-                        quanity: {
+                        quantity: {
                             type: 'number',
                             description: 'Mennyiség',
                             example: 69,
@@ -1157,12 +1158,12 @@ app.get("/api/products/:id", (req, res) => {
  *             - Rendelés
  *         description:
  *             Vendég/belépett felhasználó megrendelhet egy az oldalra feltöltött terméket
- *         security: []
  *         parameters:
  *             - in: path
  *               name: id
  *               schema:
  *                   type: integer
+ *                   example: 1
  *               required: true
  *               description: Termék ID
  *         requestBody:
@@ -1183,42 +1184,30 @@ app.get("/api/products/:id", (req, res) => {
  *                     Nem vendégként rendelt, de még vannak hiányzó adatok (fizetés, szállítás)
  *             406:
  *                 description:
- *                     Vendégként rendelt, de nem küldött el minden szükséges adatot
+ *                     Vendégként rendelt, de nem küldött el minden szükséges adatot, vagy szimplán rossz a formdata
+ *             500:
+ *                 description:
+ *                     A backenden valami nagyon nem jó, ha a backendes nem béna,
+ *                     ez sose történik meg
  */
 app.post('/api/order/:id', (req, res) => {
     const token = get_api_key(req);
 	const user = logged_in_users.find((e) => e.token === token);
 	console.log(user);
-    const is_guest = user !== undefined;
 
-    // mindent kiszedunk a requestbol
-	const country = req.body["country"];
-    console.log(country);
-	const county = req.body["county"];
-    console.log(county);
-	const city = req.body["city"];
-    console.log(city);
-	const postal_code = req.body["postal-code"];
-    console.log(postal_code);
-	const street_number = req.body["street-number"];
-    console.log(street_number);
-	const phone_number = req.body["phone-number"];
-    console.log(phone_number);
-	const name = req.body["name"];
-    const card_number = req.body['card-number'];
-    const cvv = req.body['cvv'];
-    const expiration_date = req.body['expiration-date'];
-    const colour = req.body['colour'];
-    const material = req.body['material'];
-    const quantity = req.body['quantity'];
-    const email_address = req.body['email-address'];
-
-    // TODO validalni a dolgokat
-
-    if (is_guest) {
-    } else {
-        async_get(db, `SELECT address.rowid AS address_id, payment_info.rowid AS payment_info_id`);
-    }
+    async_get(
+        db,
+        `SELECT rowid, stl_file_path FROM products WHERE rowid = ?`,
+        req.params.id
+    ).then(
+        row => {
+            return query_place_order(db, req, res, user, row.stl_file_path, row.rowid);
+        },
+        err => {
+            console.log(err);
+            return res.status(404).send();
+        },
+    );
 });
 
 app.listen(PORT, () => {
