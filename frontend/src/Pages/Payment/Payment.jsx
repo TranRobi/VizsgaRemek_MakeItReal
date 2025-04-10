@@ -75,18 +75,20 @@ const MultiStepForm = () => {
                   />
                 )}
               </CardContent>
-            </Card>
-          </Container>
-          <div className="flex w-full items-center justify-center grid-cols-3">
+              <div className="flex w-full items-center justify-center grid-cols-3">
             <div className="grid grid-cols-3">
-              <img src="visa.jpg" alt="" className="w-[80px] m-5 " />
-              <img src="mastercard.png" alt="" className="w-[80px] m-5 " />
-              <img src="paypal.png" alt="" className="w-[80px] m-5 " />
-              <img src="applePay.png" alt="" className="w-[80px] m-5 " />
-              <img src="gpay.png" alt="" className="w-[80px] m-5 " />
-              <img src="revolut.png" alt="" className="w-[80px] m-5 " />
+              <img src="visa.svg" alt="" className="w-[80px] m-5 " />
+              <img src="mastercard.svg" alt="" className="w-[80px] m-5 " />
+              <img src="paypal.svg" alt="" className="w-[80px] m-5 " />
+              <img src="applepay.svg" alt="" className="w-[80px] m-5 " />
+              <img src="gpay.svg" alt="" className="w-[80px] m-5 " />
+              <img src="revolut.svg" alt="" className="w-[80px] m-5 " />
             </div>
           </div>
+            </Card>
+            
+          </Container>
+          
         </div>
         <div class=" bg-white shadow-md rounded-2xl p-6 space-y-4 w-2/3  md:w-full">
           <h2 class="text-xl font-semibold text-gray-800">Payment Summary</h2>
