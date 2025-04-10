@@ -5,7 +5,7 @@ import express from "express";
 import swagger_jsdoc from "swagger-jsdoc";
 import swagger_ui from "swagger-ui-express";
 import body_parser from "body-parser";
-const { urlencoded } = body_parser;
+const { urlencoded, json } = body_parser;
 import cookie_parser from "cookie-parser";
 import cors from "cors";
 import multer from "multer";
@@ -22,7 +22,11 @@ import {
 	file_name_from_date,
 } from "./util.js";
 import { validate_delivery_information } from './validations.js';
-import { generate_stl_thumbnail, convert_model_to_stl } from "./slicer.js";
+import {
+	generate_stl_thumbnail,
+	convert_model_to_stl,
+	get_model_price
+} from "./slicer.js";
 import { query_place_order } from './queries.js';
 
 const PORT = 8080;
@@ -255,6 +259,21 @@ const SWAGGER_OPTS = {
                         },
                     },
                 },
+				checkout_response: {
+					type: "object",
+					properties: {
+						id: {
+							type: 'number',
+							description: 'Termék ID',
+							example: 1,
+						},
+						price: {
+							type: 'number',
+							description: 'Termék ára',
+							example: 1000,
+						},
+					},
+				},
 			},
 		},
 		security: [
@@ -302,6 +321,7 @@ const app = express();
 app.use(cors());
 app.use(cookie_parser());
 app.use(urlencoded({ extended: true }));
+app.use(json({ extended: true }));
 app.use(
 	"/api-docs",
 	swagger_ui.serve,
@@ -838,7 +858,7 @@ app.get("/api/products", (req, res) => {
 			if (err) {
 				console.log(err);
 				return res.status(500).send();
-			}o
+			}
 
 			return res.status(200).json(rows);
 		});
@@ -1148,6 +1168,98 @@ app.get("/api/products/:id", (req, res) => {
 			});
 		});
 	});
+});
+
+/**
+ * @swagger
+ * /api/checkout:
+ *      put:
+ *         summary: Termék módosítása
+ *         tags:
+ *           - Rendelés
+ *         description: Lekéri a kosárban levő termékek árait
+ *         requestBody:
+ *             required: true
+ *             content:
+ *                 application/json:
+ *                     schema:
+ *                         type: array
+ *                         items:
+ *                             type: number
+ *                         description: Termék ID
+ *                         example: [1, 2, 3]
+ *         responses:
+ *             200:
+ *                 description:
+ *                     Termék sikeresen módosítva
+ *                 content:
+ *                     application/json:
+ *                         schema:
+ *                             type: array
+ *                             items:
+ *                                 $ref: '#/components/schemas/checkout_response'
+ *                             
+ *
+ *             404:
+ *                 description:
+ *                     Az egyik ID nem létező termékre utal!
+ *             406:
+ *                 description:
+ *                     Nem JSON, hibás JSON
+ *             500:
+ *                 description:
+ *                     Nincs a backendnek `products` táblája, futtasd az `init_db.js` scriptet!
+ *                     Csak teszteléskor jöhet elő.
+ */
+app.put('/api/checkout', (req, res) => {
+	const token = get_api_key(req);
+	const user = logged_in_users.find(elem => elem.token === get_api_key(req));
+	const is_guest = user === undefined;
+
+	console.log(req);
+	if (!req.body || req.body.length === 0) {
+		return res.status(406).send();
+	}
+
+	const product_ids = req.body.map(id => Number(id));
+	product_ids.forEach(id => {
+		if (!Number.isInteger(id)) {
+			return res.status(406).send();
+		}
+	});
+
+	async_get_all(
+		db,
+		`SELECT rowid, stl_file_path FROM products WHERE rowid IN (${product_ids.join(',')})`
+	).then(	
+		rows => {
+			if (rows.length !== product_ids.length) {
+				return res.status(404).send();
+			}
+			const response_promise = (id, stl_path) => new Promise(async (resolve, reject) => {
+				const price = await get_model_price(stl_path);
+				if (price === -1) {
+					console.log('error');
+					console.log(price);
+					reject({});
+				}
+				resolve({price: price, id: id});
+			});
+			Promise.all(rows.map(row => response_promise(row.rowid, row.stl_file_path))).then(
+				prices => {
+					return res.status(200).json(prices);
+				},
+				err => {
+					console.log(err);
+					return res.status(500).send();
+				}
+			);
+		},
+		err => {
+			console.log(err);
+			return res.status(500).send();
+		}
+	)
 });
 
 /** @swagger
