@@ -28,7 +28,7 @@ function Profile() {
   return (
     <>
       <Navbar />
-      <div className="flex flex-col md:flex-row h-screen">
+      <div className="flex flex-col md:flex-row h-fit md:h-screen">
         <ProfileNav setActiveTab={setActiveTab} />
         <div className="h-full w-full">{renderComponent()}</div>
       </div>

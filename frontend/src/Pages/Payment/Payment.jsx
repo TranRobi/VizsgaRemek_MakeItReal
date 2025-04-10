@@ -138,30 +138,32 @@ const MultiStepForm = () => {
                 Payment Summary
               </Typography>
 
-              {cartList?.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex items-start justify-between border-b pb-4"
-                >
-                  <img
-                    src={`/api/products/images/${item.id}`}
-                    alt={item.name}
-                    className="w-16 h-16 object-cover rounded"
-                  />
-                  <div className="ml-4 flex-1 space-y-1">
-                    <p className="text-sm font-semibold text-gray-800">
-                      {item.name}
-                    </p>
-                    <p className="text-xs text-gray-500 line-clamp-2">
-                      {item.description}
-                    </p>
-                    <div className="flex justify-between text-sm text-gray-700">
-                      <span>Qty: {item.quantity}</span>
-                      <span>Price: ${item.price?.toFixed(2) || "0.00"}</span>
+              <div className="overflow-y-scroll h-[500px]">
+                {cartList?.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex items-start justify-between border-b pb-4"
+                  >
+                    <img
+                      src={`/api/products/images/${item.id}`}
+                      alt={item.name}
+                      className="w-16 h-16 object-cover rounded"
+                    />
+                    <div className="ml-4 flex-1 space-y-1">
+                      <p className="text-sm font-semibold text-gray-800">
+                        {item.name}
+                      </p>
+                      <p className="text-xs text-gray-500 line-clamp-2">
+                        {item.description}
+                      </p>
+                      <div className="flex justify-between text-sm text-gray-700">
+                        <span>Qty: {item.quantity}</span>
+                        <span>Price: ${item.price?.toFixed(2) || "0.00"}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
 
               <div className="flex justify-between text-sm text-gray-700">
                 <span>Shipping</span>

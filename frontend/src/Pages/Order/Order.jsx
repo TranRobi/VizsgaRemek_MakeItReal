@@ -56,7 +56,7 @@ function Order() {
     <>
       <Navbar />
       <ThemeProvider theme={theme}>
-        <div className="m-4 h-screen flex items-center justify-center">
+        <div className="m-4 h-fit flex justify-center">
           <FormControl fullWidth className="flex items-center ">
             <Paper elevation={3} className="w-full lg:w-1/2 p-6 ">
               <h1 className="text-4xl font-serif text-black w-fit p-2">

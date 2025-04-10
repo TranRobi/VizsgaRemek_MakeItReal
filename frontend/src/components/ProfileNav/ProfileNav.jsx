@@ -32,7 +32,7 @@ function ProfileNav({ setActiveTab }) {
     navigate("/");
   };
   return (
-    <ul className="w-full md:w-fit bg-neutral-900 text-white h-fit md:h-full p-2 flex-col justify-between text-center">
+    <ul className=" w-full md:w-fit bg-neutral-900 text-white h-fit md:h-full p-2 flex-col justify-between text-center">
       <div className="flex items-center justify-between ">
         <Button
           onClick={() => {

@@ -5,6 +5,17 @@ const ProductsContext = createContext();
 
 const ProductsProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
+  const [orders, setOrders] = useState([]);
+
+  function getHistory() {
+    axios
+      .get("/api/order-history", {
+        Cookie: document.cookie,
+      })
+      .then((response) => {
+        setOrders(response.data);
+      });
+  }
 
   function getProducts() {
     axios
@@ -37,10 +48,11 @@ const ProductsProvider = ({ children }) => {
   }
 
   useEffect(() => {
+    getHistory();
     getProducts();
   }, []);
   return (
-    <ProductsContext.Provider value={{ products, addProduct }}>
+    <ProductsContext.Provider value={{ products, addProduct, orders }}>
       {children}
     </ProductsContext.Provider>
   );
