@@ -257,6 +257,11 @@ const SWAGGER_OPTS = {
                             description: 'Szín',
                             example: 'Blue',
                         },
+                        'email-address': {
+                            type: 'string',
+                            description: 'E-mail cím',
+                            example: 'mernok@homestead.moe',
+                        },
                     },
                 },
 				checkout_response: {
@@ -1342,7 +1347,7 @@ app.put('/api/checkout', (req, res) => {
 app.post('/api/order/:id', (req, res) => {
     const token = get_api_key(req);
 	const user = logged_in_users.find((e) => e.token === token);
-	console.log(user);
+	console.log(`user: ${user}`);
 
     async_get(
         db,
