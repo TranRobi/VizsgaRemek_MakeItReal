@@ -33,14 +33,14 @@ function Cart() {
               return (
                 <div
                   key={index}
-                  className="flex flex-col md:flex-row   border-2 p-4 rounded-lg mb-2 w-full"
+                  className="flex flex-col md:flex-row   border-2 p-4 rounded-lg mb-2 w-full justify-between"
                 >
                   <img
                     src={`/api/products/images/${cart.id}`}
                     alt="image of product"
-                    className="w-1/3 mx-auto "
+                    className="w-1/3"
                   />
-                  <div className="">
+                  <div className="w-3/5">
                     <div className="">
                       <h1 className="text-3xl">{cart.name}</h1>
                       <p className="text-left w-full md:w-3/4 p-1">

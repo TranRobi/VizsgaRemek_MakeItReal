@@ -91,7 +91,7 @@ nav li {
   }
   nav a {
     width: 100%;
-    font-size: smaller;
+    font-size: larger;
     text-align: center;
     border-bottom: none;
   }
@@ -123,5 +123,7 @@ nav li {
   ul li {
     margin-bottom: 1.3rem;
     text-align: left;
+    width: 100%;
+    text-align: center;
   }
 }

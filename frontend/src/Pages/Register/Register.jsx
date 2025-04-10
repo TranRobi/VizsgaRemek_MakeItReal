@@ -6,203 +6,214 @@ import {
   TextField,
   ThemeProvider,
   Typography,
+  Alert,
 } from "@mui/material";
 import Stack from "@mui/material/Stack";
-
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import CancelIcon from "@mui/icons-material/Cancel";
 import KeyIcon from "@mui/icons-material/Key";
 import PersonIcon from "@mui/icons-material/Person";
-import Alert from "@mui/material/Alert";
 import CheckIcon from "@mui/icons-material/Check";
-
 import axios from "axios";
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#b71c1c", // Red
+    },
+    secondary: {
+      main: "#000000", // Black
+    },
+    background: {
+      default: "#ffffff",
+    },
+  },
+  typography: {
+    fontFamily: "Roboto, sans-serif",
+  },
+});
 
 function Register({ close, open }) {
   const [registerWasSucceeded, setRegisterWasSucceeded] = useState(false);
-  const theme = createTheme({
-    palette: {
-      warning: {
-        main: "#1C1C1C",
-      },
-    },
-  });
-
   const [formData, setFormData] = useState({
     "display-name": "",
-    password: "",
     "email-address": "",
+    password: "",
+    confirmPassword: "",
   });
   const [errors, setErrors] = useState({
     short: "",
     mismatch: "",
   });
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    setErrors({ short: "", mismatch: "" }); // Reset on change
+  };
+
   const validateFields = () => {
-    let error = false;
-    if (formData.password && formData.password.length < 5) {
-      error = true;
-      console.log("password was too short");
-      setErrors({
-        ...errors,
-        short: "Password must contain at least 5 characters",
-      });
-      console.log("short set");
+    let errorFound = false;
+    const newErrors = { short: "", mismatch: "" };
+
+    if (formData.password.length < 5) {
+      newErrors.short = "Password must contain at least 5 characters";
+      errorFound = true;
     }
-    if (
-      formData.confirmPassword &&
-      formData.confirmPassword !== formData.password
-    ) {
-      error = true;
-      setErrors({ ...errors, mismatch: "Passwords don't match" });
+
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.mismatch = "Passwords don't match";
+      errorFound = true;
     }
-    return error;
+
+    setErrors(newErrors);
+    return errorFound;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (validateFields()) {
-      return;
-    } else {
-      axios
-        .post("/api/register", formData, {
-          headers: {
-            "content-type": "application/x-www-form-urlencoded",
-          },
-        })
-        .then((response) => {
-          if (response.status === 200) {
-            setRegisterWasSucceeded(true);
-          } else {
-            setRegisterWasSucceeded(false);
-          }
-        })
-        .catch((error) => console.log(error));
-    }
-    document.getElementById("regForm").reset();
-  };
+    if (validateFields()) return;
 
-  const handleChange = (event) => {
-    if (!event.target) {
-      setFormData((values) => ({ ...values, expire_at: event.$d }));
-    } else {
-      setFormData((values) => ({
-        ...values,
-        [event.target.name]: event.target.value,
-      }));
-    }
+    axios
+      .post("/api/register", formData, {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          setRegisterWasSucceeded(true);
+        }
+      })
+      .catch((error) => {
+        console.error("Registration error:", error);
+        setRegisterWasSucceeded(false);
+      });
   };
 
   const handleOpenLogin = (e) => {
     open(e);
     close(e);
   };
+
   return (
     <ThemeProvider theme={theme}>
       <div className="w-full h-screen flex justify-center items-center backdrop-blur-sm">
-        <div className="p-5 rounded-xl w-4/5 md:w-1/3 login bg-white">
-          <div className="flex justify-between align-middle">
-            <h1 className="text-3xl font-bold pb-6 ">Register</h1>
-
-            <a href={window.location.pathname} className=" text-red-500">
-              <CancelIcon fontSize="large" onClick={(e) => close(e)} />
-            </a>
+        <div className="bg-white rounded-2xl shadow-lg p-8 w-11/12 max-w-md">
+          <div className="flex justify-between items-center mb-6">
+            <Typography
+              variant="h4"
+              sx={{ fontWeight: "bold", color: "black" }}
+            >
+              Register
+            </Typography>
+            <CancelIcon
+              fontSize="large"
+              className="text-red-700 cursor-pointer"
+              onClick={close}
+            />
           </div>
-          <form id="regForm">
+          <form onSubmit={handleSubmit}>
             <FormControl fullWidth>
-              <Stack spacing={2}>
+              <Stack spacing={3}>
                 <div className="relative">
                   <TextField
                     required
-                    onChange={handleChange}
                     name="display-name"
                     id="display-name"
                     label="Username"
-                    placeholder="Enter Username"
-                    color="warning"
                     variant="standard"
-                    className="w-full"
-                  ></TextField>
-                  <PersonIcon className="absolute top-1/2 right-0" />
+                    fullWidth
+                    color="primary"
+                    placeholder="Enter your username"
+                    value={formData["display-name"]}
+                    onChange={handleChange}
+                  />
+                  <PersonIcon className="absolute top-1/2 right-2 transform -translate-y-1/2 text-gray-600" />
                 </div>
                 <div className="relative">
                   <TextField
                     required
-                    onChange={handleChange}
                     name="email-address"
                     id="email-address"
                     label="Email Address"
-                    placeholder="Enter Email Address"
-                    type="email"
-                    color="warning"
                     variant="standard"
-                    className="w-full"
-                  ></TextField>
-                  <MailOutlineIcon className="absolute top-1/2 right-0" />
+                    fullWidth
+                    color="primary"
+                    placeholder="Enter your email"
+                    value={formData["email-address"]}
+                    onChange={handleChange}
+                  />
+                  <MailOutlineIcon className="absolute top-1/2 right-2 transform -translate-y-1/2 text-gray-600" />
                 </div>
                 <div className="relative">
                   <TextField
                     required
-                    onChange={handleChange}
                     name="password"
                     id="password"
-                    label="Password"
-                    placeholder="Enter password"
                     type="password"
-                    color="warning"
+                    label="Password"
                     variant="standard"
-                    className="w-full"
-                    error={Boolean(errors?.short)}
-                    helperText={errors?.short}
-                  ></TextField>
-                  <KeyIcon className="absolute top-1/2 right-0" />
+                    fullWidth
+                    color="primary"
+                    placeholder="Enter password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    error={!!errors.short}
+                    helperText={errors.short}
+                  />
+                  <KeyIcon className="absolute top-1/2 right-2 transform -translate-y-1/2 text-gray-600" />
                 </div>
                 <div className="relative">
                   <TextField
-                    onChange={handleChange}
+                    required
                     name="confirmPassword"
                     id="confirmPassword"
-                    label="Confirm Password"
-                    placeholder="Enter password again"
                     type="password"
-                    required
-                    color="warning"
+                    label="Confirm Password"
                     variant="standard"
-                    className="w-full"
-                    error={Boolean(errors?.mismatch)}
-                    helperText={errors?.mismatch}
-                  ></TextField>
-                  <KeyIcon className="absolute top-1/2 right-0" />
+                    fullWidth
+                    color="primary"
+                    placeholder="Re-enter password"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    error={!!errors.mismatch}
+                    helperText={errors.mismatch}
+                  />
+                  <KeyIcon className="absolute top-1/2 right-2 transform -translate-y-1/2 text-gray-600" />
                 </div>
                 <Button
+                  type="submit"
                   variant="contained"
-                  color="warning"
-                  className="w-fit"
-                  onClick={(e) => {
-                    handleSubmit(e);
-                  }}
+                  color="primary"
+                  fullWidth
+                  sx={{ py: 1.5, fontWeight: "bold" }}
                 >
-                  Register
+                  Create Account
                 </Button>
-                <div className="flex items-center justify-between">
-                  <Typography
-                    variant="subtitle2"
-                    color="primary"
-                    className="mr-4 cursor-pointer"
-                    onClick={(e) => handleOpenLogin(e)}
-                  >
-                    Already have an account? Log in now!
-                  </Typography>
-                </div>
+                <Typography
+                  variant="body2"
+                  color="secondary"
+                  align="center"
+                  className="cursor-pointer underline"
+                  onClick={handleOpenLogin}
+                >
+                  Already have an account? Log in now!
+                </Typography>
               </Stack>
             </FormControl>
           </form>
-          {registerWasSucceeded ? (
-            <Alert icon={<CheckIcon fontSize="inherit" />} severity="success">
-              You're account has been successfuly made.
+          {registerWasSucceeded && (
+            <Alert
+              icon={<CheckIcon fontSize="inherit" />}
+              severity="success"
+              sx={{ mt: 3 }}
+            >
+              Your account has been successfully created.
             </Alert>
-          ) : (
-            ""
           )}
         </div>
       </div>

@@ -1,7 +1,15 @@
 import React, { useState, useEffect, useContext } from "react";
-
 import axios from "axios";
-import { FormControl, Stack, Paper, TextField, Button } from "@mui/material";
+import {
+  FormControl,
+  Stack,
+  Paper,
+  TextField,
+  Button,
+  Typography,
+  createTheme,
+  ThemeProvider,
+} from "@mui/material";
 import { AuthContext } from "../../context/AuthContext";
 
 function Delivery() {
@@ -15,10 +23,25 @@ function Delivery() {
     street: "",
     postal_code: "",
   });
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: "#b71c1c", // Dark red
+      },
+      secondary: {
+        main: "#000000", // Black
+      },
+      background: {
+        default: "#ffffff", // White
+      },
+    },
+    typography: {
+      fontFamily: "Roboto, sans-serif",
+    },
+  });
   const [enabled, setEnabled] = useState(true);
 
   const handleChange = (event) => {
-    console.log(event.target.value);
     if (!event.target) {
       setDeliveryInformation((values) => ({ ...values, expire_at: event.$d }));
     } else {
@@ -28,8 +51,8 @@ function Delivery() {
       }));
     }
   };
+
   useEffect(() => {
-    console.log(document.cookie);
     if (user) {
       axios
         .get("/api/delivery-information", {
@@ -74,16 +97,20 @@ function Delivery() {
   }
 
   return (
-    <div>
-      <div className="m-4">
+    <ThemeProvider theme={theme}>
+      <div className="min-h-screen text-white p-6">
         <FormControl fullWidth className="flex items-center">
           <Paper
-            elevation={3}
-            className="w-full md:w-1/2 p-6 active:text-red-700 ease-in duration-75 transition"
+            elevation={4}
+            className="w-full md:w-1/2 p-8 bg-white rounded-xl border border-red-600"
           >
-            <h1 className="text-4xl font-serif text-black w-fit p-2 ">
-              Delivery information
-            </h1>
+            <Typography
+              variant="h4"
+              className="font-serif text-red-600 font-bold border-b border-red-600 pb-2 "
+            >
+              Delivery Information
+            </Typography>
+
             <Stack gap={3}>
               <TextField
                 label="Full name"
@@ -91,96 +118,95 @@ function Delivery() {
                 disabled={enabled}
                 name="name"
                 value={deliveryInformation.name}
-                onChange={(e) => {
-                  console.log("delivery informatio");
-                  handleChange(e);
-                }}
-              ></TextField>
+                onChange={handleChange}
+                InputLabelProps={{ style: { color: "#111" } }}
+              />
               <TextField
                 variant="standard"
                 disabled={enabled}
                 name="phone_number"
                 label="Phone number"
                 value={deliveryInformation.phone_number}
-                onChange={(e) => {
-                  handleChange(e);
-                }}
-              ></TextField>
+                onChange={handleChange}
+                InputLabelProps={{ style: { color: "#111" } }}
+              />
               <TextField
                 variant="standard"
                 name="country"
                 label="Country"
                 value={deliveryInformation.country}
-                onChange={(e) => {
-                  handleChange(e);
-                }}
+                onChange={handleChange}
                 disabled={enabled}
-              ></TextField>
+                InputLabelProps={{ style: { color: "#111" } }}
+              />
               <TextField
                 variant="standard"
                 name="county"
                 label="County"
                 value={deliveryInformation.county}
-                onChange={(e) => {
-                  handleChange(e);
-                }}
+                onChange={handleChange}
                 disabled={enabled}
-              ></TextField>
+                InputLabelProps={{ style: { color: "#111" } }}
+              />
               <TextField
                 variant="standard"
                 name="city"
                 label="City"
                 value={deliveryInformation.city}
-                onChange={(e) => {
-                  handleChange(e);
-                }}
+                onChange={handleChange}
                 disabled={enabled}
-              ></TextField>
-              <div className="flex w-full">
+                InputLabelProps={{ style: { color: "#111" } }}
+              />
+              <div className="flex w-full gap-4">
                 <TextField
-                  sx={{ width: "10%", marginRight: "1.5rem" }}
+                  sx={{ width: "30%" }}
                   name="postal_code"
                   label="Postal Code"
                   variant="standard"
                   value={deliveryInformation.postal_code}
                   disabled={enabled}
-                  onChange={(e) => {
-                    handleChange(e);
-                  }}
-                ></TextField>
+                  onChange={handleChange}
+                  InputLabelProps={{ style: { color: "#111" } }}
+                />
                 <TextField
-                  sx={{ width: "100%" }}
+                  sx={{ flexGrow: 1 }}
                   variant="standard"
                   name="street"
                   label="Street"
                   value={deliveryInformation.street}
                   disabled={enabled}
-                  onChange={(e) => {
-                    handleChange(e);
-                  }}
-                ></TextField>
+                  onChange={handleChange}
+                  InputLabelProps={{ style: { color: "#111" } }}
+                />
               </div>
 
               <Button
                 variant="contained"
-                className="w-fit"
+                sx={{
+                  backgroundColor: "red",
+                  color: "white",
+                  "&:hover": {
+                    backgroundColor: "#b30000",
+                  },
+                  width: "fit-content",
+                  px: 3,
+                }}
                 onClick={() => {
                   if (enabled) {
                     setEnabled(false);
                   } else {
-                    //send changes to the backend server
                     sendChanges();
                     setEnabled(true);
                   }
                 }}
               >
-                {enabled ? "Edit delivery information" : "Save changes"}
+                {enabled ? "Edit Delivery Information" : "Save Changes"}
               </Button>
             </Stack>
           </Paper>
         </FormControl>
       </div>
-    </div>
+    </ThemeProvider>
   );
 }
 

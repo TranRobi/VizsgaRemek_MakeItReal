@@ -1,53 +1,68 @@
 import React, { useState } from "react";
-
+import {
+  Box,
+  Collapse,
+  IconButton,
+  Table,
+  TableCell,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import Box from "@mui/material/Box";
-import Collapse from "@mui/material/Collapse";
-import IconButton from "@mui/material/IconButton";
-import Table from "@mui/material/Table";
-import TableCell from "@mui/material/TableCell";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
 
-function Row(props) {
-  const { row } = props;
+function Row({ row }) {
   const [openTable, setOpenTable] = useState(false);
 
   return (
-    <React.Fragment>
-      <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+    <>
+      <TableRow
+        sx={{
+          backgroundColor: "#1a1a1a",
+          "&:hover": { backgroundColor: "#2a2a2a" },
+        }}
+      >
         <TableCell>
           <IconButton
             aria-label="expand row"
             size="small"
             onClick={() => setOpenTable(!openTable)}
+            sx={{ color: "#fff" }}
           >
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            {openTable ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
-        <TableCell component="th" scope="row">
+        <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
           {row.name}
         </TableCell>
-        <TableCell>{row.description}</TableCell>
+        <TableCell sx={{ color: "#ccc" }}>{row.description}</TableCell>
       </TableRow>
-      <TableRow>
+
+      <TableRow sx={{ backgroundColor: "#121212" }}>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={openTable} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              <Table size="small" aria-label="purchases">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>File name:</TableCell>
-                    <TableCell>asd</TableCell>
-                  </TableRow>
-                </TableHead>
+            <Box sx={{ margin: 2 }}>
+              <Typography
+                variant="subtitle1"
+                gutterBottom
+                sx={{ color: "#f44336", fontWeight: "bold" }}
+              >
+                File Details
+              </Typography>
+              <Table size="small">
+                <TableRow>
+                  <TableCell sx={{ color: "#fff" }}>File Name</TableCell>
+                  <TableCell sx={{ color: "#ccc" }}>
+                    {row["stl-file"]?.name || "N/A"}
+                  </TableCell>
+                </TableRow>
+                {/* Add more details if needed */}
               </Table>
             </Box>
           </Collapse>
         </TableCell>
       </TableRow>
-    </React.Fragment>
+    </>
   );
 }
 

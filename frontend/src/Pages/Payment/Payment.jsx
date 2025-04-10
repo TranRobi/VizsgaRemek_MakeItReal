@@ -1,27 +1,55 @@
 import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
+import { CartContext } from "../../context/CartContext";
+
 import PersonalInfoForm from "../../components/PaymentForm/PersonalInfoForm";
 import ShippingForm from "../../components/PaymentForm/ShippingForm";
-import { Container, Typography, Card, CardContent } from "@mui/material";
-import axios from "axios";
 import CardInfoForm from "../../components/PaymentForm/CardInfoForn";
 
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
-import { CartContext } from "../../context/CartContext";
+
+import {
+  Container,
+  createTheme,
+  Typography,
+  Card,
+  CardContent,
+  Divider,
+  ThemeProvider,
+} from "@mui/material";
+import axios from "axios";
 
 const MultiStepForm = () => {
-  const { storedUser } = React.useContext(AuthContext);
-  const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({});
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: "#b71c1c", // Dark red
+      },
+      secondary: {
+        main: "#000000", // Black
+      },
+      background: {
+        default: "#ffffff", // White
+      },
+    },
+    typography: {
+      fontFamily: "Roboto, sans-serif",
+    },
+  });
+  const { storedUser } = useContext(AuthContext);
   const { cartList } = useContext(CartContext);
 
+  const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState({});
+
   useEffect(() => {
-    console.log(storedUser);
-    if (storedUser[1]) {
+    if (storedUser?.[1]) {
       axios
         .get("/api/delivery-information", {
-          Cookie: document.cookie,
+          headers: {
+            Cookie: document.cookie,
+          },
         })
         .then((response) => {
           setFormData(response.data);
@@ -31,110 +59,133 @@ const MultiStepForm = () => {
 
   const handleNext = (data) => {
     setFormData((prev) => ({ ...prev, ...data }));
-    setStep(step + 1);
+    setStep((prev) => prev + 1);
   };
 
   const handleBack = () => {
-    setStep(step - 1);
+    setStep((prev) => prev - 1);
   };
 
   const handlePaymentSubmit = (data) => {
     const finalData = { ...formData, ...data };
     console.log("Final Payment Data:", finalData);
+    // Add your POST logic here
   };
 
   return (
     <>
       <Navbar />
-      <div className="min-h-[86vh]  flex flex-col md:flex-row items-center">
-        <div className="w-3/4 h-full">
-          <Container maxWidth="md">
-            <Card>
-              <CardContent>
-                <Typography variant="h5" gutterBottom>
-                  Payment Process
-                </Typography>
-                {step === 1 && (
-                  <PersonalInfoForm
-                    onNext={handleNext}
-                    defaultValues={formData}
-                  />
-                )}
-                {step === 2 && (
-                  <ShippingForm
-                    onNext={handleNext}
-                    onBack={handleBack}
-                    defaultValues={formData}
-                  />
-                )}
-                {step === 3 && (
-                  <CardInfoForm
-                    onSubmit={handlePaymentSubmit}
-                    onBack={handleBack}
-                    defaultValues={formData}
-                  />
-                )}
-              </CardContent>
-              <div className="flex w-full items-center justify-center grid-cols-3">
-            <div className="grid grid-cols-3">
-              <img src="visa.svg" alt="" className="w-[80px] m-5 " />
-              <img src="mastercard.svg" alt="" className="w-[80px] m-5 " />
-              <img src="paypal.svg" alt="" className="w-[80px] m-5 " />
-              <img src="applepay.svg" alt="" className="w-[80px] m-5 " />
-              <img src="gpay.svg" alt="" className="w-[80px] m-5 " />
-              <img src="revolut.svg" alt="" className="w-[80px] m-5 " />
-            </div>
+      <ThemeProvider theme={theme}>
+        <div className="min-h-[86vh] py-10 px-4 md:px-10 flex flex-col lg:flex-row gap-10">
+          {/* Step Form */}
+          <div className="w-full lg:w-2/3">
+            <Container maxWidth="md">
+              <Card className="rounded-2xl shadow-lg">
+                <CardContent>
+                  <Typography
+                    variant="h5"
+                    className="text-black font-semibold mb-4"
+                  >
+                    Payment Process
+                  </Typography>
+                  {step === 1 && (
+                    <PersonalInfoForm
+                      onNext={handleNext}
+                      defaultValues={formData}
+                    />
+                  )}
+                  {step === 2 && (
+                    <ShippingForm
+                      onNext={handleNext}
+                      onBack={handleBack}
+                      defaultValues={formData}
+                    />
+                  )}
+                  {step === 3 && (
+                    <CardInfoForm
+                      onSubmit={handlePaymentSubmit}
+                      onBack={handleBack}
+                      defaultValues={formData}
+                    />
+                  )}
+                </CardContent>
+                {/* Payment logos */}
+                <div className="grid grid-cols-3 sm:grid-cols-6 justify-items-center py-6 border-t">
+                  {[
+                    "visa",
+                    "mastercard",
+                    "paypal",
+                    "applepay",
+                    "gpay",
+                    "revolut",
+                  ].map((img) => (
+                    <img
+                      key={img}
+                      src={`/${img}.svg`}
+                      alt={img}
+                      className="w-[60px] grayscale hover:grayscale-0 transition"
+                    />
+                  ))}
+                </div>
+              </Card>
+            </Container>
           </div>
-            </Card>
-            
-          </Container>
-          
-        </div>
-        <div class=" bg-white shadow-md rounded-2xl p-6 space-y-4 w-2/3  md:w-full">
-          <h2 class="text-xl font-semibold text-gray-800">Payment Summary</h2>
-          {cartList.map((item) => {
-            return (
-              <div class="flex justify-between text-gray-700">
-                <img
-                  src={`/api/products/images/${item.id}`}
-                  className="w-1/9"
-                />
-                <div className="flex justify-between w-full">
-                  <div>
-                    <h4>Name: </h4>
-                    <span>{item.name}</span>
-                  </div>
-                  <div>
-                    <h4>Description: </h4>
-                    <span className="w-1/3 ">{item.description}</span>
-                  </div>
-                  <div>
-                    <h4>Quantity: </h4>
-                    <span>{item.quantity}</span>
-                  </div>
-                  <div>
-                    <h4>Price: </h4>
-                    <span>{0}</span>
+
+          {/* Summary Card */}
+          <div className="w-full lg:w-2/3">
+            <div className="bg-white rounded-2xl shadow-md p-6 space-y-6">
+              <Typography variant="h6" className="text-black font-semibold">
+                Payment Summary
+              </Typography>
+
+              {cartList?.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-start justify-between border-b pb-4"
+                >
+                  <img
+                    src={`/api/products/images/${item.id}`}
+                    alt={item.name}
+                    className="w-16 h-16 object-cover rounded"
+                  />
+                  <div className="ml-4 flex-1 space-y-1">
+                    <p className="text-sm font-semibold text-gray-800">
+                      {item.name}
+                    </p>
+                    <p className="text-xs text-gray-500 line-clamp-2">
+                      {item.description}
+                    </p>
+                    <div className="flex justify-between text-sm text-gray-700">
+                      <span>Qty: {item.quantity}</span>
+                      <span>Price: ${item.price?.toFixed(2) || "0.00"}</span>
+                    </div>
                   </div>
                 </div>
+              ))}
+
+              <div className="flex justify-between text-sm text-gray-700">
+                <span>Shipping</span>
+                <span>$5.00</span>
               </div>
-            );
-          })}
 
-          <div class="flex justify-between text-gray-700">
-            <span>Shipping</span>
-            <span>$5.00</span>
-          </div>
-          <div className="">
-            <hr class="my-2 border-gray-300" />
+              <Divider className="my-2" />
 
-            <div class="flex justify-between text-lg font-bold text-gray-900">
-              <span>Total</span>
-              <span>$50.48</span>
+              <div className="flex justify-between text-lg font-bold text-gray-900">
+                <span>Total</span>
+                <span>
+                  $
+                  {cartList
+                    .reduce((acc, item) => {
+                      const itemTotal = (item.price || 0) * item.quantity;
+                      return acc + itemTotal;
+                    }, 5)
+                    .toFixed(2)}
+                </span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </ThemeProvider>
       <Footer />
     </>
   );

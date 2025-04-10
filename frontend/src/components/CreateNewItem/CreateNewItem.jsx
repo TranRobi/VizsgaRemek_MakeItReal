@@ -1,93 +1,142 @@
 import React, { useState, useEffect, useContext } from "react";
-
-import { ProductsContext } from "../../context/ProductsContext";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  IconButton,
+  createTheme,
+  Paper,
+  ThemeProvider,
+} from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
+import { ProductsContext } from "../../context/ProductsContext";
 
 function CreateNewItem({ open, setOpen }) {
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: "#b71c1c", // Dark red
+      },
+      secondary: {
+        main: "#000000", // Black
+      },
+      background: {
+        default: "#ffffff", // White
+      },
+    },
+    typography: {
+      fontFamily: "Roboto, sans-serif",
+    },
+  });
   const [STL, setSTL] = useState();
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    "stl-file": STL,
+    "stl-file": null,
   });
+
   const { addProduct } = useContext(ProductsContext);
+
   useEffect(() => {
-    formData["stl-file"] = STL;
+    setFormData((prev) => ({ ...prev, "stl-file": STL }));
   }, [STL]);
+
+  const handleChange = (event) => {
+    if (!event.target) return;
+    setFormData((values) => ({
+      ...values,
+      [event.target.name]: event.target.value,
+    }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     addProduct(formData);
   };
-  const handleChange = (event) => {
-    if (!event.target) {
-      setFormData((values) => ({ ...values, expire_at: event.$d }));
-    } else {
-      setFormData((values) => ({
-        ...values,
-        [event.target.name]: event.target.value,
-      }));
-    }
-  };
 
   return (
-    <div className="w-1/2 h-1/2 bg-white mx-auto p-3">
-      <div>
-        <div className="flex justify-between">
-          <h1>Add new item</h1>
-          <CancelIcon
-            fontSize="large"
-            onClick={(e) => setOpen(!open)}
-            sx={{ color: "red" }}
-          />
-        </div>
-        <form className="flex flex-col" encType="multipart/form-data">
-          <label>
-            Name:
-            <input
-              type="text"
+    <ThemeProvider theme={theme}>
+      <Box
+        className="flex justify-center items-center min-h-screen w-full backdrop-blur-sm"
+        sx={{ p: 4 }}
+      >
+        <Paper
+          elevation={5}
+          sx={{
+            width: { xs: "100%", md: "50%" },
+            padding: 4,
+            backgroundColor: "#fff",
+            color: "#000",
+            border: "2px solid #d32f2f",
+            borderRadius: "16px",
+          }}
+        >
+          <Box className="flex justify-between items-center mb-4">
+            <Typography
+              variant="h5"
+              sx={{ fontWeight: "bold", color: "#d32f2f" }}
+            >
+              Add New Product
+            </Typography>
+            <IconButton onClick={() => setOpen(false)}>
+              <CancelIcon fontSize="large" sx={{ color: "#d32f2f" }} />
+            </IconButton>
+          </Box>
+
+          <form onSubmit={handleSubmit} encType="multipart/form-data">
+            <TextField
+              fullWidth
+              label="Product Name"
               name="name"
-              onChange={(e) => {
-                handleChange(e);
-              }}
-              className="w-full p-2 border-2"
+              variant="outlined"
+              onChange={handleChange}
+              sx={{ mb: 3 }}
             />
-          </label>
-          <label>
-            Description:
-            <input
-              type="text"
+            <TextField
+              fullWidth
+              label="Description"
               name="description"
-              onChange={(e) => {
-                handleChange(e);
-              }}
-              className="w-full p-2 border-2"
+              variant="outlined"
+              onChange={handleChange}
+              sx={{ mb: 3 }}
             />
-          </label>
-          <label className="block mb-2 text-sm font-medium text-gray-900">
-            STL file:
-            <input
-              class="text-black w-full border-2 p-2 bg-[#f0f0f0] cursor-pointer"
-              aria-describedby="file_input_help"
-              name="stl-file"
-              type="file"
-              accept="*.stl"
-              onChange={(e) => {
-                setSTL(e.target.files[0]);
+            <Box sx={{ mb: 3 }}>
+              <Typography
+                variant="body1"
+                sx={{ mb: 1, fontWeight: 500, color: "#000" }}
+              >
+                STL File
+              </Typography>
+              <input
+                type="file"
+                name="stl-file"
+                accept="*.stl"
+                onChange={(e) => setSTL(e.target.files[0])}
+                className="bg-[#f0f0f0] p-2 w-full text-black border-2 rounded"
+              />
+            </Box>
+            <Button
+              type="submit"
+              variant="contained"
+              sx={{
+                backgroundColor: "#d32f2f",
+                color: "#fff",
+                "&:hover": {
+                  backgroundColor: "#9a0007",
+                },
+                fontWeight: "bold",
+                textTransform: "none",
+                px: 4,
+                py: 1,
               }}
-            />
-          </label>
-          <button
-            type="submit"
-            onClick={(e) => {
-              handleSubmit(e);
-            }}
-            className="w-fit p-2 bg-green-600 text-black hover:bg-green-950 hover:text-white transition duration-75"
-          >
-            Add new product
-          </button>
-        </form>
-      </div>
-    </div>
+            >
+              Add Product
+            </Button>
+          </form>
+        </Paper>
+      </Box>
+    </ThemeProvider>
   );
 }
 

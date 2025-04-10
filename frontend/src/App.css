@@ -4,4 +4,6 @@
 body {
   background: linear-gradient(black, #950101);
   font-family: "Tektur";
+  background-repeat: no-repeat;
+  background-size: cover;
 }

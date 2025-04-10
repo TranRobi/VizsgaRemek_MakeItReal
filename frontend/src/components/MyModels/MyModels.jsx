@@ -1,95 +1,129 @@
 import React, { useContext, useState } from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import IconButton from "@mui/material/IconButton";
+import {
+  Box,
+  Button,
+  IconButton,
+  Modal,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import Paper from "@mui/material/Paper";
+
 import { AuthContext } from "../../context/AuthContext";
 import { ProductsContext } from "../../context/ProductsContext";
-import { Button, Modal } from "@mui/material";
 import CreateNewItem from "../CreateNewItem/CreateNewItem";
-
 import Row from "../Row/Row";
 
 function MyModels() {
   const { userID } = useContext(AuthContext);
   const { products } = useContext(ProductsContext);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const pageSize = 5;
   const [openAddNew, setOpenAddNew] = useState(false);
 
-  return (
-    <>
-      <Button
-        onClick={() => {
-          setOpenAddNew(!openAddNew);
-        }}
-        variant="contained"
-        color="primary"
-      >
-        Add new item
-      </Button>
-      <div className="w-4/5 mx-auto ">
-        <h2 className="text-4xl text-[#EEEEEE] p-2">My Models</h2>
-        <TableContainer component={Paper}>
-          <Table aria-label="collapsible table">
-            <TableHead>
-              <TableRow>
-                <TableCell />
-                <TableCell>Name</TableCell>
-                <TableCell>Desription</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {products
-                .map((prod) => {
-                  if (prod.uploader_id == userID) {
-                    return <Row key={prod.id} row={prod} />;
-                  }
-                })
-                .slice(
-                  currentPage * pageSize - pageSize,
-                  currentPage * pageSize
-                )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </div>
-      <div className="flex justify-center items-center text-white">
-        <IconButton
-          onClick={() => {
-            if (currentPage !== 1) {
-              setCurrentPage(currentPage - 1);
-            }
-          }}
-        >
-          <ArrowBackIcon fontSize="large" />
-        </IconButton>
-        <span>
-          Page {currentPage} / {Math.ceil(products.length / pageSize)}
-        </span>
-        <IconButton
-          onClick={() => {
-            if (currentPage * pageSize < products.length) {
-              setCurrentPage(currentPage + 1);
-            }
-          }}
-        >
-          <ArrowForwardIcon fontSize="large" />
-        </IconButton>
-      </div>
+  const filteredProducts = products.filter(
+    (prod) => prod.uploader_id === parseInt(userID)
+  );
+  console.log(filteredProducts);
+  const totalPages = Math.ceil(filteredProducts.length / pageSize);
+  const displayedProducts = filteredProducts.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
-      <Modal open={openAddNew}>
-        <div className="flex items-center w-full h-full">
-          <CreateNewItem open={openAddNew} setOpen={setOpenAddNew} />
-        </div>
+  return (
+    <Box sx={{ px: 4, py: 6, minHeight: "100vh" }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
+        <Typography variant="h4" sx={{ color: "#fff", fontWeight: "bold" }}>
+          My Models
+        </Typography>
+        <Button
+          variant="contained"
+          onClick={() => setOpenAddNew(true)}
+          sx={{
+            backgroundColor: "#d32f2f",
+            "&:hover": { backgroundColor: "#9a0007" },
+            color: "#fff",
+            fontWeight: "bold",
+            textTransform: "none",
+          }}
+        >
+          Add New Item
+        </Button>
+      </Box>
+
+      <TableContainer component={Paper} sx={{ borderRadius: 2 }}>
+        <Table>
+          <TableHead sx={{ backgroundColor: "#d32f2f" }}>
+            <TableRow>
+              <TableCell sx={{ color: "#fff", fontWeight: "bold" }} />
+              <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
+                Name
+              </TableCell>
+              <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
+                Description
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {displayedProducts.map((prod) => (
+              <Row key={prod.id} row={prod} />
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          mt: 4,
+          color: "#fff",
+        }}
+      >
+        <IconButton
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          <ArrowBackIcon sx={{ color: "#fff" }} fontSize="large" />
+        </IconButton>
+        <Typography sx={{ mx: 2 }}>
+          Page {currentPage} / {totalPages || 1}
+        </Typography>
+        <IconButton
+          onClick={() =>
+            setCurrentPage((prev) =>
+              currentPage < totalPages ? prev + 1 : prev
+            )
+          }
+          disabled={currentPage >= totalPages}
+        >
+          <ArrowForwardIcon sx={{ color: "#fff" }} fontSize="large" />
+        </IconButton>
+      </Box>
+
+      <Modal
+        open={openAddNew}
+        onClose={() => setOpenAddNew(false)}
+        aria-labelledby="add-new-product"
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          backdropFilter: "blur(2px)",
+        }}
+      >
+        <CreateNewItem open={openAddNew} setOpen={setOpenAddNew} />
       </Modal>
-    </>
+    </Box>
   );
 }
 

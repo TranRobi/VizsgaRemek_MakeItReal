@@ -8,38 +8,42 @@ import {
   Typography,
 } from "@mui/material";
 import Stack from "@mui/material/Stack";
-
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import CancelIcon from "@mui/icons-material/Cancel";
 import KeyIcon from "@mui/icons-material/Key";
-
 import axios from "axios";
 import { AuthContext } from "../../context/AuthContext";
 
-function Login({ close, open }) {
-  const { user, setUser, setUserID } = useContext(AuthContext);
-  const theme = createTheme({
-    palette: {
-      warning: {
-        main: "#1C1C1C",
-      },
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#b71c1c", // Dark red
     },
-  });
+    secondary: {
+      main: "#000000", // Black
+    },
+    background: {
+      default: "#ffffff", // White
+    },
+  },
+  typography: {
+    fontFamily: "Roboto, sans-serif",
+  },
+});
 
+function Login({ close, open }) {
+  const { setUser } = useContext(AuthContext);
   const [formData, setFormData] = useState({
     "email-address": "",
     password: "",
   });
 
-  const handleChange = (event) => {
-    if (!event.target) {
-      setFormData((values) => ({ ...values, expire_at: event.$d }));
-    } else {
-      setFormData((values) => ({
-        ...values,
-        [event.target.name]: event.target.value,
-      }));
-    }
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleOpenRegister = (e) => {
@@ -49,79 +53,88 @@ function Login({ close, open }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     axios
       .post("/api/login", formData, {
-        headers: { "content-type": "application/x-www-form-urlencoded" },
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
       })
       .then((response) => {
         if (response.status === 201) {
           setUser(true);
           localStorage.setItem("userID", response.data.id);
-
           close(e);
         }
       })
-      .catch((error) => console.log(error));
+      .catch((error) => console.error("Login error:", error));
   };
+
   return (
     <ThemeProvider theme={theme}>
       <div className="w-full h-screen flex justify-center items-center backdrop-blur-sm">
-        <div className="p-5 rounded-xl w-4/5 md:w-1/3 login h-fit bg-white ">
-          <div className="flex justify-between align-middle">
-            <h1 className="text-3xl font-bold pb-6 ">Login</h1>
-
-            <a href={window.location.pathname} className=" text-red-500">
-              <CancelIcon fontSize="large" onClick={(e) => close(e)} />
-            </a>
+        <div className="bg-white rounded-2xl shadow-lg p-8 w-11/12 max-w-md">
+          <div className="flex justify-between items-center mb-6">
+            <Typography
+              variant="h4"
+              sx={{ fontWeight: "bold", color: "black" }}
+            >
+              Login
+            </Typography>
+            <CancelIcon
+              fontSize="large"
+              className="text-red-700 cursor-pointer"
+              onClick={close}
+            />
           </div>
-          <form>
+          <form onSubmit={handleSubmit}>
             <FormControl fullWidth>
-              <Stack spacing={2}>
+              <Stack spacing={3}>
                 <div className="relative">
                   <TextField
-                    onChange={handleChange}
                     name="email-address"
                     id="email-address"
-                    label="Email Address/Username"
-                    placeholder="Enter Email Address/Username"
-                    color="warning"
+                    label="Email Address / Username"
                     variant="standard"
-                    className="w-full"
-                  ></TextField>
-                  <MailOutlineIcon className="absolute top-1/2 right-0" />
+                    fullWidth
+                    color="primary"
+                    placeholder="Enter your email or username"
+                    value={formData["email-address"]}
+                    onChange={handleChange}
+                  />
+                  <MailOutlineIcon className="absolute top-1/2 right-2 transform -translate-y-1/2 text-gray-600" />
                 </div>
                 <div className="relative">
                   <TextField
-                    onChange={handleChange}
                     name="password"
                     id="password"
                     label="Password"
-                    placeholder="Enter password"
                     type="password"
-                    color="warning"
                     variant="standard"
-                    className="w-full"
-                  ></TextField>
-                  <KeyIcon className="absolute top-1/2 right-0" />
+                    fullWidth
+                    color="primary"
+                    placeholder="Enter your password"
+                    value={formData.password}
+                    onChange={handleChange}
+                  />
+                  <KeyIcon className="absolute top-1/2 right-2 transform -translate-y-1/2 text-gray-600" />
                 </div>
                 <Button
+                  type="submit"
                   variant="contained"
-                  color="warning"
-                  className="w-fit "
-                  onClick={(e) => handleSubmit(e)}
+                  color="primary"
+                  fullWidth
+                  sx={{ py: 1.5, fontWeight: "bold" }}
                 >
-                  Login
+                  Sign In
                 </Button>
-                <div className="flex items-center justify-between">
-                  <Typography
-                    variant="subtitle2"
-                    color="primary"
-                    className="mr-4 cursor-pointer"
-                    onClick={(e) => handleOpenRegister(e)}
-                  >
-                    Don't have an account? Register here!
-                  </Typography>
-                </div>
+                <Typography
+                  variant="body2"
+                  color="secondary"
+                  align="center"
+                  className="cursor-pointer underline"
+                  onClick={handleOpenRegister}
+                >
+                  Don't have an account? Register here!
+                </Typography>
               </Stack>
             </FormControl>
           </form>

@@ -1,5 +1,5 @@
-import { Modal } from "@mui/material";
-import React, { useContext } from "react";
+import { Modal, useMediaQuery } from "@mui/material";
+import React, { useContext, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { styled } from "@mui/material/styles";
 
@@ -17,6 +17,8 @@ import "./Navbar.css";
 import { AuthContext } from "../../context/AuthContext";
 import { CartContext } from "../../context/CartContext";
 function Navbar() {
+  const [isNavbarMenu, setIsNavbarMenu] = useState(true);
+  const media = useMediaQuery("(min-width:766px)");
   const { cartList } = useContext(CartContext);
   const [isOpened, setIsOpened] = useState(false);
   const [isOpenedRegister, setIsOpenedRegister] = useState(false);
@@ -29,6 +31,9 @@ function Navbar() {
   `;
   const { user } = useContext(AuthContext);
 
+  useEffect(() => {
+    media ? setIsNavbarMenu(false) : setIsNavbarMenu(true);
+  }, [media]);
   const closeLogin = (e) => {
     e.preventDefault();
     setIsOpened(false);
@@ -59,84 +64,94 @@ function Navbar() {
             alt="logo"
             onClick={home}
           />
-          <div className="w-full md:mr-4  flex justify-end ">
-            <ul className=" mobile items-center p-2 hidden">
-              <li>
-                <NavLink to="/aboutus">
-                  About us<span></span>
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/library">
-                  Library<span></span>
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/contactus">
-                  Contact us<span></span>
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/order">
-                  Order now<span></span>
-                </NavLink>
-              </li>
+          <div className="w-full md:mr-4  flex flex-col md:justify-end md:flex-row">
+            <div>
+              <MenuIcon
+                sx={{ color: "red", display: media ? "none" : "block" }}
+                onClick={() => {
+                  setIsNavbarMenu(!isNavbarMenu);
+                }}
+              />
+            </div>
+            <div className={isNavbarMenu ? "hidden" : "block"}>
+              <ul className="flex-col md:flex-row">
+                <li>
+                  <NavLink to="/aboutus">
+                    About us<span></span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/library">
+                    Library<span></span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/contactus">
+                    Contact us<span></span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/order">
+                    Order now<span></span>
+                  </NavLink>
+                </li>
 
-              <li>
-                {user ? (
-                  <AccountBoxIcon
+                <li>
+                  {user ? (
+                    <AccountBoxIcon
+                      sx={{
+                        fontSize: "4xxl",
+                        color: "#ff0000",
+                        scale: "1",
+                        margin: "2px",
+                        "&:hover": {
+                          scale: "1.2",
+                          transition: "ease-in 0.1s",
+                          color: "red",
+                        },
+                      }}
+                      onClick={() => {
+                        navigate("/profile");
+                      }}
+                    />
+                  ) : (
+                    <LoginIcon
+                      onClick={openLogin}
+                      sx={{
+                        fontSize: "4xxl",
+                        color: "#ff0000",
+                        scale: "1",
+                        "&:hover": {
+                          scale: "1.2",
+                          transition: "ease-in 0.1s",
+                          color: "red",
+                        },
+                      }}
+                    />
+                  )}
+                  <ShoppingCartIcon
                     sx={{
                       fontSize: "4xxl",
                       color: "#ff0000",
-                      scale: "1",
-                      margin: "2px",
-                      "&:hover": {
+                      marginLeft: "20px",
+                      ":hover": {
                         scale: "1.2",
                         transition: "ease-in 0.1s",
                         color: "red",
                       },
                     }}
                     onClick={() => {
-                      navigate("/profile");
+                      navigate("/cart");
                     }}
                   />
-                ) : (
-                  <LoginIcon
-                    onClick={openLogin}
-                    sx={{
-                      fontSize: "4xxl",
-                      color: "#ff0000",
-                      scale: "1",
-                      "&:hover": {
-                        scale: "1.2",
-                        transition: "ease-in 0.1s",
-                        color: "red",
-                      },
-                    }}
+                  <CartBadge
+                    badgeContent={cartList.length}
+                    color="error"
+                    showZero
                   />
-                )}
-                <ShoppingCartIcon
-                  sx={{
-                    fontSize: "4xxl",
-                    color: "#ff0000",
-                    marginLeft: "20px",
-                    ":hover": {
-                      scale: "1.2",
-                      transition: "ease-in 0.1s",
-                      color: "red",
-                    },
-                  }}
-                  onClick={() => {
-                    navigate("/cart");
-                  }}
-                />
-                <CartBadge
-                  badgeContent={cartList.length}
-                  color="error"
-                  showZero
-                />
-              </li>
-            </ul>
+                </li>
+              </ul>
+            </div>
           </div>
         </nav>
       </div>
