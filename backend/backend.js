@@ -1185,9 +1185,29 @@ app.get("/api/products/:id", (req, res) => {
  *                     schema:
  *                         type: array
  *                         items:
- *                             type: number
- *                         description: Termék ID
- *                         example: [1, 2, 3]
+ *                             type: object
+ *                             properties:
+ *                                 id:
+ *                                     type: integer
+ *                                 material:
+ *                                     type: string
+ *                                 quantity:
+ *                                     type: integer
+ *                         required:
+ *                             - id
+ *                             - material
+ *                             - quantity
+ *                         description: Szükséges adatok a kosár elemeiből
+ *                         example:
+ *                             - id: 1
+ *                               material: 'PLA'
+ *                               quantity: 3
+*                             - id: 3
+ *                               material: 'PETG'
+ *                               quantity: 1
+ *                             - id: 4
+ *                               material: 'ABS'
+ *                               quantity: 2
  *         responses:
  *             200:
  *                 description:
@@ -1198,8 +1218,6 @@ app.get("/api/products/:id", (req, res) => {
  *                             type: array
  *                             items:
  *                                 $ref: '#/components/schemas/checkout_response'
- *                             
- *
  *             404:
  *                 description:
  *                     Az egyik ID nem létező termékre utal!
@@ -1221,7 +1239,7 @@ app.put('/api/checkout', (req, res) => {
 		return res.status(406).send();
 	}
 
-	const product_ids = req.body.map(id => Number(id));
+	const product_ids = req.body.map(elem => Number(elem.id));
 	product_ids.forEach(id => {
 		if (!Number.isInteger(id)) {
 			return res.status(406).send();
