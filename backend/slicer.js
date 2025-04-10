@@ -2,7 +2,8 @@
 
 import os from 'node:os';
 import { execSync } from 'node:child_process';
-import { mkdirSync, unlinkSync, rmSync } from 'node:fs';
+import { mkdirSync, unlinkSync, rmSync, open, createReadStream } from 'node:fs';
+import readline from 'node:readline';
 
 import { file_name_from_date } from './util.js';
 
@@ -93,4 +94,26 @@ export const generate_stl_thumbnail = stl_path => {
     // TODO check success
     execSync(`${stl_thumb} --background 000000ff --size 640 ${stl_path} ${thumbnail_path}`);
     return thumbnail_path;
+};
+
+export const get_model_price = async stl_file_path => {
+    const gcode_path = `gcode/${file_name_from_date()}.gcode`;
+    slice_stl_to_gcode(stl_file_path, gcode_path);
+    const read_stream = createReadStream(gcode_path, { encoding: 'utf-8' });
+    const rl = readline.createInterface({
+        input: read_stream,
+        crlfDelay: Infinity,
+    });
+    for await (const line of rl) {
+        if (line.includes('[mm]')) {
+            console.log('FOUND');
+            const components = line.split(' ');
+            const price = parseFloat(components[components.length - 1]);
+            console.log(price);
+            unlinkSync(gcode_path);
+            return price;
+        }
+    }
+    unlinkSync(gcode_path);
+    return -1;
 };
