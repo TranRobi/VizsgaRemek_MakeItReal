@@ -63,7 +63,6 @@ winget install -e --id Prusa3D.PrusaSlicer
 winget install -e --id UnlimitedBacon.STL-Thumb
 `);
 
-// TODO jobb keresés Windows exe fájlokra
 let slicer = undefined;
 try {
     slicer = os.type() === 'Windows_NT' ?
