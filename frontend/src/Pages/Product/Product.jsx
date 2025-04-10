@@ -2,6 +2,11 @@ import React, { useContext, useState, useEffect } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
+import Button from '@mui/material/Button';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 import axios from "axios";
 import { CartContext } from "../../context/CartContext";
 
@@ -71,16 +76,19 @@ function Product() {
 
           {/* Size Scale */}
           <div>
-            <label className="block font-semibold">Size: {size}%</label>
-            <input
-              type="range"
-              min="50"
-              max="150"
+            <label className="block font-semibold">Size:</label>
+            <select
               value={size}
               onChange={(e) => setSize(e.target.value)}
-              className="w-full"
-            />
-          </div>
+              className="border p-2 rounded w-full bg-red-950"
+            >
+              {[50,100,150].map((mat) => (
+                <option key={mat} value={mat}>
+                  {mat}%
+                </option>
+              ))}
+            </select>
+          </div>          
 
           {/* Material Selector */}
           <div>
@@ -145,7 +153,7 @@ function Product() {
               }}
               className="w-full md:w-1/3 bg-gray-600 text-white py-3 rounded-lg font-semibold hover:bg-gray-900"
             >
-              Add to bag
+              Add to cart
             </button>
           </div>
         </div>

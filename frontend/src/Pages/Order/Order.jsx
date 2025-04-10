@@ -37,10 +37,10 @@ function Order({ setCartList, cartList }) {
   return (
     <>
       <Navbar cartList={cartList} />
-      <div className=" m-4">
-        <FormControl fullWidth className="flex items-center">
-          <Paper elevation={3} className="w-full lg:w-1/2 p-6">
-            <h1 className="text-4xl font-serif text-black w-fit p-2 ">
+      <div className="m-4 h-screen flex items-center justify-center">
+        <FormControl fullWidth className="flex items-center ">
+          <Paper elevation={3} className="w-full lg:w-1/2 p-6 ">
+            <h1 className="text-4xl font-serif text-black w-fit p-2">
               Order now
             </h1>
             <Stack gap={3}>
