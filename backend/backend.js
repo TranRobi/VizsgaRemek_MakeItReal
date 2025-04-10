@@ -1234,7 +1234,6 @@ app.put('/api/checkout', (req, res) => {
 	const user = logged_in_users.find(elem => elem.token === get_api_key(req));
 	const is_guest = user === undefined;
 
-	console.log(req);
 	if (!req.body || req.body.length === 0) {
 		return res.status(406).send();
 	}
