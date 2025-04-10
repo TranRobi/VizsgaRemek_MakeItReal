@@ -31,4 +31,14 @@ export const JOB_COLOURS = {
     GRAY: 'Gray',
 };
 
+export const FILAMENT_PRICE_PER_MM = {
+    /*
+     * Az első számokat 3djake.hu-ról mintáztuk,
+     * melyek kilogrammonként vannak
+     */
+    'PLA': 7500 / 1000 / 10,
+    'PETG': 9600 / 1000 / 10,
+    'ABS': 11000 / 1000 / 10,
+};
+
 export default CONFIG;

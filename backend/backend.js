@@ -11,7 +11,7 @@ import cors from "cors";
 import multer from "multer";
 import { cwd } from "node:process";
 
-import CONFIG from "./config.js";
+import CONFIG, { JOB_MATERIALS } from "./config.js";
 import { generate_salt, hash_password } from "./secret.js";
 import {
 	rename_key,
@@ -1238,23 +1238,32 @@ app.put('/api/checkout', (req, res) => {
 		return res.status(406).send();
 	}
 
-	const product_ids = req.body.map(elem => Number(elem.id));
-	product_ids.forEach(id => {
-		if (!Number.isInteger(id)) {
+    const cart_contents = req.body.map(elem => ({
+        id: Number(elem.id),
+        material: elem.material.toUpperCase(),
+        quantity: Number(elem.quantity),
+    }));
+
+	cart_contents.forEach(elem => {
+		if (!Number.isInteger(elem.id) ||
+            !Number.isInteger(elem.quantity) ||
+            !Object.values(JOB_MATERIALS).includes(elem.material)) {
 			return res.status(406).send();
 		}
 	});
+    const product_ids = cart_contents.map(e => e.id);
+
 
 	async_get_all(
 		db,
 		`SELECT rowid, stl_file_path FROM products WHERE rowid IN (${product_ids.join(',')})`
 	).then(	
 		rows => {
-			if (rows.length !== product_ids.length) {
+			if (rows.length !== cart_contents.length) {
 				return res.status(404).send();
 			}
-			const response_promise = (id, stl_path) => new Promise(async (resolve, reject) => {
-				const price = await get_model_price(stl_path);
+			const response_promise = (id, stl_path, material) => new Promise(async (resolve, reject) => {
+				const price = await get_model_price(stl_path, material);
 				if (price === -1) {
 					console.log('error');
 					console.log(price);
@@ -1262,7 +1271,18 @@ app.put('/api/checkout', (req, res) => {
 				}
 				resolve({price: price, id: id});
 			});
-			Promise.all(rows.map(row => response_promise(row.rowid, row.stl_file_path))).then(
+
+			Promise.all(
+                rows.map(
+                    row => response_promise(
+                        row.rowid,
+                        row.stl_file_path,
+                        // A sorok sorrendje lehet más lenne, mint a request-ben
+                        // levő azonosítóké, így viszont garantált a működés
+                        cart_contents.find(e => e.id === row.rowid).material
+                    )
+                )
+            ).then(
 				prices => {
 					return res.status(200).json(prices);
 				},

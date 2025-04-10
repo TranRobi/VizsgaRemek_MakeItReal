@@ -7,6 +7,7 @@ import { stat } from 'node:fs/promises';
 import readline from 'node:readline';
 
 import { file_name_from_date } from './util.js';
+import { FILAMENT_PRICE_PER_MM } from './config.js';
 
 const mkdir_wrapper = dirname => {
     try {
@@ -97,13 +98,14 @@ export const generate_stl_thumbnail = stl_path => {
     return thumbnail_path;
 };
 
-export const get_model_price = async stl_file_path => {
+export const get_model_price = async (stl_file_path, material) => {
     /*
      * PrusaSlicer által generált G-CODE-nak
      * az utolsó kb. 64kb-ja comment, itt található
      * a felhasznált filament hossza is
      */
     const BYTES_TO_READ = 64 * Math.pow(1024, 2);
+
     const gcode_path = `gcode/${file_name_from_date()}.gcode`;
     slice_stl_to_gcode(stl_file_path, gcode_path);
     const stats = await stat(gcode_path);
@@ -112,7 +114,7 @@ export const get_model_price = async stl_file_path => {
         gcode_path,
         {
             encoding: 'utf-8',
-            highWaterMark: 128 * Math.pow(1024, 2), // 128kb
+            highWaterMark: BYTES_TO_READ,
             start: Math.max(file_size - BYTES_TO_READ, 0),
             end: file_size
         }
@@ -133,5 +135,5 @@ export const get_model_price = async stl_file_path => {
         }
     }
     unlinkSync(gcode_path);
-    return p;
+    return p !== -1 ? Math.round(p * FILAMENT_PRICE_PER_MM[material.toUpperCase()]) : p;
 };
