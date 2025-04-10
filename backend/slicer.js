@@ -3,6 +3,7 @@
 import os from 'node:os';
 import { execSync } from 'node:child_process';
 import { mkdirSync, unlinkSync, rmSync, open, createReadStream } from 'node:fs';
+import { stat } from 'node:fs/promises';
 import readline from 'node:readline';
 
 import { file_name_from_date } from './util.js';
@@ -97,23 +98,40 @@ export const generate_stl_thumbnail = stl_path => {
 };
 
 export const get_model_price = async stl_file_path => {
+    /*
+     * PrusaSlicer által generált G-CODE-nak
+     * az utolsó kb. 64kb-ja comment, itt található
+     * a felhasznált filament hossza is
+     */
+    const BYTES_TO_READ = 64 * Math.pow(1024, 2);
     const gcode_path = `gcode/${file_name_from_date()}.gcode`;
     slice_stl_to_gcode(stl_file_path, gcode_path);
-    const read_stream = createReadStream(gcode_path, { encoding: 'utf-8' });
-    const rl = readline.createInterface({
-        input: read_stream,
-        crlfDelay: Infinity,
-    });
-    for await (const line of rl) {
-        if (line.includes('[mm]')) {
-            console.log('FOUND');
-            const components = line.split(' ');
-            const price = parseFloat(components[components.length - 1]);
-            console.log(price);
-            unlinkSync(gcode_path);
-            return price;
+    const stats = await stat(gcode_path);
+    const file_size = stats.size;
+    const read_stream = createReadStream(
+        gcode_path,
+        {
+            encoding: 'utf-8',
+            highWaterMark: 128 * Math.pow(1024, 2), // 128kb
+            start: Math.max(file_size - BYTES_TO_READ, 0),
+            end: file_size
+        }
+    );
+
+    const length_regex = new RegExp('filament used \\[mm\\]\\s=\\s\\d+(\\.\\d+)?');
+    let p = -1;
+    for await (const chunk of read_stream) {
+        const matches = chunk.match(length_regex);
+        if (!matches || !matches[0])
+            continue;
+        const relevant_text = matches[0];
+        if (relevant_text) {
+            const price = relevant_text.split('= ')[1];
+            console.log(`price ${price}`);
+            p = price;
+            break;
         }
     }
     unlinkSync(gcode_path);
-    return -1;
+    return p;
 };
