@@ -2,16 +2,16 @@ import React, { useContext, useState, useEffect } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
-import Button from '@mui/material/Button';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
+import Button from "@mui/material/Button";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
 import axios from "axios";
 import { CartContext } from "../../context/CartContext";
 
 function Product() {
-  const { cartList, setCartList } = useContext(CartContext);
+  const { cartList, setCartList, setProductItems } = useContext(CartContext);
   const [quantity, setQuantity] = useState(1);
   const [size, setSize] = useState(50);
   const [color, setColor] = useState("Black");
@@ -82,13 +82,13 @@ function Product() {
               onChange={(e) => setSize(e.target.value)}
               className="border p-2 rounded w-full bg-red-950"
             >
-              {[50,100,150].map((mat) => (
+              {[50, 100, 150].map((mat) => (
                 <option key={mat} value={mat}>
                   {mat}%
                 </option>
               ))}
             </select>
-          </div>          
+          </div>
 
           {/* Material Selector */}
           <div>

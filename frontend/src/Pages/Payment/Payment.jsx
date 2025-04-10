@@ -19,6 +19,7 @@ import {
   ThemeProvider,
 } from "@mui/material";
 import axios from "axios";
+import { ProductsContext } from "../../context/ProductsContext";
 
 const MultiStepForm = () => {
   const theme = createTheme({
@@ -37,25 +38,34 @@ const MultiStepForm = () => {
       fontFamily: "Roboto, sans-serif",
     },
   });
+
   const { storedUser } = useContext(AuthContext);
-  const { cartList } = useContext(CartContext);
+  const { cartList, productItems, prices } = useContext(CartContext);
+  const shipPrice = cartList.length === 0 ? 0 : 3000; // Assuming 3000 HUF for shipping cost
 
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({}); // Loading state for data fetching
 
+  // Fetch all data (prices and formData)
   useEffect(() => {
-    if (storedUser?.[1]) {
-      axios
-        .get("/api/delivery-information", {
-          headers: {
-            Cookie: document.cookie,
-          },
-        })
-        .then((response) => {
-          setFormData(response.data);
-        });
-    }
-  }, []);
+    const fetchData = async () => {
+      try {
+        if (storedUser?.[1]) {
+          const userResponse = await axios.get("/api/delivery-information", {
+            headers: {
+              Cookie: document.cookie,
+            },
+          });
+          setFormData(userResponse.data); // Set delivery information
+        } // Get prices from the API
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false); // Set loading to false after data is fetched
+      }
+    };
+    fetchData();
+  }, [storedUser, productItems]); // Dependency on storedUser and productItems
 
   const handleNext = (data) => {
     setFormData((prev) => ({ ...prev, ...data }));
@@ -70,6 +80,18 @@ const MultiStepForm = () => {
     const finalData = { ...formData, ...data };
     console.log("Final Payment Data:", finalData);
     // Add your POST logic here
+  };
+
+  // Calculate the total price
+  const calcTotal = () => {
+    let total = 0;
+    if (prices.length > 0) {
+      for (let index = 0; index < cartList.length; index++) {
+        total += parseInt(prices[index]?.price || 0);
+      }
+    }
+
+    return total + shipPrice;
   };
 
   return (
@@ -158,7 +180,19 @@ const MultiStepForm = () => {
                       </p>
                       <div className="flex justify-between text-sm text-gray-700">
                         <span>Qty: {item.quantity}</span>
-                        <span>Price: ${item.price?.toFixed(2) || "0.00"}</span>
+                        <span>
+                          {prices.map((i) => {
+                            if (i.id === item.id) {
+                              return Math.ceil(i.price).toLocaleString(
+                                "hu-HU",
+                                {
+                                  style: "currency",
+                                  currency: "HUF",
+                                }
+                              );
+                            }
+                          })}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -167,7 +201,12 @@ const MultiStepForm = () => {
 
               <div className="flex justify-between text-sm text-gray-700">
                 <span>Shipping</span>
-                <span>$5.00</span>
+                <span>
+                  {shipPrice.toLocaleString("hu-HU", {
+                    style: "currency",
+                    currency: "HUF",
+                  })}
+                </span>
               </div>
 
               <Divider className="my-2" />
@@ -175,13 +214,10 @@ const MultiStepForm = () => {
               <div className="flex justify-between text-lg font-bold text-gray-900">
                 <span>Total</span>
                 <span>
-                  $
-                  {cartList
-                    .reduce((acc, item) => {
-                      const itemTotal = (item.price || 0) * item.quantity;
-                      return acc + itemTotal;
-                    }, 5)
-                    .toFixed(2)}
+                  {calcTotal().toLocaleString("hu-HU", {
+                    style: "currency",
+                    currency: "HUF",
+                  })}
                 </span>
               </div>
             </div>

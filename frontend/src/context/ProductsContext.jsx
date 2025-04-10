@@ -1,20 +1,24 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect, useContext } from "react";
 import axios from "axios";
+import { AuthContext } from "./AuthContext";
 
 const ProductsContext = createContext();
 
 const ProductsProvider = ({ children }) => {
+  const { user } = useContext(AuthContext);
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
 
   function getHistory() {
-    axios
-      .get("/api/order-history", {
-        Cookie: document.cookie,
-      })
-      .then((response) => {
-        setOrders(response.data);
-      });
+    if (user) {
+      axios
+        .get("/api/order-history", {
+          Cookie: document.cookie,
+        })
+        .then((response) => {
+          setOrders(response.data);
+        });
+    }
   }
 
   function getProducts() {
