@@ -13,15 +13,11 @@ const CartProvider = ({ children }) => {
     return storedItems ? JSON.parse(storedItems) : [];
   });
 
-  const [prices, setPrices] = React.useState(() => {
-    const storedPrices = localStorage.getItem("prices");
-    return storedPrices ? JSON.parse(storedPrices) : [];
-  });
+
 
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cartList));
     localStorage.setItem("items", JSON.stringify(productItems));
-    localStorage.setItem("prices", JSON.stringify(prices));
   }, [cartList]);
 
   return (
@@ -30,9 +26,7 @@ const CartProvider = ({ children }) => {
         cartList,
         setCartList,
         setProductItems,
-        productItems,
-        prices,
-        setPrices,
+        productItems
       }}
     >
       {children}

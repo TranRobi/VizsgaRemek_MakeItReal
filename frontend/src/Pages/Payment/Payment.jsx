@@ -19,7 +19,6 @@ import {
   ThemeProvider,
 } from "@mui/material";
 import axios from "axios";
-import { ProductsContext } from "../../context/ProductsContext";
 
 const MultiStepForm = () => {
   const theme = createTheme({
@@ -48,6 +47,7 @@ const MultiStepForm = () => {
 
   // Fetch all data (prices and formData)
   useEffect(() => {
+    window.scrollTo(0, 0);
     const fetchData = async () => {
       try {
         if (storedUser?.[1]) {
@@ -60,8 +60,6 @@ const MultiStepForm = () => {
         } // Get prices from the API
       } catch (error) {
         console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false); // Set loading to false after data is fetched
       }
     };
     fetchData();
@@ -85,11 +83,9 @@ const MultiStepForm = () => {
   // Calculate the total price
   const calcTotal = () => {
     let total = 0;
-    if (prices.length > 0) {
-      for (let index = 0; index < cartList.length; index++) {
-        total += parseInt(prices[index]?.price || 0);
-      }
-    }
+    cartList.forEach((item) => {
+      total += (item.price * item.quantity);
+    });
 
     return total + shipPrice;
   };
@@ -181,17 +177,7 @@ const MultiStepForm = () => {
                       <div className="flex justify-between text-sm text-gray-700">
                         <span>Qty: {item.quantity}</span>
                         <span>
-                          {prices.map((i) => {
-                            if (i.id === item.id) {
-                              return Math.ceil(i.price).toLocaleString(
-                                "hu-HU",
-                                {
-                                  style: "currency",
-                                  currency: "HUF",
-                                }
-                              );
-                            }
-                          })}
+                          {(item.price * item.quantity).toLocaleString("hu-HU",{style: "currency",currency: "HUF",})}
                         </span>
                       </div>
                     </div>
