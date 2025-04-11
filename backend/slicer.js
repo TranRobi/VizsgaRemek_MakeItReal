@@ -97,16 +97,13 @@ export const generate_stl_thumbnail = stl_path => {
     return thumbnail_path;
 };
 
-export const get_model_price = async (stl_file_path, material) => {
+export const get_gcode_price = async (gcode_path, material) => {
     /*
      * PrusaSlicer által generált G-CODE-nak
      * az utolsó kb. 64kb-ja comment, itt található
      * a felhasznált filament hossza is
      */
     const BYTES_TO_READ = 64 * Math.pow(1024, 2);
-
-    const gcode_path = `gcode/${file_name_from_date()}.gcode`;
-    slice_stl_to_gcode(stl_file_path, gcode_path);
     const stats = await stat(gcode_path);
     const file_size = stats.size;
     const read_stream = createReadStream(
@@ -133,6 +130,15 @@ export const get_model_price = async (stl_file_path, material) => {
             break;
         }
     }
-    unlinkSync(gcode_path);
     return p !== -1 ? Math.round(p * FILAMENT_PRICE_PER_MM[material.toUpperCase()]) : p;
+};
+
+export const get_model_price = async (stl_file_path, material) => {
+    
+
+    const gcode_path = `gcode/${file_name_from_date()}.gcode`;
+    slice_stl_to_gcode(stl_file_path, gcode_path);
+    const p = await get_gcode_price(gcode_path, material);
+    unlinkSync(gcode_path);
+    return p;
 };

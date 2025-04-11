@@ -1,5 +1,5 @@
 import { async_get, file_name_from_date, first_letter_uppercase } from './util.js';
-import { slice_stl_to_gcode } from './slicer.js';
+import { slice_stl_to_gcode, get_gcode_price } from './slicer.js';
 import { JOB_COLOURS, JOB_MATERIALS, JOB_STATES } from "./config.js";
 import { existsSync, unlinkSync } from 'node:fs';
 
@@ -221,28 +221,60 @@ export const query_place_order = (db, req, res, user, stl_path, product_id) => {
                     payment_info => {
                         console.log(payment_info);
                         slice_stl_to_gcode(stl_path, gcode_file_path);
-                        query_insert_job(
-                            db,
-                            req.params.id,
-                            email_address,
-                            payment_info.rowid,
-                            delivery_info.rowid,
-                            gcode_file_path,
-                            quantity,
-                            material,
-                            colour,
-                            'pending'
-                        ).then(
-                            job => {
-                                return res.status(201).json({
-                                    // TODO cleanup
-                                    ...payment_info, ...delivery_info, ...job
-                                });
+                        get_gcode_price(gcode_file_path, material).then(
+                            price => {
+                                if (price === -1) {
+                                    console.log('Nem sikerült kiszámolni a gcode árát!');
+                                    return res.status(500).send();
+                                }
+                                console.log(price);
+                                query_insert_job(
+                                    db,
+                                    req.params.id,
+                                    email_address,
+                                    payment_info.rowid,
+                                    delivery_info.rowid,
+                                    gcode_file_path,
+                                    quantity,
+                                    material,
+                                    colour,
+                                    'pending'
+                                ).then(
+                                    job => {
+                                        return res.status(201).json({
+                                            'card-number': payment_info.card_number,
+                                            name: payment_info.card_name,
+                                            cvv: payment_info.cvv,
+                                            'expiration-date': payment_info.expiration_month +
+                                                '/' +
+                                                payment_info.expiration_year,
+                                            country: delivery_info.country,
+                                            county: delivery_info.county,
+                                            city: delivery_info.city,
+                                            'postal-code': delivery_info.postal_code,
+                                            'street-number': delivery_info.street_number,
+                                            'phone-number': delivery_info.phone_number,
+                                            'product-id': product_id,
+                                            'email-address': email_address,
+                                            quantity: quantity,
+                                            material: material,
+                                            colour: colour,
+                                            state: job.state,
+                                            'price-per-product': price,
+                                            'total-price': price * quantity,
+                                        });
+                                    },
+                                    err => {
+                                        console.log('job insert buko');
+                                        console.log(err);
+                                        unlinkSync(gcode_file_path);
+                                        return res.status(500).send();
+                                    }
+                                );
                             },
                             err => {
-                                console.log('job insert buko');
+                                console.log('get_gcode_price buko');
                                 console.log(err);
-                                unlinkSync(gcode_file_path);
                                 return res.status(500).send();
                             }
                         );
