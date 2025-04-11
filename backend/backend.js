@@ -264,6 +264,101 @@ const SWAGGER_OPTS = {
                         },
                     },
                 },
+				order_response: {
+					type: 'object',
+					properties: {
+						'card-number': {
+							type: 'string',
+                            description: 'Kártyaszám',
+                            example: '1234567890123456789',
+						},
+                        name: {
+							type: 'string',
+                            description: 'Rendelő neve',
+                            example: 'Gipsz Jakab',
+						},
+                        cvv: {
+							type: 'string',
+                            description: 'CVV kártyaszám',
+                            example: '666',
+						},
+                        'expiration-date': {
+							type: 'string',
+                            description: '03/28',
+                            example: 'Bankkártya lejárati dátuma',
+						},
+                        country: {
+							type: 'string',
+                            description: 'Cím ország része',
+                            example: 'Csád',
+						},
+                        county: {
+							type: 'string',
+                            description: 'Cím megye/állam része',
+                            example: 'Kanto',
+						},
+                        city: {
+							type: 'string',
+                            description: 'Cím város része',
+                            example: 'Belgrád',
+						},
+                        'postal-code': {
+							type: 'string',
+                            description: 'Cím irányítószám része',
+                            example: '6666',
+						},
+                        'street-number': {
+							type: 'string',
+                            description: 'Cím utca+házszám része',
+                            example: '308 Negra Arroyo Lane',
+						},
+                        'phone-number': {
+							type: 'string',
+                            description: 'Telefonszám (szállításhoz)',
+                            example: '+36701234567',
+						},
+                        'product-id': {
+							type: 'integer',
+                            description: 'Termék azonosító (null, ha egyedi rendelésst kap a backend)',
+                            example: 2,
+						},
+                        'email-address': {
+							type: 'string',
+                            description: 'E-mail cím',
+                            example: 'mernok@homestead.moe',
+						},
+                        quantity: {
+							type: 'integer',
+                            description: 'Rendelt mennyiség',
+                            example: 5,
+						},
+                        material: {
+							type: 'string',
+                            description: 'Anyag',
+                            example: 'ABS',
+						},
+                        colour: {
+							type: 'string',
+                            description: 'Szín',
+                            example: 'Red',
+						},
+                        state: {
+							type: 'string',
+                            description: 'Rendelés feldolgozásának állapota',
+                            example: 'pending',
+						},
+                        'price-per-product': {
+							type: 'integer',
+                            description: 'Termék darabonkénti ára',
+                            example: 1000,
+						},
+                        'total-price': {
+							type: 'integer',
+                            description: 'Összár',
+                            example: 10000,
+						},
+					},
+				},
 				checkout_response: {
 					type: "object",
 					properties: {
@@ -1330,6 +1425,10 @@ app.put('/api/checkout', (req, res) => {
  *             201:
  *                 description:
  *                     Sikeres rendelés
+ *                 content:
+ *                     application/json:
+ *                         schema:
+ *                             $ref: '#/components/schemas/order_response'
  *             404:
  *                 description:
  *                     Nincs ilyen termék!
