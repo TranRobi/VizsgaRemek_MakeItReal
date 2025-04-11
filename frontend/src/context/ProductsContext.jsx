@@ -5,12 +5,12 @@ import { AuthContext } from "./AuthContext";
 const ProductsContext = createContext();
 
 const ProductsProvider = ({ children }) => {
-  const { user } = useContext(AuthContext);
+  const { storedUser } = useContext(AuthContext);
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
 
   function getHistory() {
-    if (user) {
+    if (storedUser?.[1]) {
       axios
         .get("/api/order-history", {
           Cookie: document.cookie,

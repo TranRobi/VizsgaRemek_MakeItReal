@@ -60,7 +60,7 @@ function Cart() {
                             {cart.description}
                           </p>
                           <p className="text-left w-full md:w-3/4 p-1">
-                            Price: {cart.price * cart.quantity}
+                            Price: {(cart.price * cart.quantity).toLocaleString("hu-HU",{style: "currency",currency: "HUF",})}
                             </p>
                         </div>
                         <div className="flex flex-col">

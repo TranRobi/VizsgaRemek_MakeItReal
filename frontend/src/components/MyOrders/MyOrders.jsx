@@ -13,7 +13,6 @@ import { ProductsContext } from "../../context/ProductsContext";
 
 const OrderHistory = () => {
   const { orders } = useContext(ProductsContext);
-  console.log(orders);
 
   return (
     <div className="w-5/6 mx-auto m-4">
