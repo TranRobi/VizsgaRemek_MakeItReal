@@ -177,6 +177,10 @@ export const query_place_order = (db, req, res, user, products) => {
     const colour = req.body['colour'];
     const material = req.body['material'];
     const quantity = Number(req.body['quantity']);
+	const name = req.body["name"];
+    const card_number = req.body['card-number'];
+    const cvv = req.body['cvv'];
+    const expiration_date = req.body['expiration-date'];
 
     for (const p of products) {
         if (!p.colour || !p.material || !p.quantity) {
@@ -196,40 +200,39 @@ export const query_place_order = (db, req, res, user, products) => {
         }
     }
 
-    if (is_guest) {
-	    const country = req.body["country"];
-        console.log(country);
-	    const county = req.body["county"];
-        console.log(county);
-	    const city = req.body["city"];
-        console.log(city);
-	    const postal_code = req.body["postal-code"];
-        console.log(postal_code);
-	    const street_number = req.body["street-number"];
-        console.log(street_number);
-	    const phone_number = req.body["phone-number"];
-        console.log(phone_number);
-	    const name = req.body["name"];
-        const card_number = req.body['card-number'];
-        const cvv = req.body['cvv'];
-        const expiration_date = req.body['expiration-date'];
-        const email_address = req.body['email-address'];
+    query_insert_payment_info(
+        db,
+        name,
+        card_number,
+        cvv,
+        expiration_date
+    ).then(
+        payment_info => {
+            if (is_guest) {
+	            const country = req.body["country"];
+                console.log(country);
+	            const county = req.body["county"];
+                console.log(county);
+	            const city = req.body["city"];
+                console.log(city);
+	            const postal_code = req.body["postal-code"];
+                console.log(postal_code);
+	            const street_number = req.body["street-number"];
+                console.log(street_number);
+	            const phone_number = req.body["phone-number"];
+                console.log(phone_number);
+                const email_address = req.body['email-address'];
 
-        // guest dolgait eltárolni, hogy meg is legyen a rendelés
-        query_insert_delivery_info(
-            db, country, county,
-            city, postal_code,
-            street_number,
-            phone_number,
-            name
-        ).then(
-            delivery_info => {
-                console.log(delivery_info);
-                query_insert_payment_info(
-                    db, name, card_number,
-                    cvv, expiration_date
+                // guest dolgait eltárolni, hogy meg is legyen a rendelés
+                query_insert_delivery_info(
+                    db, country, county,
+                    city, postal_code,
+                    street_number,
+                    phone_number,
+                    name
                 ).then(
-                    payment_info => {
+                    delivery_info => {
+                        console.log(delivery_info);
                         console.log(payment_info);
                         Promise.all(products.map(product => new Promise((resolve, reject) => {
                             const gcode_file_path = `./gcode/${file_name_from_date()}.gcode`;
@@ -302,104 +305,100 @@ export const query_place_order = (db, req, res, user, products) => {
                             },
                         );
                     },
-                    fail => {
-                        console.log('payment insert buko');
+                    err => {
+                        console.log(err);
+                        console.log('delivery insert buko');
                         return res.status(500).send();
                     }
                 );
-            },
-            fail => {
-                console.log('delivery insert buko');
-                return res.status(500).send();
-            }
-        );
-
-    } else {
-        async_get(
-            db,
-            `SELECT payment_info.rowid AS payment_info_id, address.rowid AS address_id,
-                users.email_address AS email_address, payment_info.card_number,
-                payment_info.cvv, payment_info.name AS card_name, payment_info.expiration_year,
-                payment_info.expiration_month, address.country, address.county, address.city,
-                address.postal_code, address.street_number, address.phone_number
-            FROM users
-            JOIN address ON users.address_id = address.rowid
-            JOIN payment_info ON users.payment_info_id = payment_info.rowid
-            WHERE users.rowid = ?`,
-            user.id)
-        .then(
-            row => {
-                Promise.all(products.map(product => new Promise((resolve, reject) => {
-                    const gcode_file_path = `./gcode/${file_name_from_date()}.gcode`;
-                    slice_stl_to_gcode(product.stl_path, gcode_file_path);
-                    get_gcode_price(gcode_file_path, product.material).then(
-                        price => {
-                            if (price === -1) {
-                                console.log('Nem sikerült kiszámolni a gcode árát!');
-                                reject(new Error(`nem sikerült kiszámolni a gcode árát ${product.stl_path} filenak`));
-                            }
-                            console.log(price);
-                            query_insert_job(
-                                db,
-                                product.id,
-                                row.email_address,
-                                row.payment_info_id,
-                                row.address_id,
-                                gcode_file_path,
-                                product.quantity,
-                                product.material.toUpperCase(),
-                                product.colour,
-                                'pending'
-                            ).then(
-                                job => {
-                                    resolve({
-                                        quantity: product.quantity,
-                                        material: product.material,
-                                        colour: product.colour,
-                                        'product-id': product.id,
-                                        state: job.state,
-                                        'price-per-product': price,
-                                        'total-price': price * product.quantity,
-                                    });
+            } else {
+                async_get(
+                    db,
+                    `SELECT address.rowid AS address_id,
+                        users.email_address AS email_address,
+                        address.country, address.county, address.city,
+                        address.postal_code, address.street_number, address.phone_number
+                    FROM users
+                    JOIN address ON users.address_id = address.rowid
+                    WHERE users.rowid = ?`,
+                    user.id)
+                .then(
+                    row => {
+                        Promise.all(products.map(product => new Promise((resolve, reject) => {
+                            const gcode_file_path = `./gcode/${file_name_from_date()}.gcode`;
+                            slice_stl_to_gcode(product.stl_path, gcode_file_path);
+                            get_gcode_price(gcode_file_path, product.material).then(
+                                price => {
+                                    if (price === -1) {
+                                        console.log('Nem sikerült kiszámolni a gcode árát!');
+                                        reject(new Error(`nem sikerült kiszámolni a gcode árát ${product.stl_path} filenak`));
+                                    }
+                                    console.log(price);
+                                    query_insert_job(
+                                        db,
+                                        product.id,
+                                        row.email_address,
+                                        payment_info.rowid,
+                                        row.address_id,
+                                        gcode_file_path,
+                                        product.quantity,
+                                        product.material.toUpperCase(),
+                                        product.colour,
+                                        'pending'
+                                    ).then(
+                                        job => {
+                                            resolve({
+                                                quantity: product.quantity,
+                                                material: product.material,
+                                                colour: product.colour,
+                                                'product-id': product.id,
+                                                state: job.state,
+                                                'price-per-product': price,
+                                                'total-price': price * product.quantity,
+                                            });
+                                        },
+                                        err => {
+                                            console.log('job insert buko');
+                                            unlinkSync(gcode_file_path);
+                                            reject(err);
+                                        }
+                                    );
                                 },
                                 err => {
-                                    console.log('job insert buko');
+                                    console.log('get_gcode_price buko');
                                     unlinkSync(gcode_file_path);
                                     reject(err);
                                 }
                             );
-                        },
-                        err => {
-                            console.log('get_gcode_price buko');
-                            unlinkSync(gcode_file_path);
-                            reject(err);
-                        }
-                    );
-                }))).then(
-                    jobs => {
-                        return res.status(201).json({
-                            'card-number': row.card_number,
-                            name: row.card_name,
-                            cvv: row.cvv,
-                            'expiration-date': row.expiration_month +
-                                '/' +
-                                row.expiration_year,
-                            country: row.country,
-                            county: row.county,
-                            city: row.city,
-                            'postal-code': row.postal_code,
-                            'street-number': row.street_number,
-                            'phone-number': row.phone_number,
-                            'email-address': row.email_address,
-                            jobs: jobs,
-                        });
-                    },
-                    err => {
-                        console.log(err);
-                        return res.status(500).send();
+                        }))).then(
+                            jobs => {
+                                return res.status(201).json({
+                                    'card-number': payment_info.card_number,
+                                    name: payment_info.card_name,
+                                    cvv: payment_info.cvv,
+                                    'expiration-date': expiration_date,
+                                    country: row.country,
+                                    county: row.county,
+                                    city: row.city,
+                                    'postal-code': row.postal_code,
+                                    'street-number': row.street_number,
+                                    'phone-number': row.phone_number,
+                                    'email-address': row.email_address,
+                                    jobs: jobs,
+                                });
+                            },
+                            err => {
+                                console.log(err);
+                                return res.status(500).send();
+                            }
+                       );
                     }
-               );
+                );
             }
-        );
-    }
+        },
+        err => {
+            console.log(err);
+            return res.status(406);
+        }
+    );
 };
