@@ -4,7 +4,7 @@ import { unlinkSync } from "fs";
 import sqlite3 from "sqlite3";
 import { CONFIG, JOB_COLOURS, JOB_STATES, JOB_MATERIALS } from "./config.js";
 import { generate_salt, hash_password } from "./secret.js";
-import { slicer_cleanup_directiories, slice_stl_to_gcode, slicer_init_directories, generate_stl_thumbnail } from './slicer.js';
+import { slicer_cleanup_directiories, slice_stl_to_gcode, slicer_init_directories, generate_stl_thumbnail, get_gcode_price } from './slicer.js';
 import { async_get, file_name_from_date } from './util.js';
 
 sqlite3.verbose();
@@ -65,6 +65,7 @@ db.serialize(() => {
             material TEXT CHECK(material IN ('PLA', 'PETG', 'ABS')),
             colour TEXT CHECK(colour IN ('Red', 'Green', 'Blue', 'Yellow', 'Black', 'White', 'Gray')),
             state TEXT CHECK(state IN('pending', 'in_production', 'shipped', 'done')),
+            cost_per_piece INT NOT NULL,
             FOREIGN KEY(address_id) REFERENCES address(rowid),
             FOREIGN KEY(payment_info_id) REFERENCES payment_info(rowid)
         );
@@ -222,31 +223,39 @@ const promises = products_to_jobs.map(idx => new Promise((resolve, reject) => {
     async_get(db, `SELECT stl_file_path FROM products WHERE rowid = ?`, idx + 1).then(
         row => {
             const gcode_path = `./gcode/${file_name_from_date()}.gcode`;
+            const material = random_key(JOB_MATERIALS);
             slice_stl_to_gcode(row.stl_file_path, gcode_path);
             console.log(`${row.stl_file_path} -> ${gcode_path}`);
-            async_get(db, `INSERT INTO jobs VALUES
-                (${idx + 1}, NULL, 1, 1, '${gcode_path}', ${random_quantity()},
-                 '${random_key(JOB_MATERIALS)}',
-                 '${random_key(JOB_COLOURS)}', '${random_key(JOB_STATES)}')
-                RETURNING product_id, state`).then(
-                row => {
-                    console.log(row);
+            get_gcode_price(gcode_path, material).then(
+                price => {
+                    async_get(db, `INSERT INTO jobs VALUES
+                        (${idx + 1}, NULL, 1, 1, '${gcode_path}', ${random_quantity()},
+                         '${material}',
+                         '${random_key(JOB_COLOURS)}', '${random_key(JOB_STATES)}', ${price})
+                        RETURNING product_id, state`).then(
+                        row => {
+                            console.log(row);
+                            resolve(row);
+                        },
+                        err => {
+                            console.log(err);
+                            reject(err);
+                        }
+                    );
                 },
                 err => {
                     console.log(err);
+                    reject(err);
                 }
             );
         },
         err => {
             console.log(err);
+            reject(err);
         }
     );
 }));
 Promise.all(promises).then(() => db.close());
-
-
-db.close();
-
 
 console.log(`
 A backend Prusa Slicert és \`stl-thumb\`-ot használ G-Code és termék-kép

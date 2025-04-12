@@ -129,7 +129,8 @@ export const query_insert_job = (
     quantity,
     material,
     colour,
-    state
+    state,
+    cost_per_piece
 ) => new Promise((resolve, reject) => {
     if (!payment_info_id || !address_id || !email_address || !colour || !material || !quantity || !state) {
         return reject(new Error('hibas adatok'));
@@ -144,6 +145,9 @@ export const query_insert_job = (
     if (quantity <= 0 || !Number.isInteger(quantity)) {
         return reject(new Error('rossz quantity'));
     }
+    if (cost_per_piece <= 0 || !Number.isInteger(cost_per_piece)) {
+        return reject(new Error('rossz cost_per_piece'));
+    }
     if (!existsSync(gcode_file_path)) {
         return reject(new Error('nem letezo gcode'));
     }
@@ -154,13 +158,14 @@ export const query_insert_job = (
     async_get(
         db,
         `INSERT INTO jobs
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         RETURNING rowid, *`,
         product_id, email_address, payment_info_id,
         address_id, gcode_file_path, quantity,
         material.toUpperCase(),
         first_letter_uppercase(colour),
-        state
+        state,
+        cost_per_piece
     ).then(
         row => {
             return resolve(row);
@@ -254,7 +259,8 @@ export const query_place_order = (db, req, res, user, products) => {
                                         product.quantity,
                                         product.material.toUpperCase(),
                                         product.colour,
-                                        'pending'
+                                        'pending',
+                                        price
                                     ).then(
                                         job => {
                                             resolve({

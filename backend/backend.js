@@ -129,6 +129,37 @@ const SWAGGER_OPTS = {
 						},
 					},
 				},
+				order_history_element: {
+					type: "object",
+					properties: {
+						id: {
+							type: "integer",
+							description: "Termék ID",
+						},
+						uploader_id: {
+							type: "integer",
+							description: "Feltöltő ID-je",
+						},
+						name: {
+							type: "string",
+							description: "Termék neve",
+						},
+						description: {
+							type: "string",
+							description: "Termék leírása",
+						},
+                        cost_per_piece: {
+							type: "integer",
+							description: "Darabár",
+                        },
+					},
+				},
+                order_history_response: {
+                    type: 'array',
+                    items: {
+                        '$ref': '#/components/schemas/order_history_element',
+                    },
+                },
 				delivery_information_request: {
 					type: "object",
 					properties: {
@@ -908,7 +939,7 @@ app.get("/api/delivery-information", (req, res) => {
  *                 content:
  *                     application/json:
  *                         schema:
- *                             $ref: '#/components/schemas/product_response'
+ *                             $ref: '#/components/schemas/order_history_response'
  *             403:
  *                 description:
  *                     Frontend nem küldte el a `LOGIN_TOKEN` cookie-t
@@ -933,7 +964,7 @@ app.get('/api/order-history', (req, res) => {
 
     db.serialize(() => {
         async_get_all(db,
-            `SELECT jobs.quantity, jobs.material, jobs.state, jobs.colour, products.name, products.rowid AS product_id FROM jobs JOIN products
+            `SELECT jobs.quantity, jobs.material, jobs.state, jobs.colour, jobs.cost_per_piece, products.name, products.rowid AS product_id FROM jobs JOIN products
             ON jobs.product_id = products.rowid
             WHERE address_id = (SELECT address_id FROM users WHERE rowid = ${user.id})`
         ).then(
