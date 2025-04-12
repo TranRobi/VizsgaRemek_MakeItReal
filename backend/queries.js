@@ -255,24 +255,11 @@ export const query_place_order = (db, req, res, user, products) => {
                                     ).then(
                                         job => {
                                             resolve({
-                                                'card-number': payment_info.card_number,
-                                                name: payment_info.card_name,
-                                                cvv: payment_info.cvv,
-                                                'expiration-date': payment_info.expiration_month +
-                                                    '/' +
-                                                    payment_info.expiration_year,
-                                                country: delivery_info.country,
-                                                county: delivery_info.county,
-                                                city: delivery_info.city,
-                                                'postal-code': delivery_info.postal_code,
-                                                'street-number': delivery_info.street_number,
-                                                'phone-number': delivery_info.phone_number,
-                                                'product-id': product.id,
-                                                'email-address': email_address,
                                                 quantity: product.quantity,
                                                 material: product.material,
                                                 colour: product.colour,
                                                 state: job.state,
+                                                'product-id': product.id,
                                                 'price-per-product': price,
                                                 'total-price': price * product.quantity,
                                             });
@@ -292,7 +279,22 @@ export const query_place_order = (db, req, res, user, products) => {
                             );
                         }))).then(
                             jobs => {
-                                return res.status(201).json(jobs);
+                                return res.status(201).json({
+                                    'card-number': payment_info.card_number,
+                                    name: payment_info.card_name,
+                                    cvv: payment_info.cvv,
+                                    'expiration-date': payment_info.expiration_month +
+                                        '/' +
+                                        payment_info.expiration_year,
+                                    country: delivery_info.country,
+                                    county: delivery_info.county,
+                                    city: delivery_info.city,
+                                    'postal-code': delivery_info.postal_code,
+                                    'street-number': delivery_info.street_number,
+                                    'phone-number': delivery_info.phone_number,
+                                    'email-address': email_address,
+                                    jobs: jobs,
+                                });
                             },
                             err => {
                                 console.log(err);
@@ -315,48 +317,89 @@ export const query_place_order = (db, req, res, user, products) => {
     } else {
         async_get(
             db,
-            `SELECT payment_info.rowid AS payment_info_id, address.rowid AS address_id, users.email_address AS email_address
+            `SELECT payment_info.rowid AS payment_info_id, address.rowid AS address_id,
+                users.email_address AS email_address, payment_info.card_number,
+                payment_info.cvv, payment_info.name AS card_name, payment_info.expiration_year,
+                payment_info.expiration_month, address.country, address.county, address.city,
+                address.postal_code, address.street_number, address.phone_number
             FROM users
             JOIN address ON users.address_id = address.rowid
             JOIN payment_info ON users.payment_info_id = payment_info.rowid
             WHERE users.rowid = ?`,
             user.id)
-            .then(
-                row => {
-                    if (!row.payment_info_id) {
-                        console.log('No payment information set!');
-                        return res.status(401).send("No payment information set!");
-                    }
-                    if (!row.address_id) {
-                        console.log('No delivery information set!');
-                        return res.status(401).send("No delivery information set!");
-                    }
-
-                    slice_stl_to_gcode(stl_path, gcode_file_path);
-
-                    async_get(
-                        db,
-                        `INSERT INTO jobs
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-                        product_id, row.email_address, row.payment_info_id,
-                        row.address_id, gcode_file_path, quantity,
-                        material.toUpperCase(),
-                        first_letter_uppercase(colour),
-                        'pending'
-                    ).then(
-                        () => {
-                            return res.status(201).send();
+        .then(
+            row => {
+                Promise.all(products.map(product => new Promise((resolve, reject) => {
+                    const gcode_file_path = `./gcode/${file_name_from_date()}.gcode`;
+                    slice_stl_to_gcode(product.stl_path, gcode_file_path);
+                    get_gcode_price(gcode_file_path, product.material).then(
+                        price => {
+                            if (price === -1) {
+                                console.log('Nem sikerült kiszámolni a gcode árát!');
+                                reject(new Error(`nem sikerült kiszámolni a gcode árát ${product.stl_path} filenak`));
+                            }
+                            console.log(price);
+                            query_insert_job(
+                                db,
+                                product.id,
+                                row.email_address,
+                                row.payment_info_id,
+                                row.address_id,
+                                gcode_file_path,
+                                product.quantity,
+                                product.material.toUpperCase(),
+                                product.colour,
+                                'pending'
+                            ).then(
+                                job => {
+                                    resolve({
+                                        quantity: product.quantity,
+                                        material: product.material,
+                                        colour: product.colour,
+                                        'product-id': product.id,
+                                        state: job.state,
+                                        'price-per-product': price,
+                                        'total-price': price * product.quantity,
+                                    });
+                                },
+                                err => {
+                                    console.log('job insert buko');
+                                    unlinkSync(gcode_file_path);
+                                    reject(err);
+                                }
+                            );
                         },
                         err => {
-                            console.log(err);
-                            return res.status(500).send();
-                        },
+                            console.log('get_gcode_price buko');
+                            unlinkSync(gcode_file_path);
+                            reject(err);
+                        }
                     );
-                },
-                err => {
-                    console.log(err);
-                    return res.status(500).send();
-                }
+                }))).then(
+                    jobs => {
+                        return res.status(201).json({
+                            'card-number': row.card_number,
+                            name: row.card_name,
+                            cvv: row.cvv,
+                            'expiration-date': row.expiration_month +
+                                '/' +
+                                row.expiration_year,
+                            country: row.country,
+                            county: row.county,
+                            city: row.city,
+                            'postal-code': row.postal_code,
+                            'street-number': row.street_number,
+                            'phone-number': row.phone_number,
+                            'email-address': row.email_address,
+                            jobs: jobs,
+                        });
+                    },
+                    err => {
+                        console.log(err);
+                        return res.status(500).send();
+                    }
+               );
+            }
         );
     }
 };
