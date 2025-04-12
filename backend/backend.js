@@ -189,6 +189,36 @@ const SWAGGER_OPTS = {
                         },
                     },
                 },
+                order_product_info: {
+                    type: 'object',
+                    properties: {
+                        id: {
+                            type: 'number',
+                            description: 'Termék ID',
+                            example: 1,
+                        },
+                        quantity: {
+                            type: 'number',
+                            description: 'Mennyiség',
+                            example: 69,
+                        },
+                        material: {
+                            type: 'string',
+                            description: 'Anyag',
+                            example: 'PLA',
+                        },
+                        colour: {
+                            type: 'string',
+                            description: 'Szín',
+                            example: 'Blue',
+                        },
+                    },
+                    required: [
+                        'quantity',
+                        'material',
+                        'colour',
+                    ],
+                },
                 order_request: {
                     type: 'object',
                     properties: {
@@ -242,25 +272,16 @@ const SWAGGER_OPTS = {
                             description: 'Lejárati dátum (MM/YY)',
                             example: '03/28',
                         },
-                        quantity: {
-                            type: 'number',
-                            description: 'Mennyiség',
-                            example: 69,
-                        },
-                        material: {
-                            type: 'string',
-                            description: 'Anyag',
-                            example: 'PLA',
-                        },
-                        colour: {
-                            type: 'string',
-                            description: 'Szín',
-                            example: 'Blue',
-                        },
                         'email-address': {
                             type: 'string',
                             description: 'E-mail cím',
                             example: 'mernok@homestead.moe',
+                        },
+                        products: {
+                            type: 'array',
+                            items: {
+                                '$ref': '#/components/schemas/order_product_info',
+                            },
                         },
                     },
                 },
@@ -1400,25 +1421,17 @@ app.put('/api/checkout', (req, res) => {
 });
 
 /** @swagger
- * /api/order/{id}:
+ * /api/order:
  *     post:
  *         summary: Egy feltöltött termék megrendelése
  *         tags:
  *             - Rendelés
  *         description:
  *             Vendég/belépett felhasználó megrendelhet egy az oldalra feltöltött terméket
- *         parameters:
- *             - in: path
- *               name: id
- *               schema:
- *                   type: integer
- *                   example: 1
- *               required: true
- *               description: Termék ID
  *         requestBody:
  *             required: false
  *             content:
- *                 application/x-www-form-urlencoded:
+ *                 application/json:
  *                     schema:
  *                         $ref: '#/components/schemas/order_request'
  *         responses:
@@ -1443,18 +1456,33 @@ app.put('/api/checkout', (req, res) => {
  *                     A backenden valami nagyon nem jó, ha a backendes nem béna,
  *                     ez sose történik meg
  */
-app.post('/api/order/:id', (req, res) => {
+app.post('/api/order', (req, res) => {
     const token = get_api_key(req);
 	const user = logged_in_users.find((e) => e.token === token);
 	console.log(`user: ${user}`);
 
-    async_get(
+    if (!req.body || !req.body['products'])
+        return res.status(406).send('No products in request body');
+
+    const products = req.body.products;
+    console.log(products);
+    const product_ids = products.map(p => p.id);
+    for (const id of product_ids) {
+        if (id <= 0 || !Number.isInteger(id)) {
+            return res.status(406).send(`Invalid id ${id}!`);
+        }
+    }
+
+    async_get_all(
         db,
-        `SELECT rowid, stl_file_path FROM products WHERE rowid = ?`,
-        req.params.id
+        `SELECT rowid, stl_file_path FROM products WHERE rowid IN (${product_ids.join(',')})`
     ).then(
-        row => {
-            return query_place_order(db, req, res, user, row.stl_file_path, row.rowid);
+        rows => {
+            products.forEach(p => {
+                const match = rows.find(e => e.rowid === p.id);
+                p.stl_path = match.stl_file_path;
+            });
+            return query_place_order(db, req, res, user, products);
         },
         err => {
             console.log(err);

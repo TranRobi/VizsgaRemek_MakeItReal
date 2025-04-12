@@ -108,6 +108,17 @@ export const query_insert_payment_info = (
     );
 });
 
+const query_get_product_stl_file = (db, product_id) => new Promise((resolve, reject) => {
+    async_get(
+        db,
+        `SELECT stl_file_path FROM products WHERE rowid = ?`,
+        product_id
+    ).then(
+        row => resolve(row.stl_file_path),
+        err => reject(err)
+    );
+});
+
 export const query_insert_job = (
     db,
     product_id,
@@ -160,30 +171,30 @@ export const query_insert_job = (
     );
 });
 
-export const query_place_order = (db, req, res, user, stl_path, product_id) => {
+export const query_place_order = (db, req, res, user, products) => {
     const is_guest = user === undefined;
 
     const colour = req.body['colour'];
     const material = req.body['material'];
     const quantity = Number(req.body['quantity']);
 
-    if (!colour || !material || !quantity) {
-        return res.status(406).send('Missing parameter!');
+    for (const p of products) {
+        if (!p.colour || !p.material || !p.quantity) {
+            return res.status(406).send('Missing parameter!');
+        }
+        if (!Object.values(JOB_COLOURS).map(c => c.toLowerCase()).includes(p.colour.toLowerCase())) {
+            return res.status(406).send(`Invalid colour ${colour}!`);
+        }
+        if (!Object.values(JOB_MATERIALS).map(m => m.toLowerCase()).includes(p.material.toLowerCase())) {
+            return res.status(406).send(`Invalid material ${material}!`);
+        }
+        if (p.quantity <= 0 || !Number.isInteger(p.quantity)) {
+            return res.status(406).send(`Invalid quantity ${quantity}!`);
+        }
+        if (!existsSync(p.stl_path)) {
+            return res.status(404).send();
+        }
     }
-    if (!Object.values(JOB_COLOURS).map(c => c.toLowerCase()).includes(colour.toLowerCase())) {
-        return res.status(406).send(`Invalid colour ${colour}!`);
-    }
-    if (!Object.values(JOB_MATERIALS).map(m => m.toLowerCase()).includes(material.toLowerCase())) {
-        return res.status(406).send(`Invalid material ${material}!`);
-    }
-    if (quantity <= 0 || !Number.isInteger(quantity)) {
-        return res.status(406).send(`Invalid quantity ${quantity}!`);
-    }
-    if (!existsSync(stl_path)) {
-        return res.status(404).send();
-    }
-
-    const gcode_file_path = `./gcode/${file_name_from_date()}.gcode`;
 
     if (is_guest) {
 	    const country = req.body["country"];
@@ -220,63 +231,73 @@ export const query_place_order = (db, req, res, user, stl_path, product_id) => {
                 ).then(
                     payment_info => {
                         console.log(payment_info);
-                        slice_stl_to_gcode(stl_path, gcode_file_path);
-                        get_gcode_price(gcode_file_path, material).then(
-                            price => {
-                                if (price === -1) {
-                                    console.log('Nem sikerült kiszámolni a gcode árát!');
-                                    return res.status(500).send();
-                                }
-                                console.log(price);
-                                query_insert_job(
-                                    db,
-                                    req.params.id,
-                                    email_address,
-                                    payment_info.rowid,
-                                    delivery_info.rowid,
-                                    gcode_file_path,
-                                    quantity,
-                                    material,
-                                    colour,
-                                    'pending'
-                                ).then(
-                                    job => {
-                                        return res.status(201).json({
-                                            'card-number': payment_info.card_number,
-                                            name: payment_info.card_name,
-                                            cvv: payment_info.cvv,
-                                            'expiration-date': payment_info.expiration_month +
-                                                '/' +
-                                                payment_info.expiration_year,
-                                            country: delivery_info.country,
-                                            county: delivery_info.county,
-                                            city: delivery_info.city,
-                                            'postal-code': delivery_info.postal_code,
-                                            'street-number': delivery_info.street_number,
-                                            'phone-number': delivery_info.phone_number,
-                                            'product-id': product_id,
-                                            'email-address': email_address,
-                                            quantity: quantity,
-                                            material: material,
-                                            colour: colour,
-                                            state: job.state,
-                                            'price-per-product': price,
-                                            'total-price': price * quantity,
-                                        });
-                                    },
-                                    err => {
-                                        console.log('job insert buko');
-                                        console.log(err);
-                                        unlinkSync(gcode_file_path);
-                                        return res.status(500).send();
+                        Promise.all(products.map(product => new Promise((resolve, reject) => {
+                            const gcode_file_path = `./gcode/${file_name_from_date()}.gcode`;
+                            slice_stl_to_gcode(product.stl_path, gcode_file_path);
+                            get_gcode_price(gcode_file_path, product.material).then(
+                                price => {
+                                    if (price === -1) {
+                                        console.log('Nem sikerült kiszámolni a gcode árát!');
+                                        reject(new Error(`nem sikerült kiszámolni a gcode árát ${product.stl_path} filenak`));
                                     }
-                                );
+                                    console.log(price);
+                                    query_insert_job(
+                                        db,
+                                        product.id,
+                                        email_address,
+                                        payment_info.rowid,
+                                        delivery_info.rowid,
+                                        gcode_file_path,
+                                        product.quantity,
+                                        product.material.toUpperCase(),
+                                        product.colour,
+                                        'pending'
+                                    ).then(
+                                        job => {
+                                            resolve({
+                                                'card-number': payment_info.card_number,
+                                                name: payment_info.card_name,
+                                                cvv: payment_info.cvv,
+                                                'expiration-date': payment_info.expiration_month +
+                                                    '/' +
+                                                    payment_info.expiration_year,
+                                                country: delivery_info.country,
+                                                county: delivery_info.county,
+                                                city: delivery_info.city,
+                                                'postal-code': delivery_info.postal_code,
+                                                'street-number': delivery_info.street_number,
+                                                'phone-number': delivery_info.phone_number,
+                                                'product-id': product.id,
+                                                'email-address': email_address,
+                                                quantity: product.quantity,
+                                                material: product.material,
+                                                colour: product.colour,
+                                                state: job.state,
+                                                'price-per-product': price,
+                                                'total-price': price * product.quantity,
+                                            });
+                                        },
+                                        err => {
+                                            console.log('job insert buko');
+                                            unlinkSync(gcode_file_path);
+                                            reject(err);
+                                        }
+                                    );
+                                },
+                                err => {
+                                    console.log('get_gcode_price buko');
+                                    unlinkSync(gcode_file_path);
+                                    reject(err);
+                                }
+                            );
+                        }))).then(
+                            jobs => {
+                                return res.status(201).json(jobs);
                             },
                             err => {
-                                console.log('get_gcode_price buko');
                                 console.log(err);
                                 return res.status(500).send();
-                            }
+                            },
                         );
                     },
                     fail => {
