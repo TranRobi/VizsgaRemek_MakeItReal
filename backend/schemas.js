@@ -365,6 +365,79 @@ const SWAGGER_SCHEMAS = {
 				},
 			},
 		},
+        custom_order_request: {
+            type: 'object',
+            properties: {
+				country: {
+					type: "string",
+					description: "Ország",
+					example: "Csád",
+				},
+				county: {
+					type: "string",
+					description: "Megye/Állam",
+					example: "Kanto",
+				},
+				city: {
+					type: "string",
+					description: "Város",
+					example: "Shenzen",
+				},
+				'postal-code': {
+					type: "number",
+					description: "Irányítószám",
+					example: "6666",
+				},
+				"street-number": {
+					type: "string",
+					description: "Utca, házszám, emelet, ajtó, stb.",
+					example: "308 Negra Arroyo Lane",
+				},
+				"phone-number": {
+					type: "string",
+					description: "Telefonszám",
+					example: "+36701234567",
+				},
+				name: {
+					type: "string",
+					description: "Számlázási név",
+					example: "John Buyer",
+				},
+                'card-number': {
+                    type: 'string',
+                    description: 'Kártyaszám',
+                    example: '1234567890123456789',
+                },
+                'cvv': {
+                    type: 'string',
+                    description: 'CVV',
+                    example: '666',
+                },
+                'expiration-date': {
+                    type: 'string',
+                    description: 'Lejárati dátum (MM/YY)',
+                    example: '03/28',
+                },
+                'email-address': {
+                    type: 'string',
+                    description: 'E-mail cím',
+                    example: 'mernok@homestead.moe',
+                },
+				"stl-file": {
+					type: "string",
+					format: "binary",
+				},
+			},
+			encoding: {
+				"stl-file": {
+					contentType: [
+						"model/stl",
+						"application/vnd.ms-pki.stl",
+						"model/x.stl-ascii model/x.stl-binary",
+					],
+				},
+			},
+        },
 		checkout_response: {
 			type: "object",
 			properties: {

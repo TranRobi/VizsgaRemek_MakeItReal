@@ -1117,7 +1117,7 @@ app.post('/api/order', (req, res) => {
 	console.log(`user: ${user}`);
 
     if (!req.body || !req.body['products'])
-        return res.status(406).send('No products in request body');
+        return res.status(406).send('No request body or no products in request body');
 
     const products = req.body.products;
     console.log(products);
@@ -1144,6 +1144,50 @@ app.post('/api/order', (req, res) => {
             return res.status(404).send();
         },
     );
+});
+
+/** @swagger
+ * /api/order-custom:
+ *     post:
+ *         summary: Egy fel-nem-töltött modell megrendelése
+ *         tags:
+ *             - Rendelés
+ *         description:
+ *             Vendég/belépett felhasználó megrendelhet egy az oldalra fel-nem-töltött terméket
+ *         requestBody:
+ *             required: false
+ *             content:
+ *                 multipart/form-data:
+ *                     schema:
+ *                         $ref: '#/components/schemas/custom_order_request'
+ *         responses:
+ *             201:
+ *                 description:
+ *                     Sikeres rendelés
+ *                 content:
+ *                     application/json:
+ *                         schema:
+ *                             $ref: '#/components/schemas/order_response'
+ *             404:
+ *                 description:
+ *                     Nincs ilyen termék!
+ *             401:
+ *                 description:
+ *                     Nem vendégként rendelt, de még vannak hiányzó adatok (fizetés, szállítás)
+ *             406:
+ *                 description:
+ *                     Vendégként rendelt, de nem küldött el minden szükséges adatot, vagy szimplán rossz a formdata
+ *             500:
+ *                 description:
+ *                     A backenden valami nagyon nem jó, ha a backendes nem béna,
+ *                     ez sose történik meg
+ */
+app.post('/api/order-custom', stl_upload.single("stl-file"), (req, res) => {
+    const token = get_api_key(req);
+	const user = logged_in_users.find((e) => e.token === token);
+	console.log(`user: ${user}`);
+    console.log(req.file);
+    return res.status(201).send();
 });
 
 app.listen(PORT, () => {
