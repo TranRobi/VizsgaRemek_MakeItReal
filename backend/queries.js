@@ -413,7 +413,8 @@ export const query_place_order = (db, req, res, user, products) => {
                         product.quantity,
                         product.material.toUpperCase(),
                         product.colour,
-                        "pending"
+                        "pending",
+                        price
                       ).then(
                         (job) => {
                           resolve({
