@@ -155,6 +155,7 @@ export const query_insert_job = (
       !quantity ||
       !state
     ) {
+        console.log(arguments);
       return reject(new Error("hibas adatok"));
     }
     state = state.toLowerCase();
@@ -163,26 +164,26 @@ export const query_insert_job = (
         .map((c) => c.toLowerCase())
         .includes(colour.toLowerCase())
     ) {
-      return reject(new Error("rossz colour"));
+      return reject(new Error(`rossz colour ${colour.toLowerCase()}`));
     }
     if (
       !Object.values(JOB_MATERIALS)
         .map((m) => m.toLowerCase())
         .includes(material.toLowerCase())
     ) {
-      return reject(new Error("rossz material"));
+      return reject(new Error(`rossz material ${material}`));
     }
     if (quantity <= 0 || !Number.isInteger(quantity)) {
-      return reject(new Error("rossz quantity"));
+      return reject(new Error(`rossz quantity ${quantity}`));
     }
     if (cost_per_piece <= 0 || !Number.isInteger(cost_per_piece)) {
-      return reject(new Error("rossz cost_per_piece"));
+      return reject(new Error(`rossz cost_per_piece ${cost_per_piece}`));
     }
     if (!existsSync(gcode_file_path)) {
       return reject(new Error("nem letezo gcode"));
     }
     if (!Object.values(JOB_STATES).includes(state)) {
-      return reject(new Error("rossz state"));
+      return reject(new Error(`rossz state ${state}`));
     }
 
     async_get(
@@ -298,7 +299,7 @@ export const query_place_order = (db, req, res, user, products) => {
                             )
                           );
                         }
-                        console.log(price);
+                        console.log(`price ${price}`);
                         query_insert_job(
                           db,
                           product.id,
