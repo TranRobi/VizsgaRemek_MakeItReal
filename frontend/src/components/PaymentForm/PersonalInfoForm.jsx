@@ -48,7 +48,7 @@ const PersonalInfoForm = ({ onNext, defaultValues }) => {
             label="Email"
             type="email"
             fullWidth
-            {...register("email", { required: true })}
+            {...register("email-address", { required: true })}
             error={!!errors.email}
             helperText={errors.email ? "Email is required" : ""}
           />
