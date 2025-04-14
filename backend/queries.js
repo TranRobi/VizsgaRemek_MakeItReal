@@ -155,7 +155,15 @@ export const query_insert_job = (
       !quantity ||
       !state
     ) {
-        console.log(arguments);
+      console.table({
+          payment_info_id,
+          address_id,
+          email_address,
+          colour,
+          material,
+          quantity,
+          state
+      });
       return reject(new Error("hibas adatok"));
     }
     state = state.toLowerCase();
