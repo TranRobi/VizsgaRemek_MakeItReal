@@ -155,7 +155,6 @@ export const query_insert_job = (
       !quantity ||
       !state
     ) {
-        console.log(arguments);
       return reject(new Error("hibas adatok"));
     }
     state = state.toLowerCase();
