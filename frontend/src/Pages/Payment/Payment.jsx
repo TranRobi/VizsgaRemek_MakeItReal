@@ -75,16 +75,26 @@ const MultiStepForm = () => {
   };
 
   const handlePaymentSubmit = (data) => {
-    const finalData = { ...formData, ...data };
+    let productsCart = {
+      products: cartList,
+    };
+    const finalData = { ...formData, ...data, ...productsCart };
     console.log("Final Payment Data:", finalData);
-    // Add your POST logic here
+    axios
+      .post("/api/order", finalData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        console.log("Order response:", response);
+      });
   };
-
   // Calculate the total price
   const calcTotal = () => {
     let total = 0;
     cartList.forEach((item) => {
-      total += (item.price * item.quantity);
+      total += item.price * item.quantity;
     });
 
     return total + shipPrice;
@@ -102,8 +112,7 @@ const MultiStepForm = () => {
                 <CardContent>
                   <Typography
                     variant="h5"
-                    className="text-black font-semibold mb-4"
-                  >
+                    className="text-black font-semibold mb-4">
                     Payment Process
                   </Typography>
                   {step === 1 && (
@@ -160,8 +169,7 @@ const MultiStepForm = () => {
                 {cartList?.map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-start justify-between border-b pb-4"
-                  >
+                    className="flex items-start justify-between border-b pb-4">
                     <img
                       src={`/api/products/images/${item.id}`}
                       alt={item.name}
@@ -177,7 +185,10 @@ const MultiStepForm = () => {
                       <div className="flex justify-between text-sm text-gray-700">
                         <span>Qty: {item.quantity}</span>
                         <span>
-                          {(item.price * item.quantity).toLocaleString("hu-HU",{style: "currency",currency: "HUF",})}
+                          {(item.price * item.quantity).toLocaleString(
+                            "hu-HU",
+                            { style: "currency", currency: "HUF" }
+                          )}
                         </span>
                       </div>
                     </div>

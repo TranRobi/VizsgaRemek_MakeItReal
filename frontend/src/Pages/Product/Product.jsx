@@ -25,19 +25,17 @@ function Product() {
     } catch (error) {
       console.error("Error fetching prices:", error);
     }
-  }
+  };
   const [loading, setLoading] = useState(false); // Set loading to false initially
   const calc = async () => {
-    
     const items = [];
-   
-      const item = {
-        id: product.id,
-        material: material,
-        quantity: quantity,
-      }
-      items.push(item);
-   
+
+    const item = {
+      id: product.id,
+      material: material,
+      quantity: quantity,
+    };
+    items.push(item);
 
     // Set loading state to true before fetching prices
     setLoading(true);
@@ -63,7 +61,7 @@ function Product() {
       description: product.description,
       quantity: quantity,
       size: size,
-      color: color,
+      colour: color,
       material: material,
       price: prodPrice,
     };
@@ -102,12 +100,12 @@ function Product() {
           </div>
         ) : (
           <>
-          <div className="bg-gray-100 p-6 rounded-lg shadow-md flex justify-center">
-          <img
-            src={`/api/products/images/${params.id}`}
-            alt={product.name}
-            className="max-w-full h-auto"
-          />
+            <div className="bg-gray-100 p-6 rounded-lg shadow-md flex justify-center">
+              <img
+                src={`/api/products/images/${params.id}`}
+                alt={product.name}
+                className="max-w-full h-auto"
+              />
             </div>
 
             {/* Product Details */}
@@ -121,8 +119,7 @@ function Product() {
                 <select
                   value={size}
                   onChange={(e) => setSize(e.target.value)}
-                  className="border p-2 rounded w-full bg-red-950"
-                >
+                  className="border p-2 rounded w-full bg-red-950">
                   {[50, 100, 150].map((mat) => (
                     <option key={mat} value={mat}>
                       {mat}%
@@ -137,8 +134,7 @@ function Product() {
                 <select
                   value={material}
                   onChange={(e) => setMaterial(e.target.value)}
-                  className="border p-2 rounded w-full bg-red-950"
-                >
+                  className="border p-2 rounded w-full bg-red-950">
                   {["PLA", "PETG", "ABS"].map((mat) => (
                     <option key={mat} value={mat}>
                       {mat}
@@ -151,23 +147,33 @@ function Product() {
               <div>
                 <label className="block font-semibold">Color:</label>
                 <div className="flex space-x-2">
-                  {["Red", "Green", "Blue", "Yellow", "Black", "White", "Gray"].map(
-                    (col) => (
-                      <button
-                        key={col}
-                        className={`w-8 h-8 rounded-full border-2 ${
-                          color === col ? "border-black" : ""
-                        }`}
-                        style={{ backgroundColor: col.toLowerCase() }}
-                        onClick={() => setColor(col)}
-                      ></button>
-                    )
-                  )}
+                  {[
+                    "Red",
+                    "Green",
+                    "Blue",
+                    "Yellow",
+                    "Black",
+                    "White",
+                    "Gray",
+                  ].map((col) => (
+                    <button
+                      key={col}
+                      className={`w-8 h-8 rounded-full border-2 ${
+                        color === col ? "border-black" : ""
+                      }`}
+                      style={{ backgroundColor: col.toLowerCase() }}
+                      onClick={() => setColor(col)}></button>
+                  ))}
                 </div>
               </div>
 
-              
-              <div>{prodPrice.toLocaleString("hu-HU",{style: "currency",currency: "HUF",})}/db</div>
+              <div>
+                {prodPrice.toLocaleString("hu-HU", {
+                  style: "currency",
+                  currency: "HUF",
+                })}
+                /db
+              </div>
 
               {/* Add to Cart Button */}
               <div className="flex flex-col md:flex-row justify-between">
@@ -175,32 +181,28 @@ function Product() {
                   onClick={() => {
                     navigate("/library");
                   }}
-                  className="w-full md:w-1/3 bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-900"
-                >
+                  className="w-full md:w-1/3 bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-900">
                   Back to library
                 </button>
-                
+
                 <button
                   onClick={() => {
                     addToCart();
                   }}
-                  className="w-full md:w-1/3 bg-gray-600 text-white py-3 rounded-lg font-semibold hover:bg-gray-900"
-                >
+                  className="w-full md:w-1/3 bg-gray-600 text-white py-3 rounded-lg font-semibold hover:bg-gray-900">
                   Add to cart
                 </button>
               </div>
               <button
-                  onClick={() => {
-                    calc();
-                  }}
-                  className="w-full md:w-1/3 bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-900"
-                >
-                  Calculate price
-                </button>
+                onClick={() => {
+                  calc();
+                }}
+                className="w-full md:w-1/3 bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-900">
+                Calculate price
+              </button>
             </div>
           </>
         )}
-        
       </div>
       <Footer />
     </>
