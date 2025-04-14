@@ -125,12 +125,17 @@ export const get_gcode_price = async (gcode_path, material) => {
         const relevant_text = matches[0];
         if (relevant_text) {
             const price = relevant_text.split('= ')[1];
-            console.log(`price ${price}`);
             p = price;
             break;
         }
     }
-    return p !== -1 ? Math.round(p * FILAMENT_PRICE_PER_MM[material.toUpperCase()]) : p;
+    if (p !== -1) {
+        const rounded_price = Math.round(p * FILAMENT_PRICE_PER_MM[material.toUpperCase()]);
+        console.log(`price ${rounded_price}`);
+        return rounded_price;
+    } else {
+        return p;
+    }
 };
 
 export const get_model_price = async (stl_file_path, material) => {
