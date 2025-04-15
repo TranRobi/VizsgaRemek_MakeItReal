@@ -22,14 +22,17 @@ import {
   async_run,
   file_name_from_date,
 } from "./util.js";
-import { validate_delivery_information } from "./validations.js";
 import {
   generate_stl_thumbnail,
   convert_model_to_stl,
   get_model_price,
   slice_stl_to_gcode,
 } from "./slicer.js";
-import { query_place_order } from "./queries.js";
+import {
+    query_place_order,
+    query_get_user_by_email,
+    query_insert_user
+} from "./queries.js";
 
 console.log(SWAGGER_SCHEMAS);
 
@@ -145,6 +148,18 @@ app.get("/", (req, res) => {
  *         responses:
  *             "200":
  *                 description: Sikeres regisztráció
+ *                 content:
+ *                     application/json:
+ *                         schema:
+ *                             type: object
+ *                             properties:
+ *                                 email-address:
+ *                                     type: string
+ *                                     description: Email cím
+ *                                 display-name:
+ *                                     type: string
+ *                                     description: Felhasználó megjelenítési neve
+ *
  *             "400":
  *                 description: Sikertelen regisztráció
  *             "409":
@@ -165,34 +180,32 @@ app.post("/api/register", (req, res) => {
     display_name.length > 64 ||
     password.length > 128
   ) {
-    return res.status(400).send();
+    return res.status(400).send(`
+        Hiányzó, vagy hibás mezők!
+        Az email cím maximum 256, a megjelenített név 64, a jelszó pedig 128 karakter lehet!`);
   }
 
-  const salt = generate_salt();
-  const password_hash = hash_password(password, salt);
-
-  const [query_callback, get_error] = new_db_error_ctx();
-  db.serialize(() => {
-    const stmt = db.prepare(
-      `INSERT INTO users (email_address, display_name, password_hash, salt, address_id) VALUES
-            (?, ?, ?, ?, ?)`,
-      email,
-      display_name,
-      password_hash,
-      salt,
-      null,
-      query_callback
-    );
-    if (get_error()) {
-      return res.status(400).send();
-    }
-    stmt.run(query_callback);
-    if (get_error()) {
-      return res.status(409).send();
-    } else {
-      return res.status(200).send();
-    }
-  });
+  query_get_user_by_email(db, email).then(
+      row => {
+          if (row && row.rowid) {
+              return res.status(409).send('Ezzel az email címmel már létezik fiók!');
+          } else {
+              query_insert_user(db, email, display_name, password).then(
+                  row => {
+                      return res.status(200).json(row);
+                  },
+                  err => {
+                      console.log(err);
+                      return res.status(500).send('Adatbázis hiba történt');
+                  },
+              );
+          }
+      },
+      err => {
+          console.log(err);
+          return res.status(500).send('Adatbázis hiba történt');
+      },
+  );
 });
 
 /**
@@ -663,7 +676,7 @@ app.get("/api/products", (req, res) => {
  *             content:
  *                 application/x-www-form-urlencoded:
  *                     schema:
- *                         $ref: '#/components/schemas/product_request'
+ *                         $ref: '#/components/schemas/product_edit_request'
  *         responses:
  *             200:
  *                 description:
@@ -1094,7 +1107,7 @@ app.put("/api/checkout", (req, res) => {
  *             content:
  *                 application/json:
  *                     schema:
- *                         $ref: '#/components/schemas/order_request'
+ *                         $ref: '#/components/schemas/place_order_request'
  *         responses:
  *             201:
  *                 description:
@@ -1170,7 +1183,7 @@ app.post("/api/order", (req, res) => {
  *             content:
  *                 multipart/form-data:
  *                     schema:
- *                         $ref: '#/components/schemas/custom_order_request'
+ *                         $ref: '#/components/schemas/place_custom_order_request'
  *         responses:
  *             201:
  *                 description:

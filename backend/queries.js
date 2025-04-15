@@ -3,6 +3,7 @@ import {
   file_name_from_date,
   first_letter_uppercase,
 } from "./util.js";
+import { generate_salt, hash_password } from "./secret.js";
 import { slice_stl_to_gcode, get_gcode_price } from "./slicer.js";
 import { JOB_COLOURS, JOB_MATERIALS, JOB_STATES } from "./config.js";
 import { existsSync, unlinkSync } from "node:fs";
@@ -472,3 +473,32 @@ export const query_place_order = (db, req, res, user, products) => {
     }
   );
 };
+
+export const query_get_user_by_email = (db, email) => new Promise((resolve, reject) => {
+    async_get(
+        db,
+        `SELECT rowid FROM users WHERE email_address = ?`,
+        email
+    ).then(
+        row => resolve(row),
+        err => reject(err),
+    );
+});
+
+export const query_insert_user = (db, email, display_name, password) => new Promise((resolve, reject) => {
+  const salt = generate_salt();
+  const password_hash = hash_password(password, salt);
+  async_get(
+      db,
+      `INSERT INTO users (email_address, display_name, password_hash, salt, address_id) VALUES
+      (?, ?, ?, ?, ?) RETURNING email_address, display_name`,
+      email,
+      display_name,
+      password_hash,
+      salt,
+      null
+  ).then(
+      row => resolve(row),
+      err => reject(err)
+  );
+});
