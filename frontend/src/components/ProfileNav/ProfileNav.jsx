@@ -39,8 +39,9 @@ function ProfileNav({ setActiveTab }) {
       })
       .then((res) => {
         if (res.status === 204) {
+          console.log("asd");
           localStorage.clear();
-          navigate("/");
+          location.reload();
         }
       });
   };
