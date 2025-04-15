@@ -44,8 +44,13 @@ export const SWAGGER_SCHEMAS = {
 				],
 			},
 		},
+        required: [
+            'name',
+            'description',
+            'stl-file',
+        ],
 	},
-	product_request: {
+	product_edit_request: {
 		type: "object",
 		properties: {
 			name: {
@@ -60,6 +65,10 @@ export const SWAGGER_SCHEMAS = {
 					"We built the Torment Nexus from the sci-fi novel Do not build the Torment Nexus",
 			},
 		},
+        required: [
+            'name',
+            'description',
+        ],
 	},
 	product_response: {
 		type: "object",
@@ -152,6 +161,15 @@ export const SWAGGER_SCHEMAS = {
 				example: "John Buyer",
 			},
 		},
+        required: [
+            'country',
+            'county',
+            'city',
+            'postal-code',
+            'street-number',
+            'phone-number',
+            'name',
+        ],
 	},
     payment_information_request: {
         type: 'object',
@@ -172,6 +190,11 @@ export const SWAGGER_SCHEMAS = {
                 example: '03/28',
             },
         },
+        required: [
+            'card-number',
+            'cvv',
+            'expiration-date',
+        ],
     },
     order_product_info: {
         type: 'object',
@@ -203,7 +226,7 @@ export const SWAGGER_SCHEMAS = {
             'colour',
         ],
     },
-    order_request: {
+    place_order_request: {
         type: 'object',
         properties: {
 			country: {
@@ -268,6 +291,9 @@ export const SWAGGER_SCHEMAS = {
                 },
             },
         },
+        required: [
+            'products'
+        ],
     },
 	order_response: {
 		type: 'object',
@@ -364,7 +390,7 @@ export const SWAGGER_SCHEMAS = {
 			},
 		},
 	},
-    custom_order_request: {
+    place_custom_order_request: {
         type: 'object',
         properties: {
             quantity: {
@@ -451,6 +477,12 @@ export const SWAGGER_SCHEMAS = {
 				],
 			},
 		},
+        required: [
+            'material',
+            'quantity',
+            'colour',
+            'stl-file',
+        ],
     },
 	checkout_response: {
 		type: "object",
