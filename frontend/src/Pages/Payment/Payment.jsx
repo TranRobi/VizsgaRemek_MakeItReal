@@ -39,7 +39,7 @@ const MultiStepForm = () => {
   });
 
   const { storedUser } = useContext(AuthContext);
-  const { cartList, productItems, prices } = useContext(CartContext);
+  const { cartList, productItems } = useContext(CartContext);
   const shipPrice = cartList.length === 0 ? 0 : 3000; // Assuming 3000 HUF for shipping cost
 
   const [step, setStep] = useState(1);
@@ -57,14 +57,14 @@ const MultiStepForm = () => {
             },
           });
           setFormData(userResponse.data); // Set delivery information
-        } // Get prices from the API
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
     fetchData();
   }, [storedUser, productItems]); // Dependency on storedUser and productItems
-
+  // Stepping between forms
   const handleNext = (data) => {
     setFormData((prev) => ({ ...prev, ...data }));
     setStep((prev) => prev + 1);
@@ -73,13 +73,12 @@ const MultiStepForm = () => {
   const handleBack = () => {
     setStep((prev) => prev - 1);
   };
-
+  // Sending final form to the backend
   const handlePaymentSubmit = (data) => {
     let productsCart = {
       products: cartList,
     };
     const finalData = { ...formData, ...data, ...productsCart };
-    console.log("Final Payment Data:", finalData);
     axios
       .post("/api/order", finalData, {
         headers: {
@@ -90,6 +89,7 @@ const MultiStepForm = () => {
         console.log("Order response:", response);
       });
   };
+
   // Calculate the total price
   const calcTotal = () => {
     let total = 0;
@@ -112,7 +112,8 @@ const MultiStepForm = () => {
                 <CardContent>
                   <Typography
                     variant="h5"
-                    className="text-black font-semibold mb-4">
+                    className="text-black font-semibold mb-4"
+                  >
                     Payment Process
                   </Typography>
                   {step === 1 && (
@@ -169,7 +170,8 @@ const MultiStepForm = () => {
                 {cartList?.map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-start justify-between border-b pb-4">
+                    className="flex items-start justify-between border-b pb-4"
+                  >
                     <img
                       src={`/api/products/images/${item.id}`}
                       alt={item.name}

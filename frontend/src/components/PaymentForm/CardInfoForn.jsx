@@ -1,6 +1,6 @@
 import React, { useEffect, useContext } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { TextField, Button, Grid } from "@mui/material";
+import { TextField, Button, Box } from "@mui/material";
 import { AuthContext } from "../../context/AuthContext";
 
 const formatCardNumber = (value) => {
@@ -33,9 +33,9 @@ const CardInfoForm = ({ onSubmit, onBack, defaultValues }) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Grid container spacing={2}>
+      <Box display="flex" flexDirection="column" gap={2}>
         {/* Card Number */}
-        <Grid item xs={12}>
+        <Box>
           <Controller
             name="card-number"
             control={control}
@@ -56,74 +56,78 @@ const CardInfoForm = ({ onSubmit, onBack, defaultValues }) => {
               />
             )}
           />
-        </Grid>
+        </Box>
 
         {/* Expiration Date */}
-        <Grid item xs={6}>
-          <Controller
-            name="expiration-date"
-            control={control}
-            rules={{
-              required: "Expiration date is required",
-              pattern: {
-                value: /^(0[1-9]|1[0-2])\/\d{2}$/,
-                message: "Invalid format MM/YY",
-              },
-            }}
-            render={({ field: { onChange, value = "", ...field } }) => (
-              <TextField
-                {...field}
-                value={formatExpiry(value)}
-                onChange={(e) => onChange(e.target.value)}
-                label="Expiration Date (MM/YY)"
-                fullWidth
-                error={!!errors["expiration-date"]}
-                helperText={errors["expiration-date"]?.message}
-              />
-            )}
-          />
-        </Grid>
+        <Box display="flex" gap={2}>
+          <Box flex={1}>
+            <Controller
+              name="expiration-date"
+              control={control}
+              rules={{
+                required: "Expiration date is required",
+                pattern: {
+                  value: /^(0[1-9]|1[0-2])\/\d{2}$/,
+                  message: "Invalid format MM/YY",
+                },
+              }}
+              render={({ field: { onChange, value = "", ...field } }) => (
+                <TextField
+                  {...field}
+                  value={formatExpiry(value)}
+                  onChange={(e) => onChange(e.target.value)}
+                  label="Expiration Date (MM/YY)"
+                  fullWidth
+                  error={!!errors["expiration-date"]}
+                  helperText={errors["expiration-date"]?.message}
+                />
+              )}
+            />
+          </Box>
 
-        {/* CVV */}
-        <Grid item xs={6}>
-          <Controller
-            name="cvv"
-            control={control}
-            rules={{
-              required: "CVV is required",
-              pattern: {
-                value: /^\d{3}$/,
-                message: "Must be 3 digits",
-              },
-            }}
-            render={({ field: { onChange, value = "", ...field } }) => (
-              <TextField
-                {...field}
-                value={value.replace(/\D/g, "").slice(0, 3)}
-                onChange={(e) => onChange(e.target.value)}
-                label="CVV"
-                type="password"
-                fullWidth
-                inputProps={{ maxLength: 3 }}
-                error={!!errors["cvv"]}
-                helperText={errors["cvv"]?.message}
-              />
-            )}
-          />
-        </Grid>
+          {/* CVV */}
+          <Box flex={1}>
+            <Controller
+              name="cvv"
+              control={control}
+              rules={{
+                required: "CVV is required",
+                pattern: {
+                  value: /^\d{3}$/,
+                  message: "Must be 3 digits",
+                },
+              }}
+              render={({ field: { onChange, value = "", ...field } }) => (
+                <TextField
+                  {...field}
+                  value={value.replace(/\D/g, "").slice(0, 3)}
+                  onChange={(e) => onChange(e.target.value)}
+                  label="CVV"
+                  type="password"
+                  fullWidth
+                  inputProps={{ maxLength: 3 }}
+                  error={!!errors["cvv"]}
+                  helperText={errors["cvv"]?.message}
+                />
+              )}
+            />
+          </Box>
+        </Box>
 
         {/* Buttons */}
-        <Grid item xs={6}>
-          <Button onClick={onBack} variant="outlined" fullWidth>
-            Back
-          </Button>
-        </Grid>
-        <Grid item xs={6}>
-          <Button type="submit" variant="contained" color="primary" fullWidth>
-            Pay Now
-          </Button>
-        </Grid>
-      </Grid>
+        <Box display="flex" gap={2}>
+          <Box flex={1}>
+            <Button onClick={onBack} variant="outlined" fullWidth>
+              Back
+            </Button>
+          </Box>
+          <Box flex={1}>
+            <Button type="submit" variant="contained" color="primary" fullWidth>
+              Pay Now
+            </Button>
+          </Box>
+        </Box>
+      </Box>
     </form>
   );
 };

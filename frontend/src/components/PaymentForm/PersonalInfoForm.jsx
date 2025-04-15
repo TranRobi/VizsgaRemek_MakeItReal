@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { AuthContext } from "../../context/AuthContext";
-import { TextField, Button, Grid } from "@mui/material";
+import { TextField, Button, Box } from "@mui/material";
 
 const PersonalInfoForm = ({ onNext, defaultValues }) => {
-  const { storedUser, user } = React.useContext(AuthContext);
+  const { user } = React.useContext(AuthContext);
   const {
     register,
     handleSubmit,
@@ -22,43 +22,52 @@ const PersonalInfoForm = ({ onNext, defaultValues }) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
+      <Box display="flex" flexDirection="column" gap={2}>
+        {/* Full Name */}
+        <Box>
           <TextField
             label="Full Name"
             fullWidth
             {...register("name", { required: true })}
-            error={!!errors.fullName}
-            helperText={errors.fullName ? "Full Name is required" : ""}
-            InputLabelProps={user ? { shrink: true } : ""}
+            error={!!errors.name}
+            helperText={errors.name ? "Full Name is required" : ""}
+            InputLabelProps={user ? { shrink: true } : {}}
           />
-        </Grid>
-        <Grid item xs={12}>
+        </Box>
+
+        {/* Phone Number */}
+        <Box>
           <TextField
             label="Phone Number"
             fullWidth
             {...register("phone-number", { required: true })}
-            error={!!errors.fullName}
-            helperText={errors.fullName ? "Full Name is required" : ""}
-            InputLabelProps={user ? { shrink: true } : "{ shrink: true }"}
+            error={!!errors["phone-number"]}
+            helperText={
+              errors["phone-number"] ? "Phone Number is required" : ""
+            }
+            InputLabelProps={user ? { shrink: true } : {}}
           />
-        </Grid>
-        <Grid item xs={12}>
+        </Box>
+
+        {/* Email */}
+        <Box>
           <TextField
             label="Email"
             type="email"
             fullWidth
             {...register("email-address", { required: true })}
-            error={!!errors.email}
-            helperText={errors.email ? "Email is required" : ""}
+            error={!!errors["email-address"]}
+            helperText={errors["email-address"] ? "Email is required" : ""}
           />
-        </Grid>
-        <Grid item xs={12}>
+        </Box>
+
+        {/* Submit Button */}
+        <Box>
           <Button type="submit" variant="contained" color="primary" fullWidth>
             Next
           </Button>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
     </form>
   );
 };

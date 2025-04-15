@@ -119,7 +119,8 @@ function Product() {
                 <select
                   value={size}
                   onChange={(e) => setSize(e.target.value)}
-                  className="border p-2 rounded w-full bg-red-950">
+                  className="border p-2 rounded w-full bg-red-950"
+                >
                   {[50, 100, 150].map((mat) => (
                     <option key={mat} value={mat}>
                       {mat}%
@@ -134,7 +135,8 @@ function Product() {
                 <select
                   value={material}
                   onChange={(e) => setMaterial(e.target.value)}
-                  className="border p-2 rounded w-full bg-red-950">
+                  className="border p-2 rounded w-full bg-red-950"
+                >
                   {["PLA", "PETG", "ABS"].map((mat) => (
                     <option key={mat} value={mat}>
                       {mat}
@@ -162,7 +164,8 @@ function Product() {
                         color === col ? "border-black" : ""
                       }`}
                       style={{ backgroundColor: col.toLowerCase() }}
-                      onClick={() => setColor(col)}></button>
+                      onClick={() => setColor(col)}
+                    ></button>
                   ))}
                 </div>
               </div>
@@ -181,7 +184,8 @@ function Product() {
                   onClick={() => {
                     navigate("/library");
                   }}
-                  className="w-full md:w-1/3 bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-900">
+                  className="w-full md:w-1/3 bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-900"
+                >
                   Back to library
                 </button>
 
@@ -189,7 +193,8 @@ function Product() {
                   onClick={() => {
                     addToCart();
                   }}
-                  className="w-full md:w-1/3 bg-gray-600 text-white py-3 rounded-lg font-semibold hover:bg-gray-900">
+                  className="w-full md:w-1/3 bg-gray-600 text-white py-3 rounded-lg font-semibold hover:bg-gray-900"
+                >
                   Add to cart
                 </button>
               </div>
@@ -197,7 +202,8 @@ function Product() {
                 onClick={() => {
                   calc();
                 }}
-                className="w-full md:w-1/3 bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-900">
+                className="w-full md:w-1/3 bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-900"
+              >
                 Calculate price
               </button>
             </div>
