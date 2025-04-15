@@ -1,6 +1,6 @@
 "use strict";
 
-import { unlinkSync } from "fs";
+import { unlinkSync, copyFileSync } from "fs";
 import sqlite3 from "sqlite3";
 import { CONFIG, JOB_COLOURS, JOB_STATES, JOB_MATERIALS } from "./config.js";
 import { generate_salt, hash_password } from "./secret.js";
@@ -201,10 +201,12 @@ db.serialize(() => {
 
     console.log('Példa termékek képeinek generálása...');
     for (const sample of sample_products) {
+        const new_stl_path = `./stl/${file_name_from_date()}.stl`;
+        copyFileSync(sample.stl_path, new_stl_path);
         const thumbnail_path = generate_stl_thumbnail(sample.stl_path);
         console.log(`${sample.name} termék képének generálása...`)
         query(`
-            INSERT INTO products VALUES ('${sample.name}', '${sample.description}', '${sample.stl_path}', '${thumbnail_path}', 1)
+            INSERT INTO products VALUES ('${sample.name}', '${sample.description}', '${new_stl_path}', '${thumbnail_path}', 1)
         `);
     }
 });
