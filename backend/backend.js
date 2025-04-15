@@ -10,6 +10,7 @@ import cookie_parser from "cookie-parser";
 import cors from "cors";
 import multer from "multer";
 import { cwd } from "node:process";
+import { unlinkSync } from "node:fs";
 
 import CONFIG, { JOB_MATERIALS } from "./config.js";
 import { SWAGGER_SCHEMAS } from "./schemas.js";
@@ -1096,6 +1097,54 @@ app.put("/api/checkout", (req, res) => {
       return res.status(500).send();
     }
   );
+});
+
+
+/**
+ * @swagger
+ * /api/calculate-price:
+ *      put:
+ *         summary: Árajánlat kérés STL fájlra
+ *         tags:
+ *           - Rendelés
+ *         description: Kiszámolja egy STL fájl kinyomtatásának árát, ha egy bizonyos anyagból van nyomtatva
+ *         requestBody:
+ *             required: true
+ *             content:
+ *                 multipart/form-data:
+ *                     schema:
+ *                         $ref: '#/components/schemas/calculate_price_request'
+ *         responses:
+ *             200:
+ *                 description:
+ *                     Sikeres árszámítás
+ *                 content:
+ *                     application/json:
+ *                         schema:
+ *                             $ref: '#/components/schemas/calculate_price_response'
+ *             406:
+ *                 description:
+ *                     Hibás material vagy nem töltött fel fájlt
+ *             500:
+ *                 description:
+ *                     Backend hiba
+ */
+app.put('/api/calculate-price', stl_upload.single("stl-file"), (req, res) => {
+    if (!req.file || !req.file.path || !req.body || !req.body.material) return res.status(406).send('Nem kapott a végpont filet');
+    const material = req.body.material.toUpperCase();
+    if (!Object.values(JOB_MATERIALS).includes(material))
+        return res.status(406).send(`Rossz material ${req.body.material}`);
+    get_model_price(req.file.path, req.body['material']).then(
+        price => {
+            unlinkSync(req.file.path);
+            return res.status(200).json({price: price});
+        },
+        err => {
+            unlinkSync(req.file.path);
+            console.log(err);
+            return res.status(500).send('Backend hiba');
+        }
+    );
 });
 
 /** @swagger
