@@ -367,6 +367,21 @@ export const SWAGGER_SCHEMAS = {
     custom_order_request: {
         type: 'object',
         properties: {
+            quantity: {
+                type: 'number',
+                description: 'Mennyiség',
+                example: 69,
+            },
+            material: {
+                type: 'string',
+                description: 'Anyag',
+                example: 'PLA',
+            },
+            colour: {
+                type: 'string',
+                description: 'Szín',
+                example: 'Blue',
+            },
 			country: {
 				type: "string",
 				description: "Ország",

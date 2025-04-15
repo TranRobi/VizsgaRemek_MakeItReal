@@ -12,7 +12,7 @@ import multer from "multer";
 import { cwd } from "node:process";
 
 import CONFIG, { JOB_MATERIALS } from "./config.js";
-import SWAGGER_SCHEMAS from "./schemas.js";
+import { SWAGGER_SCHEMAS } from "./schemas.js";
 import { generate_salt, hash_password } from "./secret.js";
 import {
   rename_key,
@@ -27,8 +27,11 @@ import {
   generate_stl_thumbnail,
   convert_model_to_stl,
   get_model_price,
+  slice_stl_to_gcode,
 } from "./slicer.js";
 import { query_place_order } from "./queries.js";
+
+console.log(SWAGGER_SCHEMAS);
 
 const PORT = 8080;
 const SWAGGER_OPTS = {
@@ -1176,9 +1179,6 @@ app.post("/api/order", (req, res) => {
  *                     application/json:
  *                         schema:
  *                             $ref: '#/components/schemas/order_response'
- *             404:
- *                 description:
- *                     Nincs ilyen termék!
  *             401:
  *                 description:
  *                     Nem vendégként rendelt, de még vannak hiányzó adatok (fizetés, szállítás)
@@ -1195,7 +1195,20 @@ app.post("/api/order-custom", stl_upload.single("stl-file"), (req, res) => {
   const user = logged_in_users.find((e) => e.token === token);
   console.log(`user: ${user}`);
   console.log(req.file);
-  return res.status(201).send();
+  if (!req.file || !req.file.path) {
+      console.log('Nem kapott file-t');
+      return res.status(406).send('Nem kapott file-t');
+  }
+  /* Nem kell validálni a többi dolgot, mivel a `query_place_order` megteszi */
+  const products = [
+      {
+          colour: req.body['colour'],
+          material: req.body['material'],
+          quantity: Number(req.body['quantity']),
+          stl_path: req.file.path,
+      }
+  ];
+  return query_place_order(db, req, res, user, products);
 });
 
 app.listen(PORT, () => {
