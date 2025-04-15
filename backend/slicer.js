@@ -116,6 +116,7 @@ export const get_gcode_price = async (gcode_path, material) => {
         }
     );
 
+    // egy `filament used [mm] = <Valós szám>` kommentre matchel
     const length_regex = new RegExp('filament used \\[mm\\]\\s=\\s\\d+(\\.\\d+)?');
     let p = -1;
     for await (const chunk of read_stream) {
@@ -139,8 +140,6 @@ export const get_gcode_price = async (gcode_path, material) => {
 };
 
 export const get_model_price = async (stl_file_path, material) => {
-    
-
     const gcode_path = `gcode/${file_name_from_date()}.gcode`;
     slice_stl_to_gcode(stl_file_path, gcode_path);
     const p = await get_gcode_price(gcode_path, material);
