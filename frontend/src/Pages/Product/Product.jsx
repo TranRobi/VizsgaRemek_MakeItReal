@@ -91,85 +91,85 @@ function Product() {
       <Navbar />
       <div className="container mx-auto px-6 py-12 w-4/5 grid md:grid-cols-2 gap-12 min-h-[80vh] h-full">
         {/* Product Image */}
-        {loading ? (
-          <div className="flex flex-col justify-center min-h-[100vh] w-full">
-            <div className="m-auto">
-              <h1 className="text-5xl text-white">Calculating price...</h1>
-              <CircularProgress color="error" />
-            </div>
+        <>
+          <div className="bg-gray-100 p-6 rounded-lg shadow-md flex justify-center">
+            <img
+              src={`/api/products/images/${params.id}`}
+              alt={product.name}
+              className="max-w-full h-auto"
+            />
           </div>
-        ) : (
-          <>
-            <div className="bg-gray-100 p-6 rounded-lg shadow-md flex justify-center">
-              <img
-                src={`/api/products/images/${params.id}`}
-                alt={product.name}
-                className="max-w-full h-auto"
-              />
+
+          {/* Product Details */}
+          <div className="space-y-6 text-[#EEEEEE] self-center ">
+            <h2 className="text-3xl font-semibold ">{product.name}</h2>
+            <p className="text-[#EEEEEE]">{product.description}</p>
+
+            {/* Size Scale */}
+            <div>
+              <label className="block font-semibold">Size:</label>
+              <select
+                value={size}
+                onChange={(e) => setSize(e.target.value)}
+                className="border p-2 rounded w-full bg-red-950"
+              >
+                {[50, 100, 150].map((mat) => (
+                  <option key={mat} value={mat}>
+                    {mat}%
+                  </option>
+                ))}
+              </select>
             </div>
 
-            {/* Product Details */}
-            <div className="space-y-6 text-[#EEEEEE] self-center ">
-              <h2 className="text-3xl font-semibold ">{product.name}</h2>
-              <p className="text-[#EEEEEE]">{product.description}</p>
+            {/* Material Selector */}
+            <div>
+              <label className="block font-semibold">Material:</label>
+              <select
+                value={material}
+                onChange={(e) => setMaterial(e.target.value)}
+                className="border p-2 rounded w-full bg-red-950"
+              >
+                {["PLA", "PETG", "ABS"].map((mat) => (
+                  <option key={mat} value={mat}>
+                    {mat}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-              {/* Size Scale */}
-              <div>
-                <label className="block font-semibold">Size:</label>
-                <select
-                  value={size}
-                  onChange={(e) => setSize(e.target.value)}
-                  className="border p-2 rounded w-full bg-red-950"
-                >
-                  {[50, 100, 150].map((mat) => (
-                    <option key={mat} value={mat}>
-                      {mat}%
-                    </option>
-                  ))}
-                </select>
+            {/* Color Selector */}
+            <div>
+              <label className="block font-semibold">Color:</label>
+              <div className="flex space-x-2">
+                {[
+                  "Red",
+                  "Green",
+                  "Blue",
+                  "Yellow",
+                  "Black",
+                  "White",
+                  "Gray",
+                ].map((col) => (
+                  <button
+                    key={col}
+                    className={`w-8 h-8 rounded-full border-2 ${
+                      color === col ? "border-black" : ""
+                    }`}
+                    style={{ backgroundColor: col.toLowerCase() }}
+                    onClick={() => setColor(col)}
+                  ></button>
+                ))}
               </div>
+            </div>
 
-              {/* Material Selector */}
-              <div>
-                <label className="block font-semibold">Material:</label>
-                <select
-                  value={material}
-                  onChange={(e) => setMaterial(e.target.value)}
-                  className="border p-2 rounded w-full bg-red-950"
-                >
-                  {["PLA", "PETG", "ABS"].map((mat) => (
-                    <option key={mat} value={mat}>
-                      {mat}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Color Selector */}
-              <div>
-                <label className="block font-semibold">Color:</label>
-                <div className="flex space-x-2">
-                  {[
-                    "Red",
-                    "Green",
-                    "Blue",
-                    "Yellow",
-                    "Black",
-                    "White",
-                    "Gray",
-                  ].map((col) => (
-                    <button
-                      key={col}
-                      className={`w-8 h-8 rounded-full border-2 ${
-                        color === col ? "border-black" : ""
-                      }`}
-                      style={{ backgroundColor: col.toLowerCase() }}
-                      onClick={() => setColor(col)}
-                    ></button>
-                  ))}
+            {loading ? (
+              <div className="justify-center h-fit w-full">
+                <div className="flex flex-row w-fit">
+                  <h1 className="text-2xl text-white">Calculating price...</h1>
+                  <CircularProgress color="error" />
                 </div>
               </div>
-
+            ) : (
               <div>
                 {prodPrice.toLocaleString("hu-HU", {
                   style: "currency",
@@ -177,38 +177,38 @@ function Product() {
                 })}
                 /db
               </div>
+            )}
 
-              {/* Add to Cart Button */}
-              <div className="flex flex-col md:flex-row justify-between">
-                <button
-                  onClick={() => {
-                    navigate("/library");
-                  }}
-                  className="w-full md:w-1/3 bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-900"
-                >
-                  Back to library
-                </button>
-
-                <button
-                  onClick={() => {
-                    addToCart();
-                  }}
-                  className="w-full md:w-1/3 bg-gray-600 text-white py-3 rounded-lg font-semibold hover:bg-gray-900"
-                >
-                  Add to cart
-                </button>
-              </div>
+            {/* Add to Cart Button */}
+            <div className="flex flex-col md:flex-row justify-between">
               <button
                 onClick={() => {
-                  calc();
+                  navigate("/library");
                 }}
                 className="w-full md:w-1/3 bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-900"
               >
-                Calculate price
+                Back to library
+              </button>
+
+              <button
+                onClick={() => {
+                  addToCart();
+                }}
+                className="w-full md:w-1/3 bg-gray-600 text-white py-3 rounded-lg font-semibold hover:bg-gray-900"
+              >
+                Add to cart
               </button>
             </div>
-          </>
-        )}
+            <button
+              onClick={() => {
+                calc();
+              }}
+              className="w-full md:w-1/3 bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-900"
+            >
+              Calculate price
+            </button>
+          </div>
+        </>
       </div>
       <Footer />
     </>
