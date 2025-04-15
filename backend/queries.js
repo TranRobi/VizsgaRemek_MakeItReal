@@ -124,14 +124,16 @@ export const query_insert_payment_info = (
     );
   });
 
-const query_get_product_stl_file = (db, product_id) =>
+export const query_get_product_stl_file = (db, product_id) =>
   new Promise((resolve, reject) => {
     async_get(
       db,
       `SELECT stl_file_path FROM products WHERE rowid = ?`,
       product_id
     ).then(
-      (row) => resolve(row.stl_file_path),
+      (row) => {
+          resolve(row)
+      },
       (err) => reject(err)
     );
   });
@@ -531,6 +533,17 @@ export const query_get_user_statistics = (db, user_id) => new Promise((resolve, 
                 total: total
             });
         },
+        err => reject(err)
+    );
+});
+
+export const query_delete_product = (db, product_id, user_id) => new Promise((resolve, reject) => {
+    async_run(
+        db,
+        `DELETE FROM products WHERE rowid = ? AND uploader_id = ?`,
+        product_id, user_id
+    ).then(
+        () => resolve(true),
         err => reject(err)
     );
 });

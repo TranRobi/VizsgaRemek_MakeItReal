@@ -33,7 +33,9 @@ import {
     query_get_user_by_email,
     query_insert_user,
     query_get_user_statistics,
+    query_get_product_stl_file,
     query_delete_user,
+    query_delete_product,
 } from "./queries.js";
 
 console.log(SWAGGER_SCHEMAS);
@@ -1318,6 +1320,69 @@ app.delete('/api/user', (req, res) => {
             return res.status(500).send('Backend hiba, nem sikerült kitörölni a fiókot');
         }
     );
+});
+
+/**
+ * @swagger
+ * /api/products/{id}:
+ *      delete:
+ *         summary: Termék törlése
+ *         tags:
+ *           - Termékek
+ *         description: Töröl egy már létező termék sort
+ *         parameters:
+ *             - in: path
+ *               name: id
+ *               schema:
+ *                   type: integer
+ *               required: true
+ *               description: Termék ID
+ *         responses:
+ *             204:
+ *                 description:
+ *                     Termék sikeresen törölve
+ *             401:
+ *                 description:
+ *                     Nincs belépve a felhasználó
+ *                     vagy a frontend nem küldte
+ *                     el a `LOGIN_TOKEN` cookie-t
+ *             404:
+ *                 description:
+ *                     Nincs ilyen ID!
+ *             500:
+ *                 description:
+ *                     Nincs a backendnek `products` táblája, futtasd az `init_db.js` scriptet!
+ *                     Csak teszteléskor jöhet elő.
+ */
+app.delete("/api/products/:id", (req, res) => {
+  const token = get_api_key(req);
+  console.log(`token ${token}`);
+  if (!token) return res.status(401).send();
+  const user = logged_in_users.find((elem) => elem.token === token);
+  if (!user) return res.status(401).send();
+  console.log(`user id ${user.id}`);
+  if (!req.params || !req.params.id)
+    return res.status(404).send('Nem küldött a frontend termék ID-t');
+  console.log(req.params);
+
+  query_get_product_stl_file(db, req.params.id).then(
+      row => {
+          if (!row) {
+              return res.status(404).send('Nincs ilyen termék');
+          }
+          query_delete_product(db, req.params.id, user.id).then(
+              () => res.status(204).send('Sikeres törlés'),
+              err => {
+                console.log(err);
+                return res.status(500).send('Backend hiba');
+              }
+          );
+      },
+      err => {
+          console.log(err);
+          return res.status(500).send('Backend hiba');
+      }
+  );
 });
 
 app.listen(PORT, () => {
