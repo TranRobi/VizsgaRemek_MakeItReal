@@ -538,12 +538,18 @@ export const query_get_user_statistics = (db, user_id) => new Promise((resolve, 
 });
 
 export const query_delete_product = (db, product_id, user_id) => new Promise((resolve, reject) => {
-    async_run(
+    async_get(
         db,
-        `DELETE FROM products WHERE rowid = ? AND uploader_id = ?`,
+        `DELETE FROM products WHERE rowid = ? AND uploader_id = ?
+         RETURNING stl_file_path, display_image_file_path`,
         product_id, user_id
     ).then(
-        () => resolve(true),
+        row => {
+            Promise.all([row.stl_file_path, row.display_image_file_path].map(f => unlink(f))).then(
+                () => resolve(true),
+                err => reject(err)
+            );
+        },
         err => reject(err)
     );
 });

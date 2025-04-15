@@ -1,18 +1,10 @@
-import React, { useState } from "react";
-import {
-  Box,
-  Collapse,
-  IconButton,
-  Table,
-  TableCell,
-  TableRow,
-  Typography,
-} from "@mui/material";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import React, { useContext } from "react";
+import { IconButton, TableCell, TableRow } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { ProductsContext } from "../../context/ProductsContext";
 
 function Row({ row }) {
-  const [openTable, setOpenTable] = useState(false);
+  const { deleteProduct } = useContext(ProductsContext);
 
   return (
     <>
@@ -26,41 +18,24 @@ function Row({ row }) {
           <IconButton
             aria-label="expand row"
             size="small"
-            onClick={() => setOpenTable(!openTable)}
-            sx={{ color: "#fff" }}
+            onClick={() => {
+              deleteProduct(row.id);
+            }}
+            sx={{ color: "red" }}
           >
-            {openTable ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            <DeleteIcon
+              sx={{
+                ":hover": {
+                  scale: "1.5",
+                },
+              }}
+            />
           </IconButton>
         </TableCell>
         <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
           {row.name}
         </TableCell>
         <TableCell sx={{ color: "#ccc" }}>{row.description}</TableCell>
-      </TableRow>
-
-      <TableRow sx={{ backgroundColor: "#121212" }}>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-          <Collapse in={openTable} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 2 }}>
-              <Typography
-                variant="subtitle1"
-                gutterBottom
-                sx={{ color: "#f44336", fontWeight: "bold" }}
-              >
-                File Details
-              </Typography>
-              <Table size="small">
-                <TableRow>
-                  <TableCell sx={{ color: "#fff" }}>File Name</TableCell>
-                  <TableCell sx={{ color: "#ccc" }}>
-                    {row["stl-file"]?.name || "N/A"}
-                  </TableCell>
-                </TableRow>
-                {/* Add more details if needed */}
-              </Table>
-            </Box>
-          </Collapse>
-        </TableCell>
       </TableRow>
     </>
   );

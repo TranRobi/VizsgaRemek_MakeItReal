@@ -69,7 +69,7 @@ function Library() {
         </form>
       </div>
       <div>
-        <div className=" justify-center h-1/4 flex-wrap flex">
+        <div className=" justify-center h-1/4 flex-wrap flex min-h-[78vh]">
           {searchFilter().length > 0 ? (
             searchFilter()
               .map((prod, index) => {

@@ -31,9 +31,23 @@ function ProfileNav({ setActiveTab }) {
 
     navigate("/");
   };
+
+  const deleteAccount = () => {
+    axios
+      .delete("/api/user", {
+        Cookie: document.cookie,
+      })
+      .then((res) => {
+        if (res.status === 204) {
+          console.log("asd");
+          localStorage.clear();
+          location.reload();
+        }
+      });
+  };
   return (
     <ul className=" w-full md:w-fit bg-neutral-900 text-white h-fit md:h-full p-2 flex-col justify-between text-center">
-      <div className="flex items-center justify-between ">
+      <div className="flex flex-col gap-2 items-center justify-between ">
         <Button
           onClick={() => {
             handleLogout();
@@ -45,45 +59,55 @@ function ProfileNav({ setActiveTab }) {
         >
           Log out
         </Button>
-      </div>
-
-      <div className={" block "}>
-        <li className="mb-2">
-          <a
-            onClick={() => {
-              setActiveTab(1);
-            }}
-          >
-            Delivery-information
-          </a>
-        </li>
-        <li className="mb-2">
-          <a
-            onClick={() => {
-              setActiveTab(2);
-            }}
-          >
-            Order history
-          </a>
-        </li>
-        <li className="mb-2">
-          <a
-            onClick={() => {
-              setActiveTab(3);
-            }}
-          >
-            My models
-          </a>
-        </li>
-        <li className="mb-2">
-          <a
-            onClick={() => {
-              setActiveTab(4);
-            }}
-          >
-            Statistics
-          </a>
-        </li>
+        <Button
+          onClick={() => {
+            deleteAccount();
+          }}
+          className="p-2"
+          color="error"
+          variant="contained"
+          sx={{ marginX: "auto", fontSize: "15px", width: "fit-content" }}
+        >
+          Delete Account
+        </Button>
+        <div className={" block "}>
+          <li className="mb-2">
+            <a
+              onClick={() => {
+                setActiveTab(1);
+              }}
+            >
+              Delivery-information
+            </a>
+          </li>
+          <li className="mb-2">
+            <a
+              onClick={() => {
+                setActiveTab(2);
+              }}
+            >
+              Order history
+            </a>
+          </li>
+          <li className="mb-2">
+            <a
+              onClick={() => {
+                setActiveTab(3);
+              }}
+            >
+              My models
+            </a>
+          </li>
+          <li className="mb-2">
+            <a
+              onClick={() => {
+                setActiveTab(4);
+              }}
+            >
+              Statistics
+            </a>
+          </li>
+        </div>
       </div>
     </ul>
   );

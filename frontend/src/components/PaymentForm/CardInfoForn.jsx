@@ -67,7 +67,7 @@ const CardInfoForm = ({ onSubmit, onBack, defaultValues }) => {
               rules={{
                 required: "Expiration date is required",
                 pattern: {
-                  value: /^(0[1-9]|1[0-2])\/\d{2}$/,
+                  value: /^(0[1-9]|1[0-2])\/\d[2-4]/,
                   message: "Invalid format MM/YY",
                 },
               }}

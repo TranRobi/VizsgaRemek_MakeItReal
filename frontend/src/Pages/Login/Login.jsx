@@ -12,6 +12,8 @@ import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import CancelIcon from "@mui/icons-material/Cancel";
 import KeyIcon from "@mui/icons-material/Key";
 import axios from "axios";
+import Alert from "@mui/material/Alert";
+import CheckIcon from "@mui/icons-material/Check";
 import { AuthContext } from "../../context/AuthContext";
 
 const theme = createTheme({
@@ -37,6 +39,8 @@ function Login({ close, open }) {
     "email-address": "",
     password: "",
   });
+
+  const [error, setError] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -65,7 +69,20 @@ function Login({ close, open }) {
           close(e);
         }
       })
-      .catch((error) => console.error("Login error:", error));
+      .catch((err) => {
+        if (err.response) {
+          const status = err.response.status;
+          if (status === 404) {
+            setError("Account not found. Please register first.");
+          } else if (status === 406) {
+            setError("Incorrect password. Please try again.");
+          } else {
+            setError("Something went wrong. Please try again later.");
+          }
+        } else {
+          setError("Unable to connect to the server.");
+        }
+      });
   };
 
   return (
@@ -117,6 +134,14 @@ function Login({ close, open }) {
                   />
                   <KeyIcon className="absolute top-1/2 right-2 transform -translate-y-1/2 text-gray-600" />
                 </div>
+                {error && (
+                  <Alert
+                    icon={<CancelIcon fontSize="inherit" />}
+                    severity="error"
+                  >
+                    {error}
+                  </Alert>
+                )}
                 <Button
                   type="submit"
                   variant="contained"

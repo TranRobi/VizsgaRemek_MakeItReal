@@ -50,6 +50,43 @@ export const SWAGGER_SCHEMAS = {
             'stl-file',
         ],
 	},
+    calculate_price_request: {
+        type: 'object',
+        properties: {
+            material: {
+                type: 'string',
+                description: 'Nyomtatáshoz használt anyag',
+                example: 'PETG',
+            },
+			"stl-file": {
+				type: "string",
+				format: "binary",
+			},
+        },
+		encoding: {
+			"stl-file": {
+				contentType: [
+					"model/stl",
+					"application/vnd.ms-pki.stl",
+					"model/x.stl-ascii model/x.stl-binary",
+				],
+			},
+		},
+        required: [
+            'stl-file',
+            'material',
+        ],
+    },
+    calculate_price_response: {
+        type: 'object',
+        properties: {
+            price: {
+                type: 'number',
+                example: 666,
+                description: 'Kiszámított ár'
+            },
+        },
+    },
 	product_edit_request: {
 		type: "object",
 		properties: {

@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
+
+import Alert from "@mui/material/Alert";
+import CancelIcon from "@mui/icons-material/Cancel";
+import CheckIcon from "@mui/icons-material/Check";
 import {
   createTheme,
   ThemeProvider,
@@ -10,6 +14,8 @@ import {
   Typography,
   CardContent,
 } from "@mui/material";
+
+import { CircularProgress } from "@mui/material";
 import axios from "axios";
 
 import PersonalInfoForm from "../../components/PaymentForm/PersonalInfoForm";
@@ -33,6 +39,10 @@ function Order() {
   const [colour, setColor] = useState("Black");
   const [STL, setSTL] = useState(null);
   const [quantity, setQuantity] = useState(1);
+  const [price, setPrice] = useState(0);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(null);
 
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({});
@@ -69,12 +79,37 @@ function Order() {
         },
       });
 
-      console.log("✅ Submission successful:", response.data);
+      setSuccess(true);
     } catch (error) {
-      console.error("❌ Submission failed:", error);
+      if (error.status === 406) {
+        setError("Please upload a stl file");
+      }
     }
   };
+  const getPriceForStl = async () => {
+    setLoading(true);
+    const response = await axios
+      .put(
+        "/api/calculate-price",
+        {
+          material: material,
+          "stl-file": STL,
+        },
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      )
+      .catch((err) => {
+        if (err.status === 406) {
+          setError("Please upload a stl file");
+        }
+      });
 
+    setPrice(response.data.price);
+    setLoading(false);
+  };
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -85,6 +120,11 @@ function Order() {
       <ThemeProvider theme={theme}>
         <Container maxWidth="md" className="m-6">
           <Card className="rounded-2xl shadow-lg p-4">
+            {success && (
+              <Alert icon={<CheckIcon fontSize="inherit" />} severity="success">
+                Order successfuly submitted!
+              </Alert>
+            )}
             <CardContent>
               <Typography
                 variant="h5"
@@ -209,12 +249,44 @@ function Order() {
                 className="bg-[#f0f0f0] p-2 w-full text-black border-2 rounded"
               />
               {STL && (
-                <Typography
-                  variant="body2"
-                  className="mt-1 text-sm text-gray-700"
-                >
+                <Typography variant="body2" className=" text-sm text-gray-700">
                   Selected file: {STL.name}
                 </Typography>
+              )}
+            </div>
+            {error && (
+              <Alert
+                icon={<CancelIcon fontSize="inherit" />}
+                severity="error"
+                sx={{ marginTop: "10px" }}
+              >
+                {error}
+              </Alert>
+            )}
+            <div className=" flex justify-between m-2">
+              <Button
+                onClick={() => {
+                  getPriceForStl();
+                }}
+                variant="contained"
+                color="primary"
+              >
+                Calculating price
+              </Button>
+              {loading ? (
+                <div className="justify-center flex p-2 items-center">
+                  <h1 className="text-2xl text-black mr-3">
+                    Calculating stl price...
+                  </h1>
+                  <CircularProgress color="error" />
+                </div>
+              ) : (
+                <div className="text-2xl text-right">
+                  {(price * quantity).toLocaleString("hu-HU", {
+                    style: "currency",
+                    currency: "HUF",
+                  })}
+                </div>
               )}
             </div>
 

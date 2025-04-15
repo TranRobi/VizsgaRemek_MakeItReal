@@ -17,8 +17,12 @@ import {
   CardContent,
   Divider,
   ThemeProvider,
+  Button,
 } from "@mui/material";
+import Alert from "@mui/material/Alert";
+import CheckIcon from "@mui/icons-material/Check";
 import axios from "axios";
+import { CircularProgress } from "@mui/material";
 
 const MultiStepForm = () => {
   const theme = createTheme({
@@ -41,7 +45,8 @@ const MultiStepForm = () => {
   const { storedUser } = useContext(AuthContext);
   const { cartList, productItems } = useContext(CartContext);
   const shipPrice = cartList.length === 0 ? 0 : 3000; // Assuming 3000 HUF for shipping cost
-
+  const [showAlert, setShowAlert] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({}); // Loading state for data fetching
 
@@ -73,21 +78,34 @@ const MultiStepForm = () => {
   const handleBack = () => {
     setStep((prev) => prev - 1);
   };
+
+  //submit order
+  const submitOrder = async (finalData) => {
+    try {
+      const res = await axios.post("/api/order", finalData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (res.status === 201) {
+        setShowAlert(true);
+      }
+    } catch {
+      (err) => {
+        console.log(err);
+      };
+    }
+  };
   // Sending final form to the backend
-  const handlePaymentSubmit = (data) => {
+  const handlePaymentSubmit = async (data) => {
     let productsCart = {
       products: cartList,
     };
     const finalData = { ...formData, ...data, ...productsCart };
-    axios
-      .post("/api/order", finalData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-      .then((response) => {
-        console.log("Order response:", response);
-      });
+    setLoading(true);
+    await submitOrder(finalData);
+    setLoading(false);
   };
 
   // Calculate the total price
@@ -103,6 +121,17 @@ const MultiStepForm = () => {
   return (
     <>
       <Navbar />
+      {showAlert ? (
+        <Alert
+          icon={<CheckIcon fontSize="inherit" />}
+          severity="success"
+          sx={{ width: "75%", margin: "auto" }}
+        >
+          Order has been submited!
+        </Alert>
+      ) : (
+        ""
+      )}
       <ThemeProvider theme={theme}>
         <div className="min-h-[86vh] py-10 px-4 md:px-10 flex flex-col lg:flex-row gap-10">
           {/* Step Form */}
@@ -116,6 +145,16 @@ const MultiStepForm = () => {
                   >
                     Payment Process
                   </Typography>
+                  {loading ? (
+                    <div className="justify-center flex p-2 items-center">
+                      <h1 className="text-2xl text-black mr-3">
+                        Submitting order!
+                      </h1>
+                      <CircularProgress color="error" />
+                    </div>
+                  ) : (
+                    ""
+                  )}
                   {step === 1 && (
                     <PersonalInfoForm
                       onNext={handleNext}
@@ -156,6 +195,13 @@ const MultiStepForm = () => {
                   ))}
                 </div>
               </Card>
+              {showAlert ? (
+                <Button variant="contained" color="success">
+                  Show email example
+                </Button>
+              ) : (
+                ""
+              )}
             </Container>
           </div>
 

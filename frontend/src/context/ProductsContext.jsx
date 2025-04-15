@@ -1,26 +1,21 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, { createContext, useState, useEffect } from "react";
 import axios from "axios";
-import { AuthContext } from "./AuthContext";
-
 const ProductsContext = createContext();
 
 const ProductsProvider = ({ children }) => {
-  const { storedUser } = useContext(AuthContext);
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [showDelAlert, setShowDelAlert] = useState(false);
 
   function getHistory() {
-    if (storedUser?.[1]) {
-      axios
-        .get("/api/order-history", {
-          Cookie: document.cookie,
-        })
-        .then((response) => {
-          setOrders(response.data);
-        });
-    }
+    axios
+      .get("/api/order-history", {
+        Cookie: document.cookie,
+      })
+      .then((response) => {
+        setOrders(response.data);
+      });
   }
-
   function getProducts() {
     axios
       .get("/api/products")
@@ -47,8 +42,15 @@ const ProductsProvider = ({ children }) => {
   function modifyProducts() {
     getProducts();
   }
-  function deleteProduct() {
-    getProducts();
+  function deleteProduct(id) {
+    axios.delete(`/api/products/${id}`).then((res) => {
+      if (res.status === 204) {
+        setShowDelAlert(true);
+        getProducts();
+      } else {
+        setShowDelAlert(false);
+      }
+    });
   }
 
   useEffect(() => {
@@ -56,7 +58,9 @@ const ProductsProvider = ({ children }) => {
     getProducts();
   }, []);
   return (
-    <ProductsContext.Provider value={{ products, addProduct, orders }}>
+    <ProductsContext.Provider
+      value={{ products, addProduct, orders, deleteProduct, showDelAlert }}
+    >
       {children}
     </ProductsContext.Provider>
   );
