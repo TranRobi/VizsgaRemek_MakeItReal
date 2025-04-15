@@ -1,6 +1,7 @@
 import {
   async_get,
   async_get_all,
+  async_run,
   file_name_from_date,
   first_letter_uppercase,
 } from "./util.js";
@@ -8,6 +9,7 @@ import { generate_salt, hash_password } from "./secret.js";
 import { slice_stl_to_gcode, get_gcode_price } from "./slicer.js";
 import { JOB_COLOURS, JOB_MATERIALS, JOB_STATES } from "./config.js";
 import { existsSync, unlinkSync } from "node:fs";
+import { unlink } from 'node:fs/promises';
 
 export const query_user_address_id = (db, user) =>
   new Promise((resolve, reject) => {
@@ -528,6 +530,41 @@ export const query_get_user_statistics = (db, user_id) => new Promise((resolve, 
                 'user-earnings': user_earnings,
                 total: total
             });
+        },
+        err => reject(err)
+    );
+});
+
+const query_delete_products_by_user = (db, user_id) => new Promise((resolve, reject) => {
+    async_get_all(
+        db,
+        `DELETE FROM products
+         WHERE uploader_id = ?
+         RETURNING stl_file_path, display_image_file_path`,
+        user_id
+    ).then(
+        rows => {
+            console.log(rows);
+            // Ez a szörnyeteg kitöröl minden STL és PNG fájlt, amiket eltároltunk
+            Promise.all(rows.map(row => unlink(row.stl_file_path)).concat(rows.map(row => unlink(row.display_image_file_path)))).then(
+                success => resolve(true),
+                err => reject(err)
+            );
+        },
+    );
+});
+
+export const query_delete_user = (db, user_id) => new Promise((resolve, reject) => {
+    query_delete_products_by_user(db, user_id).then(
+        () => {
+            async_run(
+                db,
+                `DELETE FROM users WHERE rowid = ?`,
+                user_id
+            ).then(
+                () => resolve(true),
+                err => reject(err)
+            );
         },
         err => reject(err)
     );

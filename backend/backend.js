@@ -32,7 +32,8 @@ import {
     query_place_order,
     query_get_user_by_email,
     query_insert_user,
-    query_get_user_statistics
+    query_get_user_statistics,
+    query_delete_user,
 } from "./queries.js";
 
 console.log(SWAGGER_SCHEMAS);
@@ -1265,6 +1266,57 @@ app.get('/api/statistics', (req, res) => {
             console.log(err);
             return res.status(500).send('Nem sikerült lekérni a statisztikát');
         },
+    );
+});
+
+
+/**
+ * @swagger
+ * /api/user:
+ *     delete:
+ *         summary: Felhasználó törlése
+ *         tags:
+ *           - Auth rendszer
+ *         description: Kitörli a felhasználó fiókját, majd kijelentkezteti
+ *         responses:
+ *             204:
+ *                 description:
+ *                     Sikeres fiók törlés
+ *                 headers:
+ *                     Set-Cookie:
+ *                         schema:
+ *                             type: string
+ *             404:
+ *                 description:
+ *                     Nincs belépett felhasználó
+ *             500:
+ *                 description:
+ *                     A backenden valami nagyon nem jó, ha a backendes nem béna,
+ *                     ez sose történik meg
+ */
+app.delete('/api/user', (req, res) => {
+    const token = get_api_key(req);
+    if (!token) {
+        return res.status(404).send('Ehhez a végponthoz be kell jelentkezni!');
+    }
+    const user = logged_in_users.find((e) => e.token === token);
+    if (!user) {
+        return res.status(404).send('Ehhez a végponthoz be kell jelentkezni!');
+    }
+
+    query_delete_user(db, user.id).then(
+        success => {
+            logged_in_users.splice(
+              logged_in_users.indexOf((elem) => elem.token === token),
+              1
+            );
+            res.clearCookie("LOGIN_TOKEN");
+            return res.status(204).send('Sikeres törlés');
+        },
+        err => {
+            console.log(err);
+            return res.status(500).send('Backend hiba, nem sikerült kitörölni a fiókot');
+        }
     );
 });
 
