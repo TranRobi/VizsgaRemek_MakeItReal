@@ -1,5 +1,6 @@
 import {
   async_get,
+  async_get_all,
   file_name_from_date,
   first_letter_uppercase,
 } from "./util.js";
@@ -501,4 +502,33 @@ export const query_insert_user = (db, email, display_name, password) => new Prom
       row => resolve(row),
       err => reject(err)
   );
+});
+
+export const query_get_user_statistics = (db, user_id) => new Promise((resolve, reject) => {
+    async_get_all(
+        db,
+        `SELECT product_id, quantity, cost_per_piece FROM jobs
+         WHERE product_id IN (
+            SELECT rowid FROM products WHERE uploader_id = ?
+         )`,
+        user_id
+    ).then(
+        rows => {
+            console.log(rows);
+            let total = 0;
+            let user_earnings = 0;
+            const product_count = rows.reduce((accum, row) => accum += row.quantity, 0);
+            for (const row of rows) {
+                total += row.quantity * row.cost_per_piece;
+                // profit 40%-a jar a usernek
+                user_earnings = Math.round(row.quantity * row.cost_per_piece / 1.5 * 1.2);
+            }
+            resolve({
+                'product-count': product_count,
+                'user-earnings': user_earnings,
+                total: total
+            });
+        },
+        err => reject(err)
+    );
 });

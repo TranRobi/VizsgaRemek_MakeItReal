@@ -31,7 +31,8 @@ import {
 import {
     query_place_order,
     query_get_user_by_email,
-    query_insert_user
+    query_insert_user,
+    query_get_user_statistics
 } from "./queries.js";
 
 console.log(SWAGGER_SCHEMAS);
@@ -1222,6 +1223,49 @@ app.post("/api/order-custom", stl_upload.single("stl-file"), (req, res) => {
       }
   ];
   return query_place_order(db, req, res, user, products);
+});
+
+
+/**
+ * @swagger
+ * /api/statistics:
+ *     get:
+ *         summary: Termékek listázása
+ *         tags:
+ *           - Termékek
+ *         description: Visszaadja a felhasználó eladási statisztikáit
+ *         responses:
+ *             200:
+ *                 description:
+ *                     Sikeres GET
+ *                 content:
+ *                     application/json:
+ *                         schema:
+ *                             $ref: '#/components/schemas/product_response'
+ *             404:
+ *                 description:
+ *                     Nincs belépve a felhasználó!
+ *             500:
+ *                 description:
+ *                     init_db.js nem volt futtatva, vagy backend hiba
+ */
+app.get('/api/statistics', (req, res) => {
+    const token = get_api_key(req);
+    if (!token) {
+        return res.status(404).send('Ehhez a végponthoz be kell jelentkezni!');
+    }
+    const user = logged_in_users.find((e) => e.token === token);
+    if (!user) {
+        return res.status(404).send('Ehhez a végponthoz be kell jelentkezni!');
+    }
+
+    query_get_user_statistics(db, user.id).then(
+        stats => res.status(200).json(stats),
+        err => {
+            console.log(err);
+            return res.status(500).send('Nem sikerült lekérni a statisztikát');
+        },
+    );
 });
 
 app.listen(PORT, () => {
