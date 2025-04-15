@@ -165,7 +165,7 @@ function Product() {
             {loading ? (
               <div className="justify-center h-fit w-full">
                 <div className="flex flex-row w-fit">
-                  <h1 className="text-2xl text-white">Calculating price...</h1>
+                  <h1 className="text-2xl text-white ">Calculating price...</h1>
                   <CircularProgress color="error" />
                 </div>
               </div>
@@ -203,7 +203,7 @@ function Product() {
               onClick={() => {
                 calc();
               }}
-              className="w-full md:w-1/3 bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-900"
+              className="w-full md:w-1/3 bg-orange-400 text-white py-3 rounded-lg font-semibold hover:bg-red-900"
             >
               Calculate price
             </button>
