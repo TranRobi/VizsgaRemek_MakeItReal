@@ -62,11 +62,11 @@ nav li {
 }
 
 .logo {
-  max-width: 100px;
-  max-height: 100px;
+  max-width: 120px;
+  max-height: 120px;
   height: 100%;
   width: 100%;
-  border-radius: 100%;
+  border-radius: 10%;
   margin: 10px;
 }
 .LoginContainer {

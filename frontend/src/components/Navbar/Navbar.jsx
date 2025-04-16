@@ -60,7 +60,7 @@ function Navbar() {
         <nav className="h-fit">
           <img
             className="logo"
-            src="../../logo.png"
+            src="../../logo2.svg"
             alt="logo"
             onClick={home}
           />
