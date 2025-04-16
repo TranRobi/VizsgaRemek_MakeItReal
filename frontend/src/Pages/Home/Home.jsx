@@ -1,5 +1,3 @@
-
-
 import React from "react";
 import { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar/Navbar";
@@ -45,8 +43,7 @@ function Home() {
             <h2 className="text-2xl text-white">What are we doing?</h2>
             <NavLink
               to="/aboutus"
-              className="mt-4 inline-block bg-[#333333] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#000000] transition"
-            >
+              className="mt-4 inline-block bg-[#333333] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#000000] transition">
               See for yourself here <ReadMoreIcon className="ml-2" />
             </NavLink>
           </div>
@@ -60,16 +57,13 @@ function Home() {
         {/* Contact Section */}
         <section className=" p-8 rounded-lg shadow-lg mb-12 flex flex-col md:flex-row-reverse items-center gap-8">
           <div className="md:w-1/2">
-            <h1 className="text-5xl font-semibold text-white">
-              Contact us
-            </h1>
+            <h1 className="text-5xl font-semibold text-white">Contact us</h1>
             <h3 className="text-xl text-white mt-2">
               For help or questions, please contact us
             </h3>
             <NavLink
               to="/contactus"
-              className="mt-4 inline-block bg-[#333333] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#000000] transition"
-            >
+              className="mt-4 inline-block bg-[#333333] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#000000] transition">
               Contact us now <ArrowForwardIcon className="ml-2" />
             </NavLink>
           </div>
@@ -83,16 +77,13 @@ function Home() {
         {/* Library Section */}
         <section className="p-8 rounded-lg shadow-lg mb-12 flex flex-col md:flex-row items-center gap-8">
           <div className="md:w-1/2">
-            <h1 className="text-4xl font-semibold text-white">
-              Explore More
-            </h1>
+            <h1 className="text-4xl font-semibold text-white">Explore More</h1>
             <h3 className="text-xl text-white mt-2">
               For more products click on the button below
             </h3>
             <NavLink
               to="/library"
-              className="mt-4 inline-block bg-[#333333] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#000000] transition"
-            >
+              className="mt-4 inline-block bg-[#333333] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#000000] transition">
               Visit Library <ArrowForwardIcon className="ml-2" />
             </NavLink>
           </div>
@@ -106,18 +97,14 @@ function Home() {
         {/* Order Section */}
         <section className=" p-8 rounded-lg shadow-lg mb-12 flex flex-col md:flex-row-reverse items-center gap-8">
           <div className="md:w-1/2">
-            <h1 className="text-5xl font-semibold text-white">
-              Order now
-            </h1>
+            <h1 className="text-5xl font-semibold text-white">Custom order</h1>
             <h3 className="text-xl text-white mt-2">
-              This is for clients with ideas in mind that need to be modeled and
-              made into reality
+              This is for clients with special needs or custom orders
             </h3>
             <NavLink
-              to="/contactus"
-              className="mt-4 inline-block bg-[#333333] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#000000] transition"
-            >
-              Contact us now <ArrowForwardIcon className="ml-2" />
+              to="/order"
+              className="mt-4 inline-block bg-[#333333] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#000000] transition">
+              Order now <ArrowForwardIcon className="ml-2" />
             </NavLink>
           </div>
           <img

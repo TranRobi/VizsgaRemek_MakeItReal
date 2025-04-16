@@ -4,15 +4,21 @@ import { unlinkSync, copyFileSync } from "fs";
 import sqlite3 from "sqlite3";
 import { CONFIG, JOB_COLOURS, JOB_STATES, JOB_MATERIALS } from "./config.js";
 import { generate_salt, hash_password } from "./secret.js";
-import { slicer_cleanup_directiories, slice_stl_to_gcode, slicer_init_directories, generate_stl_thumbnail, get_gcode_price } from './slicer.js';
-import { async_get, file_name_from_date } from './util.js';
+import {
+  slicer_cleanup_directiories,
+  slice_stl_to_gcode,
+  slicer_init_directories,
+  generate_stl_thumbnail,
+  get_gcode_price,
+} from "./slicer.js";
+import { async_get, file_name_from_date } from "./util.js";
 
 sqlite3.verbose();
 
 console.log("Tiszta lappal kezdünk");
 // nem idempotens a függvény, szóval hibát dob, ha nincs létező db
 try {
-	unlinkSync(`./${CONFIG.DB_NAME}`);
+  unlinkSync(`./${CONFIG.DB_NAME}`);
 } catch (e) {}
 
 slicer_cleanup_directiories();
@@ -21,16 +27,16 @@ const db = new sqlite3.Database(`./${CONFIG.DB_NAME}`);
 console.log("SQLite adatbázis létrehozva");
 
 const query = (q) =>
-	db.run(q, (err) => {
-		if (err) {
-			console.log(err);
-			throw err;
-		}
-	});
+  db.run(q, (err) => {
+    if (err) {
+      console.log(err);
+      throw err;
+    }
+  });
 
 db.serialize(() => {
-	console.log("'address' tábla létrehozása");
-	query(`
+  console.log("'address' tábla létrehozása");
+  query(`
         CREATE TABLE address (
             country VARCHAR(64) NOT NULL,
             county VARCHAR(128) NOT NULL,
@@ -42,8 +48,8 @@ db.serialize(() => {
         );
     `);
 
-    console.log("'payment_info' tábla létrehozása");
-    query(`
+  console.log("'payment_info' tábla létrehozása");
+  query(`
         CREATE TABLE payment_info (
             card_number VARCHAR(19) NOT NULL,
             name VARCHAR(64) NOT NULL,
@@ -53,8 +59,8 @@ db.serialize(() => {
         );
     `);
 
-	console.log("'jobs' tábla létrehozása");
-	query(`
+  console.log("'jobs' tábla létrehozása");
+  query(`
         CREATE TABLE jobs (
             product_id INT NULL,
             email_address VARCHAR(128) NULL,
@@ -71,8 +77,8 @@ db.serialize(() => {
         );
     `);
 
-	console.log("'users' tábla létrehozása");
-	query(`
+  console.log("'users' tábla létrehozása");
+  query(`
         CREATE TABLE users (
             address_id INT NULL,
             payment_info_id INT NULL,
@@ -85,8 +91,8 @@ db.serialize(() => {
         );
     `);
 
-	console.log("'products' tábla létrehozása");
-	query(`
+  console.log("'products' tábla létrehozása");
+  query(`
         CREATE TABLE products (
             name VARCHAR(64) NOT NULL,
             description VARCHAR(512) NOT NULL,
@@ -97,166 +103,182 @@ db.serialize(() => {
         );
     `);
 
-    slicer_init_directories();
-    console.log('`stl`, `gcode` és `product-images` mappák sikeresen létrehozva');
+  slicer_init_directories();
+  console.log("`stl`, `gcode` és `product-images` mappák sikeresen létrehozva");
 
-	console.log("Dummy adatokkal feltöltés");
-	query(`
+  console.log("Dummy adatokkal feltöltés");
+  query(`
         INSERT INTO address(country, county, city, postal_code, street_number, phone_number, name) VALUES
         ('Magyarország', 'Pest', 'Budapest', 4000, 'Street utca 2', 36701234567, 'Vicc Elek'),
         ('Magyarország', 'Szabolcs-Szatmár-Bereg', 'Nyíregyháza', 4400, 'Street utca 3', '+36701234567', 'Kriszh Advice');
     `);
-    query(`
+  query(`
         INSERT INTO payment_info VALUES (1234567890123456789, 'Vicc Elek', '666', '03', '28');
     `);
 
-	const salt = generate_salt();
-	const pw = hash_password("888888", salt);
-	db.run(
-		`
+  const salt = generate_salt();
+  const pw = hash_password("888888", salt);
+  db.run(
+    `
         INSERT INTO users(address_id, payment_info_id, email_address, display_name, password_hash, salt)
             VALUES(
                 (SELECT rowid FROM address WHERE name = 'Vicc Elek'),
                 (SELECT rowid FROM payment_info WHERE name = 'Vicc Elek'),
                 ?, ?, ?, ?);
     `,
-		"viccelek@citromail.hu",
-		"ViccElek",
-		pw,
-		salt
-	);
+    "viccelek@citromail.hu",
+    "ViccElek",
+    pw,
+    salt
+  );
 
-    const sample_products = [
-        {
-            name: 'Gyűrű tartó',
-            description: 'Gyűrű tartó, ami megvédi a gyűrűt a karcolódástól',
-            stl_path: './stl/ring_holder.stl',
-        },
-        {
-            name: 'Ventillátor tartó',
-            description: 'Ventillátor tartó, levegő szűrő hozzáadható',
-            stl_path: './stl/80mm_fan_holder.stl',
-        },
-        {
-            name: 'Fogkefe tartó',
-            description: 'Fogkefe tartó, utazáshoz',
-            stl_path: './stl/carry-on_toothbrush_case.stl',
-        },
-        {
-            name: 'Poháralátét',
-            description: 'Poháralátét, ami megvédi a bútorokat a karcolódástól, és a nedvességtől',
-            stl_path: './stl/coaster_hex.stl',
-        },
-        {
-            name: 'DC motor tartó',
-            description: 'DC motor tartó, JGA370 motorhoz',
-            stl_path: './stl/DC_motor_holder_jga370.stl',
-        },
-        {
-            name: 'Mosószer tartó pohár',
-            description: 'Mosószer tartó, a mosószer adagolásához',
-            stl_path: './stl/detergent_cup.stl',
-        },
-        {
-            name: 'Rózsás kulcstartó',
-            description: 'Rózsás kulcstartó, tökéletes ajándék hölgyeknek',
-            stl_path: './stl/keychain_rose_heart.stl',
-        },
-        {
-            name: 'Késtartó',
-            description: 'Késtartó, túrázáshoz, kempingezéshez, övre akasztható',
-            stl_path: './stl/knife_holder.stl',
-        },
-        {
-            name: 'Laptop támasztó',
-            description: 'Laptop támasztó, a jobb hűtés érdekében',
-            stl_path: './stl/laptop_stand.stl',
-        },
-        {
-            name: 'Lézertartó',
-            description: 'Lézertartó puskához, 20mm-es sínre',
-            stl_path: './stl/laser_adapter_multi_use.stl',
-        },
-        {
-            name: 'Parkside akkumulátor tartó',
-            description: 'Falra rögzíthető akkumulátor tartó, Parkside akkumulátorokhoz',
-            stl_path: './stl/parkside_x20_battery_holder.stl',
-        },
-        {
-            name: 'PowerBank',
-            description: 'PowerBank, 10db 13700-as akkumulátorokkal',
-            stl_path: './stl/powerBank_from_13700_batteries.stl',
-        },
-        {
-            name: 'Cserép',
-            description: 'Cserép, ami megvédi a növényeket a kiszáradástól',
-            stl_path: './stl/small_pot.stl',
-        },
-        {
-            name: 'Fogkefe tartó',
-            description: 'Fogkefe tartó, egy elektromos fogkeféhez, két manuális fogkeféhez és egy tubus fogkrémhez',
-            stl_path: './stl/small_pot.stl',
-        },
-    ];
+  const sample_products = [
+    {
+      name: "Ring holder",
+      description: "Ring holder that protects the ring from scratches",
+      stl_path: "./stl/ring_holder.stl",
+    },
+    {
+      name: "Fan holder",
+      description: "Fan holder, air filter can be added",
+      stl_path: "./stl/80mm_fan_holder.stl",
+    },
+    {
+      name: "Toothbrush holder",
+      description: "Toothbrush holder, for traveling",
+      stl_path: "./stl/carry-on_toothbrush_case.stl",
+    },
+    {
+      name: "Coaster",
+      description:
+        "Coaster that protects furniture from scratches and moisture",
+      stl_path: "./stl/coaster_hex.stl",
+    },
+    {
+      name: "DC motor holder",
+      description: "DC motor holder, for JGA370 motor",
+      stl_path: "./stl/DC_motor_holder_jga370.stl",
+    },
+    {
+      name: "Detergent cup",
+      description: "Detergent dispenser for dispensing detergent",
+      stl_path: "./stl/detergent_cup.stl",
+    },
+    {
+      name: "Rose keychain",
+      description: "Rose keychain, perfect gift for ladies",
+      stl_path: "./stl/keychain_rose_heart.stl",
+    },
+    {
+      name: "Knife holder",
+      description: "Knife holder, for hiking, camping, can be hung on a belt",
+      stl_path: "./stl/knife_holder.stl",
+    },
+    {
+      name: "Laptop stand",
+      description: "Laptop stand for better cooling",
+      stl_path: "./stl/laptop_stand.stl",
+    },
+    {
+      name: "Laser holder",
+      description: "Laser mount for rifle, 20mm rail",
+      stl_path: "./stl/laser_adapter_multi_use.stl",
+    },
+    {
+      name: "Parkside battery holder",
+      description: "Wall-mounted battery holder for Parkside batteries",
+      stl_path: "./stl/parkside_x20_battery_holder.stl",
+    },
+    {
+      name: "PowerBank",
+      description: "PowerBank, with 10pcs 13700 batteries",
+      stl_path: "./stl/powerBank_from_13700_batteries.stl",
+    },
+    {
+      name: "Pot",
+      description: "A pot that protects plants from drying out",
+      stl_path: "./stl/small_pot.stl",
+    },
+    {
+      name: "Toothbrush holder",
+      description:
+        "Toothbrush holder, for one electric toothbrush, two manual toothbrushes and one tube of toothpaste",
+      stl_path: "./stl/small_pot.stl",
+    },
+  ];
 
-    console.log('Példa termékek képeinek generálása...');
-    for (const sample of sample_products) {
-        const new_stl_path = `./stl/${file_name_from_date()}.stl`;
-        copyFileSync(sample.stl_path, new_stl_path);
-        const thumbnail_path = generate_stl_thumbnail(sample.stl_path);
-        console.log(`${sample.name} termék képének generálása...`)
-        query(`
+  console.log("Példa termékek képeinek generálása...");
+  for (const sample of sample_products) {
+    const new_stl_path = `./stl/${file_name_from_date()}.stl`;
+    copyFileSync(sample.stl_path, new_stl_path);
+    const thumbnail_path = generate_stl_thumbnail(sample.stl_path);
+    console.log(`${sample.name} termék képének generálása...`);
+    query(`
             INSERT INTO products VALUES ('${sample.name}', '${sample.description}', '${new_stl_path}', '${thumbnail_path}', 1)
         `);
-    }
+  }
 });
 
 // segítő függvények random adat generáláshoz
 const random_quantity = () => Math.round(Math.random() * 5 + 1);
-const random_key = obj => {
-    const keys = Object.keys(obj).length;
-    const random_key_idx = Math.round(Math.random() * (keys - 1));
-    return obj[Object.keys(obj)[random_key_idx]];
+const random_key = (obj) => {
+  const keys = Object.keys(obj).length;
+  const random_key_idx = Math.round(Math.random() * (keys - 1));
+  return obj[Object.keys(obj)[random_key_idx]];
 };
 
-console.log('Példa rendelések generálása...');
-const products_to_jobs = [ 1, 4, 8, 9 ];
-const promises = products_to_jobs.map(idx => new Promise((resolve, reject) => {
-    async_get(db, `SELECT stl_file_path FROM products WHERE rowid = ?`, idx + 1).then(
-        row => {
-            const gcode_path = `./gcode/${file_name_from_date()}.gcode`;
-            const material = random_key(JOB_MATERIALS);
-            slice_stl_to_gcode(row.stl_file_path, gcode_path);
-            console.log(`${row.stl_file_path} -> ${gcode_path}`);
-            get_gcode_price(gcode_path, material).then(
-                price => {
-                    async_get(db, `INSERT INTO jobs VALUES
-                        (${idx + 1}, NULL, 1, 1, '${gcode_path}', ${random_quantity()},
+console.log("Példa rendelések generálása...");
+const products_to_jobs = [1, 4, 8, 9];
+const promises = products_to_jobs.map(
+  (idx) =>
+    new Promise((resolve, reject) => {
+      async_get(
+        db,
+        `SELECT stl_file_path FROM products WHERE rowid = ?`,
+        idx + 1
+      ).then(
+        (row) => {
+          const gcode_path = `./gcode/${file_name_from_date()}.gcode`;
+          const material = random_key(JOB_MATERIALS);
+          slice_stl_to_gcode(row.stl_file_path, gcode_path);
+          console.log(`${row.stl_file_path} -> ${gcode_path}`);
+          get_gcode_price(gcode_path, material).then(
+            (price) => {
+              async_get(
+                db,
+                `INSERT INTO jobs VALUES
+                        (${
+                          idx + 1
+                        }, NULL, 1, 1, '${gcode_path}', ${random_quantity()},
                          '${material}',
-                         '${random_key(JOB_COLOURS)}', '${random_key(JOB_STATES)}', ${price})
-                        RETURNING product_id, state`).then(
-                        row => {
-                            console.log(row);
-                            resolve(row);
-                        },
-                        err => {
-                            console.log(err);
-                            reject(err);
-                        }
-                    );
+                         '${random_key(JOB_COLOURS)}', '${random_key(
+                  JOB_STATES
+                )}', ${price})
+                        RETURNING product_id, state`
+              ).then(
+                (row) => {
+                  console.log(row);
+                  resolve(row);
                 },
-                err => {
-                    console.log(err);
-                    reject(err);
+                (err) => {
+                  console.log(err);
+                  reject(err);
                 }
-            );
+              );
+            },
+            (err) => {
+              console.log(err);
+              reject(err);
+            }
+          );
         },
-        err => {
-            console.log(err);
-            reject(err);
+        (err) => {
+          console.log(err);
+          reject(err);
         }
-    );
-}));
+      );
+    })
+);
 Promise.all(promises).then(() => db.close());
 
 console.log(`

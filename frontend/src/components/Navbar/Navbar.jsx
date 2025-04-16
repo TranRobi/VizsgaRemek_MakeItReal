@@ -92,7 +92,7 @@ function Navbar() {
                 </li>
                 <li>
                   <NavLink to="/order">
-                    Order now<span></span>
+                    Custom order<span></span>
                   </NavLink>
                 </li>
 
