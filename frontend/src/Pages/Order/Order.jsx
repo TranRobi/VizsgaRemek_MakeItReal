@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 
@@ -21,6 +21,8 @@ import axios from "axios";
 import PersonalInfoForm from "../../components/PaymentForm/PersonalInfoForm";
 import CardInfoForm from "../../components/PaymentForm/CardInfoForn";
 import ShippingForm from "../../components/PaymentForm/ShippingForm";
+import { EmailContext } from "../../context/EmailContext";
+import { useNavigate } from "react-router-dom";
 
 function Order() {
   const theme = createTheme({
@@ -33,6 +35,9 @@ function Order() {
       fontFamily: "Roboto, sans-serif",
     },
   });
+  const navigate = useNavigate();
+
+  const { setInfo } = useContext(EmailContext);
 
   const [size, setSize] = useState(100);
   const [material, setMaterial] = useState("PLA");
@@ -43,8 +48,8 @@ function Order() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(null);
-
   const [step, setStep] = useState(1);
+
   const [formData, setFormData] = useState({});
 
   const handleNext = (data) => {
@@ -80,12 +85,17 @@ function Order() {
       });
 
       setSuccess(true);
+      if (response.status === 201) {
+        localStorage.setItem("orderInfo", res.data);
+        setInfo(response.data);
+      }
     } catch (error) {
       if (error.status === 406) {
         setError("Please upload a stl file");
       }
     }
   };
+
   const getPriceForStl = async () => {
     setLoading(true);
     const response = await axios
@@ -110,6 +120,7 @@ function Order() {
     setPrice(response.data.price);
     setLoading(false);
   };
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -124,6 +135,19 @@ function Order() {
               <Alert icon={<CheckIcon fontSize="inherit" />} severity="success">
                 Order successfuly submitted!
               </Alert>
+            )}
+            {success ? (
+              <Button
+                variant="contained"
+                color="success"
+                onClick={() => {
+                  navigate("/email-example");
+                }}
+              >
+                Show email example
+              </Button>
+            ) : (
+              ""
             )}
             <CardContent>
               <Typography

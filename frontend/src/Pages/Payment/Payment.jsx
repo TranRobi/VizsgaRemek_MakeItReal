@@ -23,6 +23,8 @@ import Alert from "@mui/material/Alert";
 import CheckIcon from "@mui/icons-material/Check";
 import axios from "axios";
 import { CircularProgress } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { EmailContext } from "../../context/EmailContext";
 
 const MultiStepForm = () => {
   const theme = createTheme({
@@ -41,16 +43,21 @@ const MultiStepForm = () => {
       fontFamily: "Roboto, sans-serif",
     },
   });
+  const navigate = useNavigate();
 
   const { storedUser } = useContext(AuthContext);
   const { cartList, productItems } = useContext(CartContext);
+  const { setInfo } = useContext(EmailContext);
+
   const shipPrice = cartList.length === 0 ? 0 : 3000; // Assuming 3000 HUF for shipping cost
+
   const [showAlert, setShowAlert] = useState(false);
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
+
   const [formData, setFormData] = useState({}); // Loading state for data fetching
 
-  // Fetch all data (prices and formData)
+  // Fetch all data
   useEffect(() => {
     window.scrollTo(0, 0);
     const fetchData = async () => {
@@ -69,6 +76,7 @@ const MultiStepForm = () => {
     };
     fetchData();
   }, [storedUser, productItems]); // Dependency on storedUser and productItems
+
   // Stepping between forms
   const handleNext = (data) => {
     setFormData((prev) => ({ ...prev, ...data }));
@@ -89,6 +97,8 @@ const MultiStepForm = () => {
       });
 
       if (res.status === 201) {
+        setInfo(res.data);
+        localStorage.setItem("orderInfo", res.data);
         setShowAlert(true);
       }
     } catch {
@@ -196,7 +206,13 @@ const MultiStepForm = () => {
                 </div>
               </Card>
               {showAlert ? (
-                <Button variant="contained" color="success">
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={() => {
+                    navigate("/email-example");
+                  }}
+                >
                   Show email example
                 </Button>
               ) : (

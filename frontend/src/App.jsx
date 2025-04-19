@@ -11,6 +11,7 @@ import Cart from "./Pages/Cart/Cart.jsx";
 import Payment from "./Pages/Payment/Payment.jsx";
 
 import RequireAuth from "./context/RequireAuth.jsx";
+import EmailExample from "./components/EmailExample/EmailExample.jsx";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
             <Route path="/profile" element={<Profile />} />
           </Route>
           <Route path="/payment" element={<Payment />} />
+          <Route path="/email-example" element={<EmailExample />} />
         </Routes>
       </BrowserRouter>
     </div>
