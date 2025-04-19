@@ -39,9 +39,7 @@ const ProductsProvider = ({ children }) => {
         console.log(error);
       });
   }
-  function modifyProducts() {
-    getProducts();
-  }
+
   function deleteProduct(id) {
     axios.delete(`/api/products/${id}`).then((res) => {
       if (res.status === 204) {
@@ -54,12 +52,18 @@ const ProductsProvider = ({ children }) => {
   }
 
   useEffect(() => {
-    getHistory();
     getProducts();
   }, []);
   return (
     <ProductsContext.Provider
-      value={{ products, addProduct, orders, deleteProduct, showDelAlert }}
+      value={{
+        products,
+        addProduct,
+        orders,
+        deleteProduct,
+        showDelAlert,
+        getHistory,
+      }}
     >
       {children}
     </ProductsContext.Provider>

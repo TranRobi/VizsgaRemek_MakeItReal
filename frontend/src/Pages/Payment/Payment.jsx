@@ -99,6 +99,7 @@ const MultiStepForm = () => {
       if (res.status === 201) {
         setInfo(res.data);
         localStorage.setItem("orderInfo", res.data);
+        localStorage.setItem("cart", []);
         setShowAlert(true);
       }
     } catch {
@@ -211,6 +212,7 @@ const MultiStepForm = () => {
                   color="success"
                   onClick={() => {
                     navigate("/email-example");
+                    location.reload();
                   }}
                 >
                   Show email example

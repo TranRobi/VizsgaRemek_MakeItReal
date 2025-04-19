@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -12,7 +12,10 @@ import {
 import { ProductsContext } from "../../context/ProductsContext";
 
 const OrderHistory = () => {
-  const { orders } = useContext(ProductsContext);
+  const { orders, getHistory } = useContext(ProductsContext);
+  useEffect(() => {
+    getHistory();
+  }, []);
 
   return (
     <div className="w-5/6 mx-auto m-4">

@@ -1,23 +1,44 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { BarChart } from "@mui/x-charts/BarChart";
+import axios from "axios";
 
 function Statistics() {
+  const [stat, setStat] = useState({
+    total: 0,
+    "product-count": 0,
+    "user-earnings": 0,
+  });
+
+  useEffect(() => {
+    axios.get("/api/statistics").then((res) => {
+      if (res.status === 200) {
+        console.log(res.data);
+        setStat(res.data);
+      }
+    });
+  }, []);
+
   return (
-    <div className="w-1/2 h-1/2 mx-auto mt-10 bg-white p-5 rounded-lg shadow-lg">
-      <BarChart
-        xAxis={[
-          {
-            scaleType: "band",
-            data: [
-              "rendelesemhonapja1",
-              "rendelesemhonapja2",
-              "rendelesemhonapja3",
-            ],
-          },
-        ]}
-        // yAxis shows the times the product was ordered in months
-        series={[{ data: [4, 3, 5] }, { data: [1, 6, 3] }, { data: [2, 5, 6] }]}
-      />
+    <div className="w-full max-w-2xl mx-auto mt-10 bg-white p-5 rounded-lg shadow-lg">
+      <div className="w-full" style={{ height: 400 }}>
+        <BarChart
+          xAxis={[
+            {
+              scaleType: "band",
+              data: [
+                "Total earnings from sales",
+                "Number of items sold",
+                "Your total earnings",
+              ],
+            },
+          ]}
+          series={[
+            {
+              data: [stat.total, stat["product-count"], stat["user-earnings"]],
+            },
+          ]}
+        />
+      </div>
     </div>
   );
 }
