@@ -348,7 +348,7 @@ export const query_place_order = (db, req, res, user, products) => {
               (jobs) => {
                 return res.status(201).json({
                   "card-number": payment_info.card_number,
-                  name: payment_info.card_name,
+                  name: payment_info.name,
                   cvv: payment_info.cvv,
                   "expiration-date":
                     payment_info.expiration_month +
@@ -451,7 +451,7 @@ export const query_place_order = (db, req, res, user, products) => {
             (jobs) => {
               return res.status(201).json({
                 "card-number": payment_info.card_number,
-                name: payment_info.card_name,
+                name: payment_info.name,
                 cvv: payment_info.cvv,
                 "expiration-date": expiration_date,
                 country: row.country,
