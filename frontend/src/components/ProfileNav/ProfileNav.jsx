@@ -1,12 +1,15 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 
 import axios from "axios";
 import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
 function ProfileNav({ setActiveTab }) {
+  //getting user data from context
   const { user, setUser, storedUser } = useContext(AuthContext);
+  //navitagtion hook
   const navigate = useNavigate();
+  //handle logout function
   const handleLogout = () => {
     setUser(!user);
     axios
@@ -31,7 +34,7 @@ function ProfileNav({ setActiveTab }) {
 
     navigate("/");
   };
-
+  //delete account function
   const deleteAccount = () => {
     axios
       .delete("/api/user", {

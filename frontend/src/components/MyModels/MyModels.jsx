@@ -24,16 +24,24 @@ import CreateNewItem from "../CreateNewItem/CreateNewItem";
 import Row from "../Row/Row";
 
 function MyModels() {
+  //getting the informations from the Contexts
   const { userID } = useContext(AuthContext);
   const { products, showDelAlert } = useContext(ProductsContext);
+  //declaring states
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 5;
   const [openAddNew, setOpenAddNew] = useState(false);
+  //setting the page size
+  const pageSize = 5;
 
+  //filtering the products by user
   const filteredProducts = products.filter(
     (prod) => prod.uploader_id === parseInt(userID)
   );
+
+  // calculating the total pages
   const totalPages = Math.ceil(filteredProducts.length / pageSize);
+
+  //displaying the filtered products
   const displayedProducts = filteredProducts.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize

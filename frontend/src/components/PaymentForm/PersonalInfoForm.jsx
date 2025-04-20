@@ -4,7 +4,9 @@ import { AuthContext } from "../../context/AuthContext";
 import { TextField, Button, Box } from "@mui/material";
 
 const PersonalInfoForm = ({ onNext, defaultValues }) => {
+  //getting the informations from the Contexts
   const { user } = React.useContext(AuthContext);
+  //setting the default values for the form
   const {
     register,
     handleSubmit,
@@ -12,10 +14,11 @@ const PersonalInfoForm = ({ onNext, defaultValues }) => {
     reset,
   } = useForm();
 
+  //reload the form values when the user changes the default values
   useEffect(() => {
     reset(defaultValues);
   }, [defaultValues, reset, user]);
-
+  //submitting the form data to the parent component
   const onSubmit = (data) => {
     onNext(data);
   };

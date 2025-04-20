@@ -4,9 +4,9 @@ import Footer from "../../components/Footer/Footer";
 import { useEffect } from "react";
 
 function AboutUs() {
-  useEffect(()=> {
-    window.scrollTo(0,0)
-  })
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <>
@@ -19,7 +19,7 @@ function AboutUs() {
             </h2>
             <div className="grid md:grid-cols-3 gap-8">
               <div className="bg-[#E0E0E0] p-6 rounded-lg shadow-md">
-              <img src="mester.jpg" alt="" />
+                <img src="mester.jpg" alt="" />
                 <h3 className="text-xl font-semibold mb-2 text-[#333333]">
                   Mester Máté
                 </h3>
@@ -56,8 +56,8 @@ function AboutUs() {
                   Vadász Zsolt
                 </h3>
                 <p className="text-[#333333]">
-                 I have been programming for several years at a hobby level.
-                 I mostly dabble in systems programming.
+                  I have been programming for several years at a hobby level. I
+                  mostly dabble in systems programming.
                 </p>
                 <p className="text-[#333333]">
                   I wrote most of the backend, in the future I do not want to

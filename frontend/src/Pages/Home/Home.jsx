@@ -1,10 +1,9 @@
 import React from "react";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import ReadMoreIcon from "@mui/icons-material/ReadMore";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import { NavLink } from "react-router-dom";
 
 import "./Home.css";
@@ -12,7 +11,7 @@ import "./Home.css";
 function Home() {
   useEffect(() => {
     window.scrollTo(0, 0);
-  });
+  }, []);
   return (
     <>
       <Navbar />
@@ -43,7 +42,8 @@ function Home() {
             <h2 className="text-2xl text-white">What are we doing?</h2>
             <NavLink
               to="/aboutus"
-              className="mt-4 inline-block bg-[#333333] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#000000] transition">
+              className="mt-4 inline-block bg-[#333333] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#000000] transition"
+            >
               See for yourself here <ReadMoreIcon className="ml-2" />
             </NavLink>
           </div>
@@ -63,7 +63,8 @@ function Home() {
             </h3>
             <NavLink
               to="/contactus"
-              className="mt-4 inline-block bg-[#333333] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#000000] transition">
+              className="mt-4 inline-block bg-[#333333] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#000000] transition"
+            >
               Contact us now <ArrowForwardIcon className="ml-2" />
             </NavLink>
           </div>
@@ -83,7 +84,8 @@ function Home() {
             </h3>
             <NavLink
               to="/library"
-              className="mt-4 inline-block bg-[#333333] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#000000] transition">
+              className="mt-4 inline-block bg-[#333333] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#000000] transition"
+            >
               Visit Library <ArrowForwardIcon className="ml-2" />
             </NavLink>
           </div>
@@ -103,7 +105,8 @@ function Home() {
             </h3>
             <NavLink
               to="/order"
-              className="mt-4 inline-block bg-[#333333] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#000000] transition">
+              className="mt-4 inline-block bg-[#333333] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#000000] transition"
+            >
               Order now <ArrowForwardIcon className="ml-2" />
             </NavLink>
           </div>

@@ -12,7 +12,8 @@ import {
 import CancelIcon from "@mui/icons-material/Cancel";
 import { ProductsContext } from "../../context/ProductsContext";
 
-function CreateNewItem({ open, setOpen }) {
+function CreateNewItem({ setOpen }) {
+  //creating a theme for the page
   const theme = createTheme({
     palette: {
       primary: {
@@ -29,19 +30,22 @@ function CreateNewItem({ open, setOpen }) {
       fontFamily: "Roboto, sans-serif",
     },
   });
+  //declaring states
   const [STL, setSTL] = useState();
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     "stl-file": null,
   });
-
+  //getting the informations from the Contexts
   const { addProduct } = useContext(ProductsContext);
 
   useEffect(() => {
+    //checking if the file is selected and setting the formData
     setFormData((prev) => ({ ...prev, "stl-file": STL }));
   }, [STL]);
 
+  //handling the changes in the input fields
   const handleChange = (event) => {
     if (!event.target) return;
     setFormData((values) => ({
@@ -50,6 +54,7 @@ function CreateNewItem({ open, setOpen }) {
     }));
   };
 
+  //handling the submit event
   const handleSubmit = (e) => {
     e.preventDefault();
     addProduct(formData);

@@ -2,8 +2,6 @@ import { Modal, useMediaQuery } from "@mui/material";
 import React, { useContext, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { styled } from "@mui/material/styles";
-
-import IconButton from "@mui/material/IconButton";
 import { useState } from "react";
 import Login from "../../Pages/Login/Login";
 import Register from "../../Pages/Register/Register";
@@ -12,45 +10,53 @@ import LoginIcon from "@mui/icons-material/Login";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import Badge, { badgeClasses } from "@mui/material/Badge";
 import MenuIcon from "@mui/icons-material/Menu";
-
 import "./Navbar.css";
 import { AuthContext } from "../../context/AuthContext";
 import { CartContext } from "../../context/CartContext";
+
 function Navbar() {
-  const [isNavbarMenu, setIsNavbarMenu] = useState(true);
-  const media = useMediaQuery("(min-width:766px)");
+  //getting the informations from the Contexts
   const { cartList } = useContext(CartContext);
+  const { user } = useContext(AuthContext);
+  //declaring states
+  const [isNavbarMenu, setIsNavbarMenu] = useState(true);
   const [isOpened, setIsOpened] = useState(false);
   const [isOpenedRegister, setIsOpenedRegister] = useState(false);
+  //navigation function
   const navigate = useNavigate();
+  //media query for responsive design
+  const media = useMediaQuery("(min-width:766px)");
+
   const CartBadge = styled(Badge)`
     & .${badgeClasses.badge} {
       top: -12px;
       right: -6px;
     }
   `;
-  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     media ? setIsNavbarMenu(false) : setIsNavbarMenu(true);
   }, [media]);
+
+  //closing and opening the login modal
+  const openLogin = (e) => {
+    e.preventDefault();
+    setIsOpened(true);
+  };
   const closeLogin = (e) => {
     e.preventDefault();
     setIsOpened(false);
+  };
+  //closing and opening the register modal
+  const openRegister = (e) => {
+    e.preventDefault();
+    setIsOpenedRegister(true);
   };
   const closeRegister = (e) => {
     e.preventDefault();
     setIsOpenedRegister(false);
   };
-  const openLogin = (e) => {
-    e.preventDefault();
-    setIsOpened(true);
-  };
-  const openRegister = (e) => {
-    e.preventDefault();
-    setIsOpenedRegister(true);
-  };
-
+  //navigating to the home page
   const home = () => {
     navigate("/");
   };

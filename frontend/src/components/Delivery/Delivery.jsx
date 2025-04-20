@@ -13,7 +13,10 @@ import {
 import { AuthContext } from "../../context/AuthContext";
 
 function Delivery() {
+  //getting the informations from the Contexts
   const { user } = useContext(AuthContext);
+  //declaring states
+  const [enabled, setEnabled] = useState(true);
   const [deliveryInformation, setDeliveryInformation] = useState({
     name: "",
     phone_number: "",
@@ -23,6 +26,7 @@ function Delivery() {
     street: "",
     postal_code: "",
   });
+  //creating a theme for the page
   const theme = createTheme({
     palette: {
       primary: {
@@ -39,8 +43,8 @@ function Delivery() {
       fontFamily: "Roboto, sans-serif",
     },
   });
-  const [enabled, setEnabled] = useState(true);
 
+  //handling the changes in the input fields
   const handleChange = (event) => {
     if (!event.target) {
       setDeliveryInformation((values) => ({ ...values, expire_at: event.$d }));
@@ -53,6 +57,7 @@ function Delivery() {
   };
 
   useEffect(() => {
+    //getting delivery-information if the user is logged in
     if (user) {
       axios
         .get("/api/delivery-information", {
@@ -74,6 +79,7 @@ function Delivery() {
     }
   }, [user]);
 
+  //Sending changes to the backend
   function sendChanges() {
     axios
       .put(

@@ -12,7 +12,9 @@ import {
 import { ProductsContext } from "../../context/ProductsContext";
 
 const OrderHistory = () => {
+  //getting the informations from the Contexts
   const { orders, getHistory } = useContext(ProductsContext);
+  // This function fetches the order history from the server and updates the state with the fetched data.
   useEffect(() => {
     getHistory();
   }, []);

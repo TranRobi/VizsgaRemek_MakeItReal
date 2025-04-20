@@ -9,7 +9,8 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 import axios from "axios";
 function Library() {
-  let [search, setSearch] = useState("");
+  //declaring states
+  const [search, setSearch] = useState("");
   const [product, setProduct] = useState([]);
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
@@ -24,6 +25,8 @@ function Library() {
     return searchArray;
   }
   useEffect(() => {
+    window.scrollTo(0, 0);
+    // Fetching data from the API
     axios
       .get("/api/products")
       .then((res) => {
@@ -33,9 +36,6 @@ function Library() {
         console.error(err);
       });
   }, [pageSize]);
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  });
   return (
     <>
       <Navbar />

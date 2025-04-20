@@ -1,9 +1,10 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import Navbar from "../Navbar/Navbar";
 import Footer from "../Footer/Footer";
 import { EmailContext } from "../../context/EmailContext";
 
 function EmailExample() {
+  //getting the informations from the Contexts
   const { info } = useContext(EmailContext);
 
   return (

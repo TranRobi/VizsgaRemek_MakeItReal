@@ -8,7 +8,7 @@ import EmailIcon from "@mui/icons-material/Email";
 function ContactUs() {
   useEffect(() => {
     window.scrollTo(0, 0);
-  });
+  }, []);
   return (
     <>
       <Navbar />

@@ -3,6 +3,7 @@ import { BarChart } from "@mui/x-charts/BarChart";
 import axios from "axios";
 
 function Statistics() {
+  // State to hold the statistics data
   const [stat, setStat] = useState({
     total: 0,
     "product-count": 0,
@@ -10,6 +11,7 @@ function Statistics() {
   });
 
   useEffect(() => {
+    // Fetching statistics data from the server
     axios.get("/api/statistics").then((res) => {
       if (res.status === 200) {
         console.log(res.data);

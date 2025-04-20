@@ -3,6 +3,7 @@ import { createContext } from "react";
 
 const CartContext = createContext();
 const CartProvider = ({ children }) => {
+  // State to hold the cart list and product items
   const [cartList, setCartList] = React.useState(() => {
     const storedCart = localStorage.getItem("cart");
     return storedCart ? JSON.parse(storedCart) : [];
@@ -13,9 +14,8 @@ const CartProvider = ({ children }) => {
     return storedItems ? JSON.parse(storedItems) : [];
   });
 
-
-
   useEffect(() => {
+    // Update local storage whenever cartList changes
     localStorage.setItem("cart", JSON.stringify(cartList));
     localStorage.setItem("items", JSON.stringify(productItems));
   }, [cartList]);
@@ -26,7 +26,7 @@ const CartProvider = ({ children }) => {
         cartList,
         setCartList,
         setProductItems,
-        productItems
+        productItems,
       }}
     >
       {children}

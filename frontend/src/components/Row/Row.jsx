@@ -4,6 +4,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { ProductsContext } from "../../context/ProductsContext";
 
 function Row({ row }) {
+  //getting deleteProduct function from context
   const { deleteProduct } = useContext(ProductsContext);
 
   return (

@@ -3,23 +3,10 @@ import { useForm, Controller } from "react-hook-form";
 import { TextField, Button, Box } from "@mui/material";
 import { AuthContext } from "../../context/AuthContext";
 
-const formatCardNumber = (value) => {
-  return value
-    .replace(/\D/g, "")
-    .slice(0, 16)
-    .replace(/(.{4})/g, "$1-")
-    .replace(/-$/, "");
-};
-
-const formatExpiry = (value) => {
-  const cleaned = value.replace(/\D/g, "").slice(0, 4);
-  if (cleaned.length < 3) return cleaned;
-  return cleaned.slice(0, 2) + "/" + cleaned.slice(2);
-};
-
 const CardInfoForm = ({ onSubmit, onBack, defaultValues }) => {
+  //getting the informations from the Contexts
   const { user } = useContext(AuthContext);
-
+  //setting the default values for the form
   const {
     control,
     handleSubmit,
@@ -27,10 +14,26 @@ const CardInfoForm = ({ onSubmit, onBack, defaultValues }) => {
     reset,
   } = useForm();
 
+  //reload the form values when the user changes the default values
   useEffect(() => {
     reset(defaultValues);
   }, [defaultValues, reset, user]);
 
+  //formatting the expiration date to be MM/YY
+  const formatExpiry = (value) => {
+    const cleaned = value.replace(/\D/g, "").slice(0, 4);
+    if (cleaned.length < 3) return cleaned;
+    return cleaned.slice(0, 2) + "/" + cleaned.slice(2);
+  };
+  
+  //formatting the card number to be 4 digits separated by a dash
+  const formatCardNumber = (value) => {
+    return value
+      .replace(/\D/g, "")
+      .slice(0, 16)
+      .replace(/(.{4})/g, "$1-")
+      .replace(/-$/, "");
+  };
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Box display="flex" flexDirection="column" gap={2}>

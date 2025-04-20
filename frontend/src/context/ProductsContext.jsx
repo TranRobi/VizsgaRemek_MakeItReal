@@ -16,8 +16,8 @@ const ProductsProvider = ({ children }) => {
         setOrders(response.data);
       });
   }
-  function getProducts() {
-    axios
+  async function getProducts() {
+    await axios
       .get("/api/products")
       .then((response) => {
         setProducts(response.data);
@@ -39,7 +39,6 @@ const ProductsProvider = ({ children }) => {
         console.log(error);
       });
   }
-
   function deleteProduct(id) {
     axios.delete(`/api/products/${id}`).then((res) => {
       if (res.status === 204) {
@@ -52,6 +51,7 @@ const ProductsProvider = ({ children }) => {
   }
 
   useEffect(() => {
+    // Fetching products from the server
     getProducts();
   }, []);
   return (
@@ -63,6 +63,7 @@ const ProductsProvider = ({ children }) => {
         deleteProduct,
         showDelAlert,
         getHistory,
+        getProducts,
       }}
     >
       {children}

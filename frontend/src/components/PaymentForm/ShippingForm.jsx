@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { AuthContext } from "../../context/AuthContext";
 import { TextField, Button, Grid } from "@mui/material";
 
 const ShippingForm = ({ onNext, onBack, defaultValues }) => {
+  //getting the informations from the Contexts
   const { storedUser } = React.useContext(AuthContext);
+  //setting the default values for the form
   const {
     register,
     handleSubmit,
@@ -12,10 +14,11 @@ const ShippingForm = ({ onNext, onBack, defaultValues }) => {
     reset,
   } = useForm();
 
+  //reload the form values when the user changes the default values
   useEffect(() => {
     reset(defaultValues);
   }, [defaultValues, reset, storedUser]);
-
+  //submitting the form data to the parent component
   const onSubmit = (data) => {
     onNext(data);
   };
