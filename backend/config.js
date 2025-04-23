@@ -36,9 +36,9 @@ export const FILAMENT_PRICE_PER_MM = {
    * Az első számokat 3djake.hu-ról mintáztuk,
    * melyek kilogrammonként vannak
    */
-  PLA: (7500 / 330000) * 1.5,
-  PETG: (9600 / 325000) * 1.5,
-  ABS: (11000 / 400000) * 1.5,
+  PLA: (7500 / 330000) * 15,
+  PETG: (9600 / 325000) * 15,
+  ABS: (11000 / 400000) * 15,
 };
 
 export default CONFIG;
