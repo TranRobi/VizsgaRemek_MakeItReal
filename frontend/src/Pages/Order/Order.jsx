@@ -142,8 +142,7 @@ function Order() {
                 color="success"
                 onClick={() => {
                   navigate("/email-example");
-                }}
-              >
+                }}>
                 Show email example
               </Button>
             ) : (
@@ -152,8 +151,7 @@ function Order() {
             <CardContent>
               <Typography
                 variant="h5"
-                className="text-black font-semibold mb-4"
-              >
+                className="text-black font-semibold mb-4">
                 Payment Process
               </Typography>
 
@@ -185,8 +183,7 @@ function Order() {
               <select
                 value={size}
                 onChange={(e) => setSize(Number(e.target.value))}
-                className="border p-2 rounded w-full bg-red-950 text-white"
-              >
+                className="border p-2 rounded w-full bg-red-950 text-white">
                 {[50, 100, 150].map((s) => (
                   <option key={s} value={s}>
                     {s}%
@@ -201,8 +198,7 @@ function Order() {
               <select
                 value={material}
                 onChange={(e) => setMaterial(e.target.value)}
-                className="border p-2 rounded w-full bg-red-950 text-white"
-              >
+                className="border p-2 rounded w-full bg-red-950 text-white">
                 {["PLA", "PETG", "ABS"].map((mat) => (
                   <option key={mat} value={mat}>
                     {mat}
@@ -231,8 +227,7 @@ function Order() {
                       colour === col ? "border-black" : "border-white"
                     }`}
                     style={{ backgroundColor: col.toLowerCase() }}
-                    onClick={() => setColor(col)}
-                  ></button>
+                    onClick={() => setColor(col)}></button>
                 ))}
               </div>
             </div>
@@ -255,8 +250,7 @@ function Order() {
             <div className="mt-4">
               <Typography
                 variant="body1"
-                sx={{ fontWeight: 500, color: "#000" }}
-              >
+                sx={{ fontWeight: 500, color: "#000" }}>
                 STL File
               </Typography>
               <input
@@ -282,8 +276,7 @@ function Order() {
               <Alert
                 icon={<CancelIcon fontSize="inherit" />}
                 severity="error"
-                sx={{ marginTop: "10px" }}
-              >
+                sx={{ marginTop: "10px" }}>
                 {error}
               </Alert>
             )}
@@ -293,9 +286,8 @@ function Order() {
                   getPriceForStl();
                 }}
                 variant="contained"
-                color="primary"
-              >
-                Calculating price
+                color="primary">
+                Calculate price
               </Button>
               {loading ? (
                 <div className="justify-center flex p-2 items-center">
