@@ -203,7 +203,7 @@ db.serialize(() => {
       name: "Toothbrush holder",
       description:
         "Toothbrush holder, for one electric toothbrush, two manual toothbrushes and one tube of toothpaste",
-      stl_path: "./stl/small_pot.stl",
+      stl_path: "./stl/toothburhs_holder_elecric_brush.stl",
     },
   ];
 
